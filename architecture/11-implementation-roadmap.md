@@ -46,15 +46,16 @@ flowchart LR
   - Angular Schematic Canvas + Interactive Waveform Viewer + Live Component Parameter Inspector.
 - **Exit Criteria:** Series/parallel resistor chains, RLC filters, BJT/MOSFET amplifiers, and a synchronous buck converter simulate accurately (< 0.5% deviation vs. reference SPICE golden benchmarks) with live voltage/current/SOA probes in the Angular UI.
 
-### Phase 2 — Kubernetes Stateful Project Pods, Encrypted `signal-vcs`, Multi-User Sync & Unified Projects
+### Phase 2 — Kubernetes Stateful Project Pods, BYO-GitHub Sync, Security Auditor & Unified Projects
 - **Deliverables:**
-  - `signal-vcs` (`jj-lib` + `gitoxide` + Encrypted S3 CAS): 1 Organization → 1 VCS Org, 1 Project → 1 isolated encrypted Git-compatible repository, canonical diffable EDA files, visual 3-way diff, and policy-gated optional `github.com` mirror for `PUBLIC_OPEN_HARDWARE` repos only.
-  - `signal-operator` (`kube-rs`) managing `ProjectSession` CRDs, Warm Standby Pod Pool, fenced distributed leases, and idle hibernation.
+  - `services/vcs-connector` & `engine/crates/signal-git-sync`: 2FA-gated Customer GitHub Organization setup (GitHub Org Name + Fine-Grained PAT or GitHub App, encrypted in Vault/HSM), automatic 1 Project → 1 Repo provisioning, RAM-only `gitoxide` + `jj-lib` sync, `ENCRYPTED_VAULT` (AES-256-GCM) vs. `PLAIN_CANONICAL` modes, and visual 3-way hardware diff.
+  - `services/vcs-auditor`: Periodic (6h/daily + webhook) GitHub Organization security vulnerability & posture auditor (public-repo drift, unauthorized human vault access, Org 2FA/SSO, Classic PAT detection, Secret Scanning, Dependabot CVEs, Posture Score 0–100, and 2FA-gated remediation).
+  - `signal-operator` (`kube-rs`) managing `ProjectSession` CRDs, Warm Standby Pod Pool, fenced distributed leases, and idle hibernation (zero customer files retained on Signal after pod termination).
   - `session-broker` implementing **sticky routing** so 2+ concurrent users opening Project X attach to the exact same Rust Engine Pod.
-  - Real-time CRDT multi-user sync, live cursors, presence, soft locks, and continuous **AES-256-GCM encrypted WAL + VCS checkpoints** (RAM-only `tmpfs` + `zeroize`).
+  - Real-time CRDT multi-user sync, live cursors, presence, soft locks, and batched encrypted commits/checkpoints to the customer's GitHub Org.
   - `identity-org` & `project-catalog`: Individual accounts, approval-gated Enterprise Onboarding, RBAC/ABAC, Multi-Type Projects (`PRD`, `HFS`, `SCHEMATIC`, `PCB`, `IC_*`, `FPGA`, `FIRMWARE`, `BIOS`), extensible metadata, cross-domain traceability links, Project Templates, and **Progressive UI Profiles (`EXPLORER` / `MAKER` / `PRO`)** with low-bandwidth vector delta transport.
   - Integrated PRD & HFS structured spec editor inside the Angular IDE.
-- **Exit Criteria:** Two browsers join the same encrypted project on Kubernetes (local `k3d` & cloud EKS/GKE), verify identical Pod IP assignment, commit & visually diff changes in `signal-vcs`, edit schematics + PRD concurrently with < 50 ms sync (and smoothly in `EXPLORER` mode over simulated 3G bandwidth), and survive simulated pod crash with zero data loss.
+- **Exit Criteria:** Two browsers join the same project hydrated into RAM from the connected GitHub Org (or local GitHub mock on Mac), verify identical Pod IP assignment, commit & visually diff changes back to GitHub, trigger a simulated public-repo/2FA vulnerability that `vcs-auditor` catches and alerts immediately, edit schematics + PRD concurrently with < 50 ms sync, and survive simulated pod crash with zero data loss.
 
 ### Phase 3 — AI-Agent-First Orchestration, Multilingual Tutor & Universal Datasheet RAG
 - **Deliverables:**
@@ -68,7 +69,7 @@ flowchart LR
 - **Deliverables:**
   - `signal-geom` & `signal-pcb`: Exact nanometer geometry, R-tree spatial DRC, stackup + 2D impedance field solver, push-and-shove router, differential pairs, length tuning, copper pours, 3D PCB renderer, and in-memory Gerber X2 / ODB++ / IPC-2581 / BOM / CPL generators.
   - `signal-render`: Server-side `wgpu` GPU renderer with WebRTC encrypted pixel/tile streaming + burned-in visible & invisible forensic watermarks (Enterprise Zero-Leak Mode).
-  - Full DLP Enforcement: Print blocking, privacy curtain, zero download endpoints, zero external `git clone` for Enterprise/Private repos, Enterprise Secure Browser policy hooks.
+  - Full DLP Enforcement: Print blocking, privacy curtain, zero download endpoints, `ENCRYPTED_VAULT` + `vcs-auditor` pre-release security gate, Enterprise Secure Browser policy hooks.
   - `sftp-egress`: **Mandatory Step-Up 2FA** (WebAuthn/TOTP) to register/verify SFTP targets (Enterprise & Individual), HSM ED25519 keys, host-key pinning, optional PGP encryption, 4-eyes approval, and immutable hash-chained audit logs.
   - AI PCB Floorplan, Routing & DFM Auto-Repair Agent.
 - **Exit Criteria:** End-to-end flow from PRD → HFS → AI-verified Schematic → 6-layer high-speed PCB (zero DRC) → 2FA-approved SFTP push of Gerber/ODB++/BOM to a remote SFTP server, while verifying zero raw CAD payloads touch browser storage or DevTools in Zero-Leak Mode.
@@ -76,11 +77,11 @@ flowchart LR
 ### Phase 5 — Full IC / GPU / Chip Suite, Multi-Pod Federation, FPGA/FW/BIOS Co-Design & Plugin SDK
 - **Deliverables:**
   - `signal-ic`: Encrypted PDK ingestion (plus Open Silicon `Sky130` / `GF180` / `IHP SG13G2` packs), BSIM4/BSIM-CMG/PSP Rust transistor modules, sandboxed WASM PCELLs, custom analog mask layout editor, hierarchical DRC/LVS/PEX, RTL-to-GDSII burst orchestration, 2.5D/3D-IC chiplet/SiP packaging, and in-memory GDSII/OASIS SFTP release.
-  - **GPU/ASIC Scale-Out:** `SILICON_SCALE` hierarchical multi-pod federation (abstract IP-block mounting across sub-repos) + sparse virtual `signal-vcs` hydration for 100 GB+ chip repos.
+  - **GPU/ASIC Scale-Out:** `SILICON_SCALE` hierarchical multi-pod federation (mounting verified abstract IP-block repos from the Enterprise's GitHub Org across federated Project Pods) + Git LFS / Customer BYO-S3 pointer support for multi-GB PDKs and waveforms.
   - Embedded Monaco IDE + LSP inside Signal for FPGA (`SystemVerilog`/`VHDL`), Firmware (`C`/`C++`/`Rust`), and BIOS (`UEFI`/`Device Tree`/`Register Maps`), bi-directionally synchronized with schematics/IC pinouts.
   - Hardware-Firmware Co-Simulation (`signal-lib-firmware-bridge`) running virtual MCU code live against Rust SPICE peripherals.
   - Elastic K8s CPU/GPU Burst Worker pool + **Multi-Physics WASM/Rust Domain Plugin SDK** (foundation for future Photonics, Quantum/Cryo-CMOS, and MEMS modules).
-- **Exit Criteria:** Open-source PDK (SkyWater 130nm / GF180) analog/digital IC block passes Schematic → Post-Layout PEX SPICE → DRC/LVS Clean → SFTP GDSII delivery; multi-block hierarchical SoC mounts across federated Project Pods; embedded firmware toggles a virtual GPIO and drives a simulated Rust buck/motor stage live in the browser.
+- **Exit Criteria:** Open-source PDK (SkyWater 130nm / GF180) analog/digital IC block passes Schematic → Post-Layout PEX SPICE → DRC/LVS Clean → SFTP GDSII delivery; multi-block hierarchical SoC mounts across federated Project Pods from separate GitHub Org IP repos; embedded firmware toggles a virtual GPIO and drives a simulated Rust buck/motor stage live in the browser.
 
 ### Phase 6 — Enterprise Hardening, Scale Benchmarking & General Availability
 - **Deliverables:**

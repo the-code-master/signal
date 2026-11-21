@@ -31,8 +31,9 @@ flowchart TB
             PG["PostgreSQL 16 + pgvector (:5432)"]
             Redis["Redis / Valkey (:6379)"]
             NATS["NATS JetStream (:4222)"]
-            MinIO["MinIO Encrypted S3 (:9000)"]
+            MinIO["MinIO Ephemeral Cache / Dev BYO-S3 (:9000)"]
             DevKMS["Local KMS Emulator (:9100)"]
+            MockGitHub["Local GitHub Org Mock (:8085)\n(or Real Test GitHub Org + PAT)"]
             MockSFTP["Local OpenSSH Mock SFTP (:2222)\n(Tests 2FA + Host Pinning + Push)"]
         end
     end
@@ -44,7 +45,9 @@ flowchart TB
     AI <--> PG
     Node <--> PG
     Node <--> Redis
+    Node <--> MockGitHub
     Node <--> MockSFTP
+    Rust <--> MockGitHub
     Rust <--> MinIO
     Rust <--> DevKMS
     Rust <--> NATS

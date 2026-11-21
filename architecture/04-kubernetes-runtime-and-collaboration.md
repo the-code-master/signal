@@ -60,27 +60,27 @@ Managed by a custom pure-Rust Kubernetes Operator (`signal-operator` built with 
 stateDiagram-v2
     [*] --> WarmStandby: Pre-provisioned in Warm Pool
     WarmStandby --> Claiming: First user opens Project X (distributed lock acquired)
-    Claiming --> Hydrating: Scoped KMS token issued, fetch encrypted snapshot from S3
-    Hydrating --> Active: Decrypted in RAM-only tmpfs, registered in Redis directory
-    Active --> Active: Users 2..N & AI agents join same pod + encrypted WAL checkpoints
+    Claiming --> Hydrating: Scoped Vault GitHub + KMS token issued, clone project repo into RAM-only tmpfs
+    Hydrating --> Active: Decrypted (if ENCRYPTED_VAULT) in RAM, registered in Redis directory
+    Active --> Active: Users 2..N & AI agents join same pod + batched commits/checkpoints to Customer GitHub Org
     Active --> Draining: Last user disconnects (idle grace timer e.g. 15 min)
     Draining --> Active: User reconnects before timeout (zero cold start)
     Draining --> Checkpointing: Grace timer expires
-    Checkpointing --> Terminating: Final encrypted snapshot verified in S3, zeroize RAM & drop KMS lease
-    Terminating --> [*]: Pod destroyed (never reused across tenants)
+    Checkpointing --> Terminating: Final commit/encrypted checkpoint verified on Customer GitHub Org, zeroize RAM & drop leases
+    Terminating --> [*]: Pod destroyed (zero customer files retained on Signal!)
 ```
 
 ### Key Lifecycle Invariants
 1. **Single-Pod Guarantee (No Split-Brain):**
    - Before claiming a pod for `project_id`, `signal-operator` acquires a **fenced distributed lease** (etcd/Redis Redlock with monotonically increasing `fencing_token`).
-   - Object Storage WAL checkpoints validate `fencing_token`—making split-brain dual-writer corruption mathematically impossible even during network partitions.
+   - Git push/checkpoint refs and ephemeral crash-recovery WAL validate `fencing_token`—making split-brain dual-writer corruption mathematically impossible even during network partitions.
 2. **Never Reuse a Pod Across Different Tenants/Projects:**
    - Warm Standby pods are completely clean, uninitialized binaries waiting to be claimed. Once a pod finishes serving Project X and hibernates, **the pod is permanently destroyed** after zeroizing memory—eliminating any possibility of cross-tenant memory residue.
 3. **Sub-Second Startup via Warm Pools:**
-   - Maintaining a dynamically sized warm pool of pre-started `signal-pod` containers removes container image pull and Kubernetes scheduling latency (turning 15–30 s cold starts into **< 1.5 s** hydration times).
-4. **Crash Recovery & Durability:**
-   - Every committed user/AI transaction is appended to an **AES-256-GCM encrypted Write-Ahead Log (WAL)** streamed asynchronously (with < 500 ms RPO, or synchronous for critical releases) to S3.
-   - If a Kubernetes node unexpectedly dies, `signal-operator` detects lease expiry within 5 seconds, claims a fresh Warm Standby pod, replays the latest encrypted snapshot + WAL, and seamlessly reconnects all active clients via automatic WebSocket/WebTransport resume.
+   - Maintaining a dynamically sized warm pool of pre-started `signal-pod` containers removes container image pull and Kubernetes scheduling latency (turning 15–30 s cold starts into **< 1.5 s** hydration times via shallow/sparse `gitoxide` fetch into RAM).
+4. **Crash Recovery & Durability (Zero Permanent Signal Storage):**
+   - Active editing transactions are pushed as clean commits to the customer's GitHub Org repository (and optionally mirrored to a short-lived encrypted checkpoint ref/ephemeral crash buffer purged immediately once pushed to GitHub).
+   - If a Kubernetes node unexpectedly dies, `signal-operator` detects lease expiry within 5 seconds, claims a fresh Warm Standby pod, re-hydrates from the customer's GitHub Org repo + latest checkpoint ref, and seamlessly reconnects all active clients via automatic WebSocket/WebTransport resume.
 
 ---
 

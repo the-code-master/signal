@@ -76,14 +76,33 @@ erDiagram
     PROJECT ||--o{ PROJECT_METADATA_KV : "stores_rich_metadata"
     PROJECT ||--o{ PROJECT_REVISION : "versions"
     PROJECT ||--o{ RELEASE_PACKAGE : "delivers_via_sftp"
+    ORGANIZATION ||--o| GIT_ORG_CONNECTION : "connects_byo_github"
+    USER ||--o| GIT_ORG_CONNECTION : "personal_byo_github"
+    GIT_ORG_CONNECTION ||--o{ VCS_SECURITY_AUDIT : "periodically_audited"
     SUB_PROJECT ||--o{ TRACEABILITY_LINK : "links_across_domains"
     SFTP_TARGET ||--o{ RELEASE_PACKAGE : "receives"
+
+    GIT_ORG_CONNECTION {
+        uuid id PK
+        uuid org_id FK "nullable if personal"
+        uuid owner_user_id FK
+        string provider "GITHUB_COM|GHES"
+        string api_base_url
+        string github_org_name
+        string auth_mode "FINE_GRAINED_PAT|GITHUB_APP"
+        string vault_credential_ref "encrypted in Vault/HSM"
+        string repo_encryption_mode "ENCRYPTED_VAULT|PLAIN_CANONICAL"
+        int last_posture_score "0-100"
+        timestamp last_audited_at
+        timestamp verified_with_2fa_at
+    }
 
     PROJECT {
         uuid id PK
         uuid org_id FK
         string project_code
         string name
+        string github_repo_full_name "org/project-slug"
         string primary_type
         string lifecycle_stage
         string security_tier

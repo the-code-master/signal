@@ -200,13 +200,15 @@ signal/
 │   │   ├── signal-pcb/        # Stackup, impedance, router, Gerber/ODB++/IPC-2581
 │   │   ├── signal-ic/         # PDK, PCELL, LVS, PEX, STA, GDSII/OASIS
 │   │   ├── signal-render/     # Server-side GPU renderer (wgpu) + forensic watermarking
-│   │   ├── signal-vcs/        # Embedded encrypted Git/Jujutsu (jj-lib + gitoxide) & S3 CAS server
-│   │   ├── signal-pod/        # Stateful project pod daemon (gRPC + WebRTC + KMS/S3/VCS)
+│   │   ├── signal-git-sync/   # RAM-only gitoxide + jj-lib sync & ENCRYPTED_VAULT cipher to Customer GitHub Org
+│   │   ├── signal-pod/        # Stateful project pod daemon (gRPC + WebRTC + KMS/GitHub Sync)
 │   │   └── signal-operator/   # Kubernetes ProjectSession Operator (kube-rs)
 ├── services/                  # Node.js / TypeScript Control Plane & BFF
 │   ├── api-gateway/           # Auth, SSO, 2FA, rate limiting, routing
 │   ├── identity-org/          # Users, Enterprise onboarding approvals, RBAC/ABAC
 │   ├── project-catalog/       # Projects, multi-type modules, metadata, templates
+│   ├── vcs-connector/         # 2FA-gated Customer GitHub Org settings (Fine-Grained PAT / GitHub App) & repo provisioning
+│   ├── vcs-auditor/           # Periodic GitHub Org security vulnerability, DLP drift & CVE posture auditor
 │   ├── session-broker/        # Sticky routing proxy to K8s Rust pods
 │   ├── sftp-egress/           # 2FA-gated authorized SFTP registry & transfer engine
 │   └── audit-service/         # Immutable cryptographic audit pipeline
