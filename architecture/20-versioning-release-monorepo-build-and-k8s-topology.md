@@ -140,35 +140,67 @@ flowchart LR
 
 ---
 
-## 4. Monorepo-Native Default Build, Local Run & Deploy (`justfile` + `infra/`)
+## 4. Unified Common Build, CI/CD, Release & Deploy CLI (`./signal.sh` + `scripts/signal_ops.py`)
 
-Building, testing, running locally, cutting versioned releases, and deploying to Kubernetes are **100% native defaults inside the single Signal monorepo**—zero external deployment repos or undocumented scripts:
+For a **small engineering team** maintaining Rust `1.100+` pods, Python `3.15+` FastAPI APIs, Angular `v22+` UI, AI services, Envoy bridges, and 3-tier Kubernetes `1.37+` manifests, duplicating build/deploy logic across CI YAML files, Makefiles, and per-service scripts creates brittle release toil. Signal standardizes **100% of build, test, image, release, deploy, and rollback operations** behind **ONE single monorepo executable**—run identically on developer laptops AND in CI/CD:
 
-### 4.1 Unified Monorepo Root Command Surface (`justfile` + `pnpm` Aliases)
+```mermaid
+flowchart LR
+    Dev["Engineer (macOS ARM64 / Linux)\n./signal.sh ... (or just alias)"] --> Shim["./signal.sh\nThin POSIX/Bash Launcher"]
+    CI["Thin GitHub Actions (~30 LOC YAML)\npr-gate / release / deploy-gitops"] --> Shim
+    Shim --> CLI["scripts/signal_ops.py\nPython 3.15+ Stdlib-Only CLI (Zero pip Bootstrap)"]
+    CLI --> Reg["scripts/components.toml\nSingle Registry: contracts, rust-*, api, ui, bridge, ai, k8s"]
+    CLI --> Ops["Modular scripts/ops/*.py (<= 250 LOC each)\ndoctor | dev | build | check | image | release | deploy | rollback"]
+    Ops --> Out["Uniform Outputs & Artifacts\nMulti-Arch Signed OCI + SBOM + CHANGELOG + releases/notes/ + Helm/GitOps"]
+```
 
-| Command | Default Behavior (Works Identically on Mac Apple Silicon, Linux & CI) |
+### 4.1 Why `./signal.sh` (Bash Shim) + `scripts/signal_ops.py` (Stdlib Python `3.15+`) + `components.toml`
+- **Local == CI (Zero YAML Script Drift):** `.github/workflows/{pr-gate,release,deploy-gitops}.yml` remain tiny (`~25–45 LOC`) declarative triggers that ONLY invoke `./signal.sh <verb> --json`. Any CI failure reproduces locally in one command—never debug buried GitHub Actions shell scripts.
+- **Zero Bootstrap Dependencies & Cross-OS Parity:** `scripts/signal_ops.py` and `scripts/ops/*.py` use **Python `3.15+` standard library ONLY** (`tomllib`, `argparse`, `subprocess`, `json`, `hashlib`, `concurrent.futures`)—zero `pip install` needed to run CI/CD, eliminating macOS BSD vs. Linux GNU `sed`/`date`/`sha256sum` incompatibilities while reusing the exact Python `3.15+` toolchain the team already maintains.
+- **Single Declarative Component Registry (`scripts/components.toml`):** Every buildable and deployable Signal unit (`contracts`, `rust-pod`, `rust-operator`, `rust-egress-proxy`, `rust-sftp-egress`, `rust-cell-wasm`, `api`, `ui`, `bridge`, `ai`, `k8s`) is declared in ONE TOML manifest (path, K8s tier, Dockerfile, build/check commands, OCI image name, dependency order). Adding a future service or Rust binary requires **one 6-line `[[component]]` stanza**—`build`, `check`, multi-arch `image`, Cosign/SBOM signing, `releases/manifest.json` digest pinning, `deploy`, and `rollback` include it automatically!
+- **Optional `justfile` Convenience Wrapper:** Root `justfile` stays a 1-line-per-recipe alias delegating 100% to `./signal.sh` (`just build` → `./signal.sh build`) so CI containers and minimal shells never require `just` installed.
+- **Small-Team Safety Guardrails:** Global `--dry-run`, `--json` (GitHub Actions Step Summaries), and `--changed` (git-diff impacted-only PR builds) flags on all verbs; enforces clean working tree + signed tag before `--env staging|prod`; masks secrets; and unit-tests every ops module under `scripts/tests/` via `pytest` + `ruff` + `pyright --strict` + `bandit`.
+
+### 4.2 Unified Command Surface (`./signal.sh <verb>` — `just <verb>` Aliases Identical)
+
+| Command (`./signal.sh ...`) | What It Runs Uniformly Across Rust Engine, FastAPI API, Angular UI, AI & K8s |
 |---|---|
-| **`just dev`** *(default local run)* | Auto-detects host RAM (`<= 16 GB` → `dev:lite` `< 1.5 GB RAM`; `>= 32 GB` → `dev:full` Docker ARM64) + Local Ollama/MLX (`deterministic_mock` fallback) + `Guest @ Signal Design, Inc.` (zero-bypass RBAC/PQC). |
-| **`just dev-k8s`** | Boots local `k3d`/`OrbStack` K8s `1.37+` cluster running the **exact 3-tier K8s topology** (`signal-web` pod + FastAPI/Granian `signal-api` & Envoy `signal-engine-bridge` pod + `1–4` simulated Rust `1.100+` worker nodes) via monorepo Helm `values-local.yaml`. |
-| **`just build`** | Canonical full-stack build in dependency order: `contracts/` (`buf` + `signal-proto` + Python + TS `bigint` codegen) → `engine/` (`cargo build`, Rust `1.100+`) → `services/` + `ai/` (`uv sync`, Python `3.15+`) → `web/` (`pnpm build`, Angular `v22+`). |
-| **`just build-images`** | Builds deterministic multi-arch (`linux/amd64`, `linux/arm64`) OCI images from `infra/docker/Dockerfile.{web,api,bridge,rust-pod,operator,ai}` using `cargo-chef` + `uv` + `pnpm deploy` caching (`--no-default-features` forbidding `dev-guest-auth`). |
-| **`just test`** / **`just check`** | Runs full Definition-of-Done gate: `buf lint/breaking`, `contracts/fixtures` + `transcripts`, Rust `1.100+` `fmt`/`clippy -D warnings`/`nextest`/`cargo deny`/`cargo vet`, Python `3.15+` `uv run ruff`/`pyright`/`pytest`/`bandit`/`pip-audit`, Angular `v22+` `pnpm lint`/`typecheck`/`vitest`/`pnpm audit --ignore-scripts`, Helm `lint` + `kubeconform`, and `dev-guest-auth` binary symbol scan. |
-| **`just release-preview`** | Computes next SemVer from commits/changesets, validates `releases/compatibility.json`, and prints draft `releases/notes/vX.Y.Z.md` locally before merging. |
-| **`just deploy-local-k8s`** | Builds local images & runs `helm upgrade --install signal infra/k8s/helm/signal -f values-local.yaml` with pre-upgrade DB migration hook & readiness checks. |
-| **`just deploy <env>`** | Renders & validates GitOps release overlay (`infra/k8s/gitops/overlays/{dev,staging,prod}/`) pinned by immutable `sha256` digests for **ArgoCD + Argo Rollouts** progressive Canary (`10% -> 50% -> 100%`) with automatic Prometheus SLO rollback! |
+| **`./signal.sh doctor`** | Verifies Nov 2026 toolchain minimums (`rustc >= 1.100`, `node >= 26`, `pnpm >= 11`, `python3 >= 3.15`, `uv`, `buf`, `docker`, `helm`, `cosign`) and prints exact 1-line remediation if missing. |
+| **`./signal.sh dev [lite\|full\|k8s]`** | Starts local dev stack on macOS/Linux: auto-detects host RAM (`lite` `< 1.5 GB RAM` / `full` ARM64 Compose) or deploys exact 3-tier local K8s (`k8s` via `values-local.yaml`) with `Guest @ Signal Design, Inc.` & local Ollama/MLX (`deterministic_mock` fallback). |
+| **`./signal.sh build [--target all\|<comp,...>] [--changed]`** | Deterministic topological build with unified `SIGNAL_VERSION` & `SIGNAL_GIT_SHA`: `contracts` (`buf` + `signal-proto` + Python + TS `bigint`) → `rust-*` (`cargo build`) → `api`/`ai` (`uv sync`) → `ui` (`pnpm build`). `--changed` scopes PR CI to modified components + dependents. |
+| **`./signal.sh check [--target all\|<comp,...>] [--changed]`** | Single Definition-of-Done PR & release gate: `buf lint/breaking`, `contracts/fixtures` + `transcripts`, Rust `fmt`/`clippy -D warnings`/`nextest`/`cargo deny`/`cargo vet`, Python `uv run ruff`/`pyright`/`pytest`/`bandit`/`pip-audit` (including `scripts/`), Angular `pnpm lint`/`typecheck`/`vitest`/`pnpm audit --ignore-scripts`, Helm `lint` + `kubeconform`, and `dev-guest-auth` release symbol scan. |
+| **`./signal.sh image [--target all\|<comp,...>] [--arch amd64,arm64] [--push] [--sign]`** | Builds deterministic multi-arch OCI images from `scripts/components.toml` (`cargo-chef` + `uv` + `pnpm deploy`, forbidding `dev-guest-auth`), attaches **Cosign signature + SLSA L3 provenance + SPDX 3.0 / CycloneDX SBOM**, and writes immutable `sha256` digests to `releases/manifest.json`. |
+| **`./signal.sh release <preview\|cut\|publish> [--bump auto\|patch\|minor\|major] [--physics-epoch-bump]`** | One-command small-team release lifecycle: calculates SemVer from Conventional Commits + `releases/changesets/*.md`, syncs `VERSION` into `Cargo.toml`, `pyproject.toml`, `web/package.json`, `Chart.yaml`, verifies `N-2` Buf wire window & Expand-and-Contract SQL, generates `CHANGELOG.md` + `releases/notes/vX.Y.Z.{md,json}` + `releases/compatibility.json`, signs tag `vX.Y.Z`, and publishes GitHub Release. |
+| **`./signal.sh deploy --env <local\|dev\|staging\|prod> [--version vX.Y.Z] [--dry-run]`** | Verifies signed `sha256` digests in `releases/manifest.json` + clean git state, runs pre-upgrade PostgreSQL `19+` Expand-and-Contract migration check, applies Helm (`local`/`dev`) or updates digest-pinned GitOps overlay (`staging`/`prod` → **ArgoCD + Argo Rollouts** canary `10% -> 50% -> 100%` with auto SLO rollback), and confirms readiness across `pool-web`, `pool-api`, and `pool-rust-engine`. |
+| **`./signal.sh rollback --env <local\|dev\|staging\|prod> [--to vX.Y.Z]`** | Instant 1-command safe rollback to a prior verified release manifest (`N-2` wire-safe + `N-3` UI chunk-safe) with automated post-rollback health probes—zero panic `helm`/`git` guesswork during incidents. |
 
-### 4.2 Default Monorepo Build, Release & Deploy Layout
+### 4.3 Default Monorepo Build, Script, Release & Deploy Layout
 
 ```text
 signal/
 ├── VERSION                         # Canonical platform SemVer (synced to Cargo, pyproject.toml, web/package.json, Helm)
 ├── CHANGELOG.md                    # Auto-maintained chronological release changelog
-├── justfile                        # Single default root entrypoint: dev, dev-k8s, build, test, release, deploy
+├── signal.sh                       # Thin POSIX/Bash entrypoint (calls scripts/signal_ops.py — Local == CI!)
+├── justfile                        # Optional developer alias wrapper (1-line delegation to ./signal.sh)
 ├── rust-toolchain.toml / .nvmrc / .python-version # Pinned Rust 1.100+, Node.js 26 LTS+, Python 3.15+ toolchains
-├── .github/workflows/
-│   ├── pr-gate.yml                 # Contracts, Rust 1.100+, FastAPI 3.15+, Angular v22+, Helm lint, commitlint, lavapipe CI
-│   ├── release.yml                 # Automated Release PR, SemVer bump, Release Notes, signed tag, SLSA L3 + Cosign + SBOM
-│   └── deploy-gitops.yml           # Updates digest-pinned GitOps overlays -> Argo Rollouts Canary + Auto-Rollback
+├── scripts/                        # Unified Build, Check, Image, Release, Deploy & Rollback Engine (Python 3.15+ stdlib)
+│   ├── components.toml             # Single declarative registry for ALL components (contracts, rust-*, api, ui, bridge, ai, k8s)
+│   ├── signal_ops.py               # CLI router (--target, --changed, --dry-run, --json, --env)
+│   ├── ops/                        # Modular ops units (<= 250 LOC each; zero third-party deps)
+│   │   ├── registry.py             # Loads components.toml, resolves dependency DAG & git --changed impact graph
+│   │   ├── doctor.py               # Verifies pinned Nov 2026 toolchains & local/CI prerequisites
+│   │   ├── dev.py                  # Launches dev:lite, dev:full, or dev:k8s cleanly on macOS & Linux
+│   │   ├── build.py                # Topological build (contracts -> rust -> api/ai -> ui) with uniform VERSION/SHA
+│   │   ├── check.py                # Unified DoD lint/typecheck/test/audit/helm/dev-guest-auth symbol verification
+│   │   ├── image.py                # Multi-arch Buildx + Cosign + SLSA L3 + SBOM + releases/manifest.json digest writer
+│   │   ├── release.py              # SemVer calc, VERSION sync, N-2/SQL check, CHANGELOG + releases/notes/ + tag publish
+│   │   ├── deploy.py               # Verified digest deploy (Helm local/dev, GitOps Argo Rollouts staging/prod + readiness)
+│   │   └── rollback.py             # Safe 1-command rollback to verified prior release manifest + health check
+│   └── tests/                      # Unit & dry-run contract tests (pytest scripts/tests/)
+├── .github/workflows/              # Thin (~25-45 LOC) declarative triggers calling ONLY ./signal.sh!
+│   ├── pr-gate.yml                 # Runs: ./signal.sh check --changed --json (plus lavapipe WGSL parity)
+│   ├── release.yml                 # Runs: ./signal.sh release cut && ./signal.sh image --push --sign && ./signal.sh release publish
+│   └── deploy-gitops.yml           # Runs: ./signal.sh deploy --env <staging|prod> --version <tag> --json
 ├── releases/
 │   ├── manifest.json               # Current release metadata, SBOM URIs & immutable OCI image digests
 │   ├── compatibility.json          # N-2 Web/API/Rust/Contract matrix + physics_determinism_epoch
@@ -197,6 +229,6 @@ signal/
 - **Canonical Contracts (`contracts/` — Spec `10`):**
   - `contracts/proto/signal/v1/platform_release.proto` (`PlatformReleaseService`: `GetPlatformVersion`, `NegotiateEngineCompatibility`, `ListReleaseNotes`, `RunPreUpgradeRegressionCheck`) + `contracts/schemas/release-manifest.schema.json` + `contracts/schemas/platform-lockfile.schema.json`.
 - **Dual-Lane Phase 0 Ownership (Zero Conflicts):**
-  - **Shared Governed Zone (`contract/*`):** `VERSION`, `justfile`, `.github/workflows/`, `releases/`, `contracts/proto/signal/v1/platform_release.proto`, `infra/local/**`.
-  - **Lane A — Antigravity (`ag/*`):** `infra/docker/Dockerfile.{rust-pod,operator}`, `infra/k8s/**` (Umbrella Helm chart, 3-tier Cilium policies, Karpenter extensible Rust `NodePool`s, Kyverno Cosign/SBOM gates), and `signal-operator` multi-version reconciler.
+  - **Shared Governed Zone (`contract/*`):** `VERSION`, `signal.sh`, `scripts/**`, `justfile`, `.github/workflows/`, `releases/`, `contracts/proto/signal/v1/platform_release.proto`, `infra/local/**`.
+  - **Lane A — Antigravity (`ag/*`):** `infra/docker/Dockerfile.{rust-pod,operator,bridge}`, `infra/k8s/**` (Umbrella Helm chart, 3-tier Cilium policies, Karpenter extensible Rust `NodePool`s, Kyverno Cosign/SBOM gates), and `signal-operator` multi-version reconciler.
   - **Lane B — Cursor (`cursor/*`):** `infra/docker/Dockerfile.{web,api}`, `services/api-gateway` version-skew + `GET /api/v1/platform/releases` endpoint, and Angular **"What's New"** drawer + non-disruptive reload toast.

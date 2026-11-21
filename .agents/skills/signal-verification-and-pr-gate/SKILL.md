@@ -16,7 +16,9 @@ Governing rules: `AGENTS.md` Section 7 | `architecture/12-multi-ide-collaboratio
    - Confirm ONLY declared `touched_paths` (plus your own `coordination/agents/<agent>.md`) changed.
    - Confirm ZERO edits to the peer agent's journal, ZERO committed generated stubs, ZERO `.DS_Store` or stray temp artifacts, and ZERO secret values.
 
-## 2. Domain Verification Gates (Run All Applicable Checks)
+## 2. Domain Verification Gates (Run `./signal.sh check --changed` or Applicable Checks)
+- **Unified CI/Local Gate (`signal.sh` + `scripts/**`):**
+  - Prefer `./signal.sh check --changed` (runs identical checks locally and in CI). When editing `signal.sh` or `scripts/**`, verify `bash -n signal.sh`, `uv run ruff check scripts/`, `uv run pyright scripts/`, `uv run bandit -r scripts/ -ll`, `uv run pytest scripts/tests/ -q`, zero third-party bootstrap imports in `scripts/`, and thin `.github/workflows/*.yml` delegation only.
 - **Planning / Docs / Rules Changes:**
   - Verify UTF-8 + LF endings, valid relative links & anchors, balanced code fences, exact GFM table column counts (escape any literal `|` inside table cells), valid Mermaid syntax (no HTML tags, balanced `subgraph`/`end`, quoted parens), escaped prose `\$`, and `git fsck --full`.
 - **Contracts (`contracts/**`):**

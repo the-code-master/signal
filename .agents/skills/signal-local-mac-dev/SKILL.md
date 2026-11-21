@@ -7,12 +7,12 @@ description: Configures, runs, and debugs Signal's macOS Apple Silicon local dev
 
 Governing specs: `architecture/09-local-development-environment.md`, `architecture/20-versioning-release-monorepo-build-and-k8s-topology.md`.
 
-## 1. Three Local Execution Profiles (Monorepo `justfile` Defaults)
-- **`just dev` / `pnpm dev:lite` (Default Daily Inner Loop — `< 1.5 GB RAM`, `< 30 s` Boot):**
+## 1. Three Local Execution Profiles (Unified `./signal.sh` + `justfile` Aliases)
+- **`./signal.sh dev lite` / `just dev` (Default Daily Inner Loop — `< 1.5 GB RAM`, `< 30 s` Boot):**
   - Native **Rust `1.100+`** `signal-pod` (Apple Silicon Metal `wgpu`), **Angular `v22+`** HMR (**Node.js `26 LTS+`** + `pnpm 11+`), **Python `3.15+` FastAPI (`uv` + `granian`)** Control Plane, SQLite/in-proc store, `local-git-mock`, DevKMS (active Hybrid PQC!), Mock SFTP, and Local Mac Ollama/MLX (falling back automatically to `deterministic_mock` when offline or in CI).
-- **`just dev-full` / `pnpm dev:full` (Full Service Parity — Native `linux/arm64` Docker Compose):**
+- **`./signal.sh dev full` / `just dev-full` (Full Service Parity — Native `linux/arm64` Docker Compose):**
   - **PostgreSQL `19+`** + `pgvector` (with RLS active), Redis/Valkey, NATS JetStream, Envoy edge relay, Rust `signal-egress-proxy`, Vault/DevKMS, `local-git-mock`, and Mock SFTP.
-- **`just dev-k8s` / `just deploy-local-k8s` (Full 3-Tier K8s `1.37+` Parity — Local `k3d` / `OrbStack`):**
+- **`./signal.sh dev k8s` / `./signal.sh deploy --env local` (Full 3-Tier K8s `1.37+` Parity — Local `k3d` / `OrbStack`):**
   - Deploys `infra/k8s/helm/signal -f values-local.yaml` with separate `signal-web` (Angular `v22+` + Node `26 LTS+`) pod, separate `signal-api` (FastAPI/Granian) + Envoy `signal-engine-bridge` pod, and `1–4` simulated Rust `1.100+` worker nodes (`signal-operator`, linearizable Leases, Cilium NetworkPolicies).
 
 ## 2. Fast Build & Cross-Platform GPU Parity

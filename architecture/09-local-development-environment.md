@@ -53,12 +53,12 @@ flowchart TB
     Rust <--> NATS
 ```
 
-### Three Local Execution Modes (Monorepo Root `justfile` Defaults — [`20-*`](./20-versioning-release-monorepo-build-and-k8s-topology.md))
-1. **Ultra-Light Inner-Loop Mode (`just dev` / `pnpm dev:lite` — `< 1.5 GB RAM` for 8–16 GB MacBooks):**
+### Three Local Execution Modes (Unified `./signal.sh` + `justfile` Alias — [`20-*`](./20-versioning-release-monorepo-build-and-k8s-topology.md))
+1. **Ultra-Light Inner-Loop Mode (`./signal.sh dev lite` / `just dev` — `< 1.5 GB RAM` for 8–16 GB MacBooks):**
    - Runs **Rust `1.100+`** `signal-engine` (`aarch64-apple-darwin` + Metal `wgpu`) + **Python `3.15+` FastAPI (`uv` + `granian`)** + **Angular `v22+`** HMR with embedded local Postgres/pgvector, in-memory Redis/NATS, and embedded `MockGit`/`DevKMS`—booting in `< 30 s` without heavy Docker VM memory overhead!
-2. **Full Service-Parity Mode (`just dev-full` / `pnpm dev:full` — Default on 32 GB+ Macs):**
+2. **Full Service-Parity Mode (`./signal.sh dev full` / `just dev-full` — Default on 32 GB+ Macs):**
    - Runs native macOS Rust `1.100+` `signal-engine` + Docker Compose / OrbStack (`linux/arm64` native multi-arch images only—zero slow `amd64` Rosetta emulation!) with **PostgreSQL `19+`** + RLS + partitioned `pgvector`, Redis/Valkey, NATS JetStream, MinIO, DevKMS, `MockGit (:8085)`, and `MockSFTP (:2222)`.
-3. **Full 3-Tier Kubernetes `1.37+` Parity Mode (`just dev-k8s` / `just deploy-local-k8s` — Exact Prod Topology Locally):**
+3. **Full 3-Tier Kubernetes `1.37+` Parity Mode (`./signal.sh dev k8s` / `./signal.sh deploy --env local` — Exact Prod Topology Locally):**
    - Runs a local `aarch64` Kubernetes `1.37+` cluster (`OrbStack K8s` / `k3d`) deploying the monorepo Umbrella Helm Chart (`infra/k8s/helm/signal -f values-local.yaml`) with separate **`signal-web` (Angular `v22+` + Node `26 LTS+`) pod**, separate **`signal-api` (FastAPI/Granian) + Envoy `signal-engine-bridge` pod**, and **`1–4` simulated Rust `1.100+` worker nodes** (`signal-operator`, linearizable Leases, Cilium NetworkPolicies, and `signal-egress-proxy`).
 
 ---
