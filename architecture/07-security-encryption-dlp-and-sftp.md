@@ -61,6 +61,7 @@ Signal applies **defense-in-depth Data Loss Prevention (DLP)** across backend, t
 
 ### 3.1 Zero Export / Zero Download Enforcement
 - **Structural Absence:** There are **zero** HTTP endpoints returning Gerber, GDSII, schematic JSON, SPICE netlists, firmware archives, or PDF exports to a user's browser.
+- **Zero External `git clone` (Enterprise & Private Projects):** Every Project lives in its own AES-256-GCM encrypted repository inside internal `signal-vcs` (`jj-lib` + `gitoxide`). External `git clone`, `git pull`, and ZIP downloads are structurally disabled for Enterprise and Private projects; only authenticated Project Pods fetch objects into volatile RAM over SPIFFE mTLS. Optional `github.com` mirroring is strictly restricted to opted-in `PUBLIC_OPEN_HARDWARE` community/student projects and is structurally locked OFF for Enterprise tenants (see [`13-vcs-git-server-and-storage-analysis.md`](./13-vcs-git-server-and-storage-analysis.md)).
 - **API & Header Hardening:** Every API response carries `Cache-Control: no-store, no-cache, must-revalidate, private`, `Pragma: no-cache`, and strict Content-Security-Policy (`CSP`) disallowing data exfiltration to unauthorized origins.
 - **Clipboard & Drag-Drop Lockdown:** Copy/cut/drag-export of schematic blocks, netlists, code files, and spec text to the OS clipboard is disabled in Enterprise Strict Mode (internal in-app clipboard lives strictly inside the Rust Project Pod!).
 

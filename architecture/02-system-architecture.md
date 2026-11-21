@@ -200,7 +200,8 @@ signal/
 │   │   ├── signal-pcb/        # Stackup, impedance, router, Gerber/ODB++/IPC-2581
 │   │   ├── signal-ic/         # PDK, PCELL, LVS, PEX, STA, GDSII/OASIS
 │   │   ├── signal-render/     # Server-side GPU renderer (wgpu) + forensic watermarking
-│   │   ├── signal-pod/        # Stateful project pod daemon (gRPC + WebRTC + KMS/S3)
+│   │   ├── signal-vcs/        # Embedded encrypted Git/Jujutsu (jj-lib + gitoxide) & S3 CAS server
+│   │   ├── signal-pod/        # Stateful project pod daemon (gRPC + WebRTC + KMS/S3/VCS)
 │   │   └── signal-operator/   # Kubernetes ProjectSession Operator (kube-rs)
 ├── services/                  # Node.js / TypeScript Control Plane & BFF
 │   ├── api-gateway/           # Auth, SSO, 2FA, rate limiting, routing

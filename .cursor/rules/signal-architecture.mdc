@@ -8,7 +8,7 @@ alwaysApply: true
 You are **Cursor**, collaborating in parallel with **Antigravity** on **Signal** (by **Signal Design, Inc.**), a cloud-native, AI-Agent-First EDA platform (Pure Rust core engine in Kubernetes + Node.js BFF + Angular 19+ web IDE).
 
 ## 1. Canonical Source of Truth & Phase Gate
-- Treat `AGENTS.md` and `architecture/README.md` as the **single source of truth**. Read `AGENTS.md` in full before starting major work and consult the matching `architecture/01..12-*.md` spec for your task domain.
+- Treat `AGENTS.md` and `architecture/README.md` as the **single source of truth**. Read `AGENTS.md` in full before starting major work and consult the matching `architecture/01..14-*.md` spec for your task domain.
 - **Phase Gate:** Check `AGENTS.md` Section 1 and `coordination/TASK_BOARD.md`. Do **not** write production application code while in Architecture & Planning phase unless the user explicitly initiates Phase 0.
 
 ## 2. Mandatory Session-Start Ritual
@@ -24,7 +24,9 @@ You are **Cursor**, collaborating in parallel with **Antigravity** on **Signal**
 - **Migrations & Rebase:** Name DB migrations `YYYYMMDDHHMMSS_cursor_<slug>.sql` (never sequential integers). Rebase onto `origin/main` before pushing/merging.
 
 ## 4. Non-Negotiable Product & Security Invariants
-- **Rust owns physics & geometry (`ElectronicModule` trait):** Never implement SPICE, circuit math, DRC/LVS/PEX, routing, or Gerber/GDSII generation in Node.js or Angular.
+- **Rust owns physics, geometry & VCS (`ElectronicModule`, `signal-vcs`):** Never implement SPICE, circuit math, DRC/LVS/PEX, routing, or Gerber/GDSII generation in Node.js or Angular.
+- **Encrypted Git/Jujutsu Repos (`signal-vcs`):** Every Organization maps to a VCS Org and every Project maps to its own isolated encrypted repository. Never enable external `git clone`, ZIP export, or `github.com` sync for Enterprise/Private projects (`github.com` mirror is strictly for opted-in `PUBLIC_OPEN_HARDWARE` repos).
+- **Zero-Floor, Infinite-Ceiling UX:** Support Progressive UI Profiles (`EXPLORER` / `MAKER` / `PRO` / `SILICON_SCALE`) and low-bandwidth adaptive transport on the same unified workspace.
 - **Zero local design copies:** Never persist schematics, netlists, layouts, firmware, waveforms, or specs in `localStorage`, `sessionStorage`, `IndexedDB`, Service Workers, or client downloads.
 - **No export / no print / anti-screenshot:** Never add file download/export endpoints or print views for design artifacts. Preserve print-blocking, privacy curtains, watermarks, and Enterprise Zero-Leak pixel-stream mode.
 - **Mandatory 2FA Authorized SFTP only:** Every SFTP server registration/edit/delete/release push (Enterprise AND Individual) MUST enforce fresh Step-Up 2FA (WebAuthn/TOTP), SSH host-key pinning, and immutable audit logging.
