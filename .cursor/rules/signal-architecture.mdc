@@ -8,17 +8,17 @@ alwaysApply: true
 You are collaborating in parallel on **Signal** (by **Signal Design, Inc.**): Pure Rust EDA engine in K8s + Node.js 22 BFF + Angular 19/20+ Zoneless Web IDE.
 
 ## 1. Sources of Truth & Phase Gate
-- **Canonical Rulebook:** [`AGENTS.md`](../../AGENTS.md) | **Specs:** `architecture/01..19-*.md` | **Guides:** `docs/engineering/*.md` | **Skills:** `.agents/skills/*/SKILL.md`.
+- **Canonical Rulebook:** [`AGENTS.md`](../../AGENTS.md) | **Specs:** `architecture/01..20-*.md` | **Guides:** `docs/engineering/*.md` | **Skills:** `.agents/skills/*/SKILL.md`.
 - **Phase Gate:** Check `AGENTS.md` Section 1 and `coordination/TASK_BOARD.md`. Never write production code (`engine/`, `services/`, `web/`, `ai/`, `contracts/`, `infra/`) before explicit Phase 0 user approval.
 - **Session Start:** Run `git fetch origin --prune`, read `coordination/TASK_BOARD.md`, peer journal (`coordination/agents/antigravity.md` read-only for Cursor), and `coordination/handoffs/`. Branch `cursor/<task-id>-<slug>` or `contract/<task-id>-<slug>` with zero `touched_paths` overlap.
 - **Single-Writer Journals:** Cursor edits ONLY `coordination/agents/cursor.md`; Antigravity edits ONLY `coordination/agents/antigravity.md`.
 
 ## 2. Hard Red-Line Invariants (PR Rejection If Violated)
-1. **1 Project = 1 Security Cell:** PostgreSQL RLS (`NOBYPASSRLS`), 3-Tier `pgvector` HNSW, per-project Hybrid PQC (`ML-KEM-768` + 2-level `HKDF`) DEK & SPIFFE SVID, `< 8 MB` `signal-cell-wasm` (`EXPLORER`) or Kata/`CONFIDENTIAL_SILICON` + Exclusive `H100 CC` / Blackwell `B200 TEE-I/O` MIG, Cilium eBPF 100% lateral drop, uniform `404` anti-enumeration, and socket-pinned + epoch-fencing `signal-egress-proxy`.
+1. **1 Project = 1 Security Cell & 3-Tier K8s (`20-*`):** Separate `signal-web` pod (`pool-web`), HA `signal-api` + Envoy `signal-engine-bridge` (`pool-api`), & `1–4 -> N` extensible `pool-rust-engine` worker nodes (`signal-cell-wasm` or Kata/`CONFIDENTIAL_SILICON` + Exclusive `H100 CC` / `B200 TEE-I/O` MIG); RLS (`NOBYPASSRLS`), Hybrid PQC DEK/SVID, Cilium 100% lateral drop, uniform `404`, epoch-fenced `signal-egress-proxy`.
 2. **Rust Owns All Physics, CAD/CAM & Manufacturing:** Zero SPICE, magnetics, creepage, EMC/FMEDA, B-Rep CAD, CNC/3D slicing, DRC/LVS, routing, ECO, or Gerber/GDSII/STEP/G-code/3MF logic in Node.js or Angular.
 3. **Zero Local Design Files & No Browser Export/Print:** Never persist design IP in `localStorage`/`sessionStorage`/`IndexedDB`/SW caches or expose `/export`, `/download`, or `/print` routes. All physical manufacturing/CNC/3D-print/MCAD/ECN/MCN bundles egress ONLY via Step-Up 2FA write-only `russh` SFTP.
-4. **BYO-Git, Padmé-Blinded Vault & Universal Parts (`18-*`):** Customer owns design repos (`GitHub`/`GitLab`/`Bitbucket`: `<project>-meta` + lazy `<project>-<type>` bound by `provider_repo_id`) + Org-private `<org>/signal-org-parts` AVL overlays under Padmé-blinded RFC 8452 `AES-256-GCM-SIV` + Dual-Fenced 2PC `Super-Commit`; never hardcode pad polygons outside `PadstackDef` or leak NDA parts into Global CAS.
-5. **Contract-First `bigint` Safety:** All 64-bit integer contract fields (`_nm`, `_ps`, `fencing_epoch`) use `[jstype = JS_STRING]` / ES2020 `bigint` (`longAsBigint: true`). Generate stubs at build time ONLY (never commit generated stubs).
+4. **BYO-Git, Padmé Vault & Universal Parts (`18-*`):** Customer owns design repos (`GitHub`/`GitLab`/`Bitbucket`: `<project>-meta` + lazy `<project>-<type>` by `provider_repo_id`) + `<org>/signal-org-parts` AVL under Padmé-blinded `AES-256-GCM-SIV` + Dual-Fenced 2PC `Super-Commit`; never leak NDA parts into Global CAS.
+5. **Contract-First `bigint` & Platform Releases (`20-*`):** All 64-bit contract fields (`_nm`, `_ps`, `fencing_epoch`) use ES2020 `bigint` (`longAsBigint: true`); build-time codegen ONLY. Monorepo `justfile`/`VERSION`/auto Release Notes (`CHANGELOG.md`, `releases/notes/`), `N-2` compat, LTS pinning, SLSA L3/Cosign, and Expand-and-Contract SQL.
 6. **Zero-Bypass Local Dev:** `dev-guest-auth` (`local-guest-0001`) executes full RBAC + encryption and MUST fail compilation in release/staging builds.
 
 ## 3. Token Efficiency, 2–3 Sentence Dev Replies & Anti-Hallucination

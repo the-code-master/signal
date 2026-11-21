@@ -53,13 +53,13 @@ flowchart TB
     Rust <--> NATS
 ```
 
-### Three Local Execution Modes (From 8 GB MacBook Air to 128 GB MacBook Pro)
-1. **Ultra-Light Inner-Loop Mode (`dev:lite` — `< 1.5 GB RAM` for 8–16 GB MacBooks):**
-   - Runs `signal-engine` (`aarch64-apple-darwin` + Metal `wgpu`) + Node.js BFF + Angular HMR with embedded local Postgres/pgvector, in-memory Redis/NATS, and embedded `MockGit`/`DevKMS`—booting in `< 30 s` without heavy Docker VM memory overhead!
-2. **Full Service-Parity Mode (`dev:full` — Default on 32 GB+ Macs):**
+### Three Local Execution Modes (Monorepo Root `justfile` Defaults — [`20-*`](./20-versioning-release-monorepo-build-and-k8s-topology.md))
+1. **Ultra-Light Inner-Loop Mode (`just dev` / `pnpm dev:lite` — `< 1.5 GB RAM` for 8–16 GB MacBooks):**
+   - Runs `signal-engine` (`aarch64-apple-darwin` + Metal `wgpu`) + Node.js API/BFF + Angular HMR with embedded local Postgres/pgvector, in-memory Redis/NATS, and embedded `MockGit`/`DevKMS`—booting in `< 30 s` without heavy Docker VM memory overhead!
+2. **Full Service-Parity Mode (`just dev-full` / `pnpm dev:full` — Default on 32 GB+ Macs):**
    - Runs native macOS Rust `signal-engine` + Docker Compose / OrbStack (`linux/arm64` native multi-arch images only—zero slow `amd64` Rosetta emulation!) with PostgreSQL 16 + RLS + partitioned `pgvector`, Redis, NATS JetStream, MinIO, DevKMS, `MockGit (:8085)`, and `MockSFTP (:2222)`.
-3. **Full Kubernetes Parity Mode (`dev:k8s` — Operator & Pod Lifecycle Testing):**
-   - Runs a local `aarch64` Kubernetes cluster (`OrbStack K8s` / `k3d`) with `signal-operator`, linearizable `Lease` fencing, Warm Standby Rust Pods, Cilium NetworkPolicies, `signal-egress-proxy`, and sticky multi-user routing.
+3. **Full 3-Tier Kubernetes Parity Mode (`just dev-k8s` / `just deploy-local-k8s` — Exact Prod Topology Locally):**
+   - Runs a local `aarch64` Kubernetes cluster (`OrbStack K8s` / `k3d`) deploying the monorepo Umbrella Helm Chart (`infra/k8s/helm/signal -f values-local.yaml`) with separate **`signal-web` (Angular+Node) pod**, separate **`signal-api` + `signal-engine-bridge` pod**, and **`1–4` simulated Rust Engine worker nodes** (`signal-operator`, linearizable Leases, Cilium NetworkPolicies, and `signal-egress-proxy`).
 
 ---
 

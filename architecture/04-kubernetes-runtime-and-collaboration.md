@@ -11,6 +11,10 @@ Because an EDA project can hold gigabytes of live hierarchical schematic, PCB, I
 - **1 Loaded Project = 1 Active `signal-project-pod`** running `signal-engine` in encrypted RAM.
 - **N Concurrent Users + AI Agents opening Project X → ALL routed to the EXACT SAME Pod.**
 - Zero conflicting local copies, zero "file locked by another user" errors, shared real-time SPICE probes, shared cursors, and instant multi-user edits.
+- **3-Tier Pod & Extensible Worker Node Separation (Full Spec in [`20-*`](./20-versioning-release-monorepo-build-and-k8s-topology.md)):**
+  - **Tier 1 (`pool-web` — Separate Web Pod):** Hosts `signal-web` (Angular 19/20+ static/SSR assets + Node UI edge) with zero direct network path to Rust engine pods or databases.
+  - **Tier 2 (`pool-api` — Dedicated API & Engine Bridge Tier):** Co-locates stateless Node.js 22 `signal-api-gateway` (Auth/RBAC/REST/Tickets) + native Envoy `signal-engine-bridge` (zero-copy HTTP/3 WebTransport/gRPC/Arrow relay over SPIFFE mTLS connecting frontend traffic to the Rust Core Engine).
+  - **Tier 3 (`pool-rust-engine` — `1–4` Baseline, Elastically Extensible to `N` Worker Nodes):** Tainted `signal.io/workload=rust-engine:NoSchedule`. Schedules isolated per-project `signal-pod` MicroVMs & `< 8 MB` `signal-cell-wasm` cells across `1–4` baseline core nodes (extensible horizontally to `N` nodes or specialized `core-highmem`/`core-gpu`/`core-confidential` pools via Karpenter), supporting **Multi-Version Engine Coexistence** for pinned enterprise LTS projects!
 
 ```mermaid
 flowchart LR

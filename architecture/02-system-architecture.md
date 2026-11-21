@@ -175,11 +175,16 @@ sequenceDiagram
 
 ```text
 signal/
-├── architecture/              # Master design, security, 148-flaw, 120-feature, Universal Parts & CAD/CAM/PLM (01..19)
+├── VERSION                    # Canonical SemVer synced across Cargo, pnpm, Helm & releases/
+├── CHANGELOG.md               # Auto-generated chronological release changelog
+├── justfile                   # Default monorepo entrypoint: dev, dev-k8s, build, test, release, deploy
+├── .github/workflows/         # Automated PR gate, release notes/SemVer/SLSA L3/Cosign & GitOps deploy
+├── releases/                  # compatibility.json (N-2 + physics_determinism_epoch), changesets/ & notes/vX.Y.Z.{md,json}
+├── architecture/              # Master design, security, 148-flaw, 120-feature, Parts, CAD/CAM/PLM & Ops (01..20)
 ├── contracts/                 # Source of truth: Protobuf (.proto), OpenAPI, JSON Schemas, Golden Fixtures
 │   ├── proto/signal/v1/       # SI-unit-suffixed gRPC (int64 -> bigint) + Arrow binary framing contracts
-│   ├── openapi/               # Control-plane REST APIs
-│   ├── schemas/               # Datasheet, Universal Parts, MCAD/CAM/3D-Print, BOM/ECO/MCN/PCN/Deviation & SFTP
+│   ├── openapi/               # Control-plane REST APIs (incl. Platform Version & In-App Release Notes)
+│   ├── schemas/               # Datasheet, Universal Parts, MCAD/CAM/3D-Print, BOM/ECO/MCN/PCN/Deviation, Release & SFTP
 │   ├── fixtures/              # Cross-language golden conformance vectors (Antigravity <-> Cursor)
 │   └── transcripts/           # Stateful multi-step gRPC/WebTransport conformance transcripts (*.jsonl)
 ├── engine/                    # Pure Rust Workspace (Cargo workspace — shared build-time proto codegen)
@@ -216,9 +221,9 @@ signal/
 │   │   ├── signal-git-sync/   # Multi-repo gitoxide + jj-lib, Dual-Fenced 2PC Super-Commit & Padme GCM-SIV
 │   │   ├── signal-cell-wasm/  # < 8 MB Wasmtime EXPLORER isolate cell runtime (auto-promotes to Kata MicroVM)
 │   │   ├── signal-pod/        # MicroVM project pod daemon, child OSDI/AMI sandbox, BYOK continuity WAL
-│   │   └── signal-operator/   # K8s Operator (Host-Aggregated Node Leases, Pre-Copy < 150ms Live Migration)
-├── services/                  # Node.js 22 / TypeScript Control Plane & BFF
-│   ├── api-gateway/           # Auth, CSRF/CSP nonces, rate limiting, fail-closed policy enforcement
+│   │   └── signal-operator/   # K8s Operator (Host Leases, Multi-Version Pod Pinning, < 150ms Live Migration)
+├── services/                  # Node.js 22 / TypeScript Control Plane & BFF (Tier 2 API Pool)
+│   ├── api-gateway/           # Auth, CSRF/CSP nonces, rate limiting, Release Notes API & fail-closed policy
 │   ├── identity-org/          # Provider OAuth + SAML dual-binding, 2FA, Enterprise onboarding, Access Review
 │   ├── project-catalog/       # Multi-repo Projects, metadata, SPDX license gate, Templates, Portfolio DAG
 │   ├── parts-registry/        # Universal Parts search, BLAKE3 CAS gateway, Org AVL overlays & Where-Used scans
@@ -233,14 +238,19 @@ signal/
 │   ├── llm-gateway/           # Grammar-constrained (GBNF) router (Confidential GPU / Cloud / Local Mac / Mock)
 │   ├── datasheet-ingest/      # Dual-VLM consensus parser, curve digitizer, rev differ & SPICE sanity verifier
 │   └── rag-service/           # 3-Tier Sharded Hybrid RAG + Bulk-Mirrored/Chaff-Padded supply-chain & carbon
-├── web/                       # Angular 19+ Web Platform
-│   ├── apps/signal-web/       # Main IDE shell, Omni-Palette, Radial Menu, Multi-Monitor & 120 FPS HUD overlay
+├── web/                       # Angular 19+ Web Platform (Tier 1 Separate Web Pod: signal-web)
+│   ├── apps/signal-web/       # Main IDE shell, Omni-Palette, Radial Menu, Multi-Monitor, What's New & 120 FPS HUD
 │   └── libs/                  # Core + Extended Workbenches (schematic, pcb, ic, sim-viewer, code-ide, specs,
 │                              #   visual-diff, review, admin, magnetics, power-studio, emc-lab, safety-wcca,
 │                              #   fpga-studio, harness-3d, dfm-panel, library-studio, bringup-lab, academy,
 │                              #   mcad-studio, cam-print, plm-ops)
 ├── benchmarks/                # Continuous NGSPICE parity, Sky130 DRC/LVS, IPC-2581 & SignalBench-AI suites
-├── infra/                     # Helm charts, Kata/Cilium/Kyverno policies, Anti-SSRF Egress Proxy, Campus Edge
+├── infra/                     # Default Monorepo Build/Deploy/Local Infra (20-*)
+│   ├── docker/                # Multi-arch (amd64/arm64) Dockerfiles (web, api, engine-bridge, rust-pod, operator, ai)
+│   ├── local/                 # Default Mac/Linux local run (dev:lite, dev:full, dev:k8s, MockGit, MockSFTP, DevKMS)
+│   ├── k8s/                   # Umbrella Helm Chart (3-tier: web, api-bridge, 1-4 extensible Rust nodes), Karpenter, GitOps, Cilium/Kyverno
+│   ├── terraform/             # Optional 3-pool cluster bootstrap (pool-web, pool-api, pool-rust-engine)
+│   └── campus-edge/           # Air-gapped / Campus Edge packaging
 └── coordination/              # Multi-AI-IDE task board & single-writer per-agent journals
 ```
 

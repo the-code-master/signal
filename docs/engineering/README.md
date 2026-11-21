@@ -1,6 +1,6 @@
 # Signal — Engineering Operating System (`docs/engineering/`)
 
-> **Purpose:** Bridges Signal's 19 architecture specifications ([`architecture/`](../../architecture/README.md)) into disciplined, high-velocity, **token-efficient Phase 0+ coding** shared seamlessly by **Antigravity**, **Cursor**, and human engineers.
+> **Purpose:** Bridges Signal's 20 architecture specifications ([`architecture/`](../../architecture/README.md)) into disciplined, high-velocity, **token-efficient Phase 0+ coding** shared seamlessly by **Antigravity**, **Cursor**, and human engineers.
 
 ---
 
@@ -12,8 +12,8 @@ To maximize both **human maintainability** and **AI token efficiency** across An
 flowchart TB
     L1["Layer 1 — Always-On Guardrails (Compact, Zero Truncation)\nAGENTS.md (< 12 KB) + .cursor/rules/signal-architecture.mdc (< 4 KB)"]
     L2["Layer 2 — Path-Scoped Rules (Loaded Only When Editing Matching Files)\n.cursor/rules/rust-engine.mdc | angular-frontend.mdc | nodejs-control-plane.mdc | contracts-and-schemas.mdc | ai-rag-and-security.mdc"]
-    L3["Layer 3 — On-Demand Portable Skills (Progressive Disclosure in Antigravity + Cursor)\n.agents/skills/*/SKILL.md (16 Procedural Workflows — Only Metadata Loaded at Idle)"]
-    Ref["Deep Reference Handbooks (Read When Designing New Modules)\ndocs/engineering/*.md + architecture/01..19-*.md"]
+    L3["Layer 3 — On-Demand Portable Skills (Progressive Disclosure in Antigravity + Cursor)\n.agents/skills/*/SKILL.md (17 Procedural Workflows — Only Metadata Loaded at Idle)"]
+    Ref["Deep Reference Handbooks (Read When Designing New Modules)\ndocs/engineering/*.md + architecture/01..20-*.md"]
 
     L1 --> L2
     L2 --> L3
@@ -24,7 +24,7 @@ flowchart TB
 |---|---|---|---|
 | **Always-On Core** | [`AGENTS.md`](../../AGENTS.md), [`.cursor/rules/signal-architecture.mdc`](../../.cursor/rules/signal-architecture.mdc) | Antigravity + Cursor (every turn) | Hard red lines & lookup pointers only; strictly `< 12 KB` / `< 4 KB` to prevent context truncation. |
 | **Path-Scoped Rules** | `.cursor/rules/*.mdc` (5 glob-scoped files) | Cursor (auto-attached by `globs`) & Antigravity (via `AGENTS.md` lookup) | Rust rules never pollute Angular turns; Angular rules never pollute Rust turns. |
-| **Portable Agent Skills** | [`.agents/skills/`](../../.agents/skills/README.md) (`16` `SKILL.md` folders) | **Both Antigravity AND Cursor** natively via the Open Agent Skills standard | Progressive disclosure: idle skills cost ~30 tokens of frontmatter; full instructions load strictly when matched. |
+| **Portable Agent Skills** | [`.agents/skills/`](../../.agents/skills/README.md) (`17` `SKILL.md` folders) | **Both Antigravity AND Cursor** natively via the Open Agent Skills standard | Progressive disclosure: idle skills cost ~30 tokens of frontmatter; full instructions load strictly when matched. |
 | **Deep Handbooks** | `docs/engineering/*.md` | Humans + Agents on demand | Complete style guides, module layouts, checklists, and Phase 0 launch playbooks. |
 
 ---
@@ -38,7 +38,7 @@ flowchart TB
 3. **[`ANGULAR_ENGINEERING_GUIDE.md`](./ANGULAR_ENGINEERING_GUIDE.md)**  
    Angular 19/20+ Zoneless & Signals-first architecture (`web/`), Standalone components, `input()`/`output()`/`computed()`/`@if`/`@for`/`@defer`, `web/libs/*` public `index.ts` boundaries, ES2020 `bigint` safety, `HudOverlayPrimitive` Zero-Leak overlays, Trusted Types + CSP, and WCAG 2.2 AA accessibility.
 4. **[`PHASE0_LAUNCH_PLAYBOOK.md`](./PHASE0_LAUNCH_PLAYBOOK.md)**  
-   Exact step-by-step execution runbook to transition from Architecture into Phase 0 coding (`P0-01` serialized contract freeze → parallel `P0-02` Antigravity Rust + `P0-03` Cursor Angular/Node + `P0-04` Local Mac Harness).
+   Exact step-by-step execution runbook to transition from Architecture into Phase 0 coding (`P0-01` serialized contract freeze → parallel `P0-02` Antigravity Rust + `P0-03` Cursor Angular/Node + `P0-04` Monorepo Build, Release & 3-Tier Local/K8s Harness).
 
 ---
 
@@ -60,5 +60,6 @@ flowchart TB
 | `signal-security-isolation-audit` | Both | Reviewing PRs or building security-sensitive boundaries (RLS, PQC, MicroVM/MIG, eBPF, SFTP) |
 | `signal-ai-neuro-symbolic-rag` | Both | Building AI specialists, `GBNF` gateway, Dual-LLM/VLM quarantine, or 3-Tier `pgvector` RAG |
 | `signal-local-mac-dev` | Both | Running or updating Mac Apple Silicon `dev:lite`/`dev:full`, `lavapipe` CI, or `dev-guest-auth` |
+| `signal-release-deploy-topology` | Both | Managing platform SemVer/auto release notes, monorepo `justfile`/Docker/Helm/GitOps, & 3-tier K8s (`1–4` extensible Rust nodes) |
 | `signal-verification-and-pr-gate` | Both | Running pre-commit verification, formatting, linting, tests, supply-chain vet, and PR prep |
 | `signal-cross-ide-handoff` | Both | Handing work between Antigravity and Cursor, logging blockers, or reclaiming stale claims |

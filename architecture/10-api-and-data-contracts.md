@@ -37,9 +37,10 @@ contracts/
 │   ├── render_stream.proto    # Dual-Plane Zstd-QOI/WebP dirty tiles, HudOverlayPrimitive, 6-DOF & Constellation
 │   ├── agent_tools.proto      # RBAC-scoped Neuro-Symbolic AI tools, Pareto explorer, Red-Team & NL rule compiler
 │   ├── academy_campus.proto   # Breadboard twin, deterministic lab grader, TinyTapeout wizard & Campus Edge sync
+│   ├── platform_release.proto # Platform SemVer, N-2 engine compatibility, pinned LTS & automated release notes
 │   └── sftp_release.proto     # Fail-closed PQC-signed RAM-to-SFTP fab/CNC/3D-print/ECN/MCN/turnkey CM release
 ├── openapi/
-│   └── control-plane.v1.yaml  # URL-scoped (/org/:slug) Auth, Access Review, BYO-Git, Parts/AVL, PLM-Ops & SFTP
+│   └── control-plane.v1.yaml  # URL-scoped (/org/:slug) Auth, Access Review, BYO-Git, Parts/AVL, PLM-Ops, Releases & SFTP
 ├── schemas/
 │   ├── datasheet-record.schema.json
 │   ├── universal-part-manifest.schema.json
@@ -63,6 +64,8 @@ contracts/
 │   ├── emc-safety-policy.schema.json
 │   ├── dfm-panel-plan.schema.json
 │   ├── hw-security-audit.schema.json
+│   ├── release-manifest.schema.json
+│   ├── platform-lockfile.schema.json
 │   ├── super-commit-manifest.schema.json
 │   └── sftp-release-manifest.schema.json
 ├── fixtures/                  # Cross-IDE golden bigint/SI-unit serialization vectors
@@ -103,6 +106,7 @@ Every passive, active, IC, RF, optical, cryo-quantum, digital, and hierarchical 
 | **Multi-Provider Security Auditor** | `GET /v1/orgs/{org_slug}/vcs/security-audit/latest`, `POST /v1/orgs/{org_slug}/vcs/security-audit/run`, `POST .../findings/{id}/remediate` | Security Officer / Admin RBAC (**Step-Up 2FA** for remediation) |
 | **Active Sessions & Cloud Clipboard** | `POST /v1/orgs/{org_slug}/projects/{id}/session/attach` (checks mTLS device posture + issues `60 s` Ed25519 Envoy stream ticket), `POST /v1/orgs/{org_slug}/clipboard/copy-ticket` | JWT + Live Per-Repo RBAC + Sovereign ABAC + Org DLP Policy |
 | **Authorized SFTP (2FA)** | `POST /v1/orgs/{org_slug}/sftp-targets`, `PUT .../sftp-targets/{id}`, `POST .../sftp-targets/{id}/test`, `POST /v1/orgs/{org_slug}/projects/{id}/releases/push-sftp` (fab, OSAT, regulatory lab, or MCAD STEP) | **Mandatory Fresh Step-Up 2FA** + Sync Quorum Audit (+ Optional 4-Eyes & 21 CFR Part 11) |
+| **Platform Versioning & Releases** | `GET /v1/platform/version`, `GET /v1/platform/releases` (In-App What's New feed), `PUT /v1/orgs/{org_slug}/projects/{id}/engine-version` (pin certified LTS digest) | Public Read (sanitized notes) / Project Admin (**2FA** for LTS pin bump) |
 | **Audit & Digital Product Passport** | `GET /v1/orgs/{org_slug}/audit-events`, `GET /v1/orgs/{org_slug}/projects/{id}/compliance-and-sustainability` | Security Officer / Auditor RBAC |
 
 > **Explicitly Excluded Endpoints:** There are **ZERO** `/export`, `/download`, `/raw-file`, or `/print` endpoints anywhere in the API surface.
@@ -123,6 +127,7 @@ Every passive, active, IC, RF, optical, cryo-quantum, digital, and hierarchical 
   - `UniversalPartsService` (`18-*`): `ResolveUniversalPart` (3-Tier Global + Org AVL + Project Lockfile), `AdaptPadstackToFabProfile`, `VerifyMasterPinBijection`, `VerifyThreeWayStepPadAlignment`, `ComputePartRevisionDiff`, `PinPartInLockfile`.
   - `McadCamPrintService` (`19-*`): `SolveSketchConstraints`, `EvaluateBRepFeatureTree`, `UnfoldSheetMetal`, `SyncEcadMcadAnchors`, `GenerateCncToolpathAndSim`, `SliceBRepFor3dPrint`, `StreamUnified3dScene`.
   - `PlmOpsService` (`19-*`): `CompileMultiViewBom` (`eBOM`/`mBOM`/`sBOM`/`Costed`), `AnalyzeChangeBlastRadius`, `TransitionChangeOrder` (`ECR`/`ECO`/`ECN`/`MCN`/`PCN`/`Deviation`/`NCR`), `VerifyDeviationGate`, `ComputeClearToBuild`.
+  - `PlatformReleaseService` (`20-*`): `GetPlatformVersion`, `NegotiateEngineCompatibility` (`N-2` wire & `physics_determinism_epoch` check), `ListReleaseNotes`, `RunPreUpgradeRegressionCheck`.
 
 ---
 

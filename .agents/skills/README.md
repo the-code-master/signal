@@ -4,7 +4,7 @@
 
 ---
 
-## Available Skills (16)
+## Available Skills (17)
 
 | Skill Name | Scope / Lane | Purpose |
 |---|---|---|
@@ -22,5 +22,6 @@
 | [`signal-security-isolation-audit`](./signal-security-isolation-audit/SKILL.md) | Both | OWASP ASVS L3 & "1 Project = 1 Security Cell" audit (PQC, H100/B200, eBPF, sandboxes, SFTP) |
 | [`signal-ai-neuro-symbolic-rag`](./signal-ai-neuro-symbolic-rag/SKILL.md) | Both (`ai/`) | Neuro-symbolic agents, Multimodal + Dual-LLM Quarantine, `GBNF`, 3-Tier `pgvector` & Proof re-check |
 | [`signal-local-mac-dev`](./signal-local-mac-dev/SKILL.md) | Both (`infra/local/`) | Apple Silicon `dev:lite`/`dev:full`, `lavapipe` WGSL CI, `local-git-mock` & `dev-guest-auth` guards |
+| [`signal-release-deploy-topology`](./signal-release-deploy-topology/SKILL.md) | Both (`infra/`, `releases/`) | Platform SemVer & Auto Release Notes, monorepo `justfile`/Docker/Helm/GitOps, and 3-tier K8s (`1–4` extensible Rust nodes) |
 | [`signal-verification-and-pr-gate`](./signal-verification-and-pr-gate/SKILL.md) | Both | Full Definition-of-Done verification, supply-chain vetting, journal update & clean PR creation |
 | [`signal-cross-ide-handoff`](./signal-cross-ide-handoff/SKILL.md) | Both (`coordination/`) | Immutable Antigravity ↔ Cursor handoff packets, blocker escalation & `> 24h` stale-claim takeover |
