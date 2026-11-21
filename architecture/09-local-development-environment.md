@@ -33,7 +33,7 @@ flowchart TB
             NATS["NATS JetStream (:4222)"]
             MinIO["MinIO Ephemeral Cache / Dev BYO-S3 (:9000)"]
             DevKMS["Local KMS Emulator (:9100)"]
-            MockGitHub["Local GitHub Org Mock (:8085)\n(or Real Test GitHub Org + PAT)"]
+            MockGit["Local Git Provider Mock (:8085)\n(Emulates GitHub/GitLab/Bitbucket\nor Connect Real Test Namespace)"]
             MockSFTP["Local OpenSSH Mock SFTP (:2222)\n(Tests 2FA + Host Pinning + Push)"]
         end
     end
@@ -45,9 +45,9 @@ flowchart TB
     AI <--> PG
     Node <--> PG
     Node <--> Redis
-    Node <--> MockGitHub
+    Node <--> MockGit
     Node <--> MockSFTP
-    Rust <--> MockGitHub
+    Rust <--> MockGit
     Rust <--> MinIO
     Rust <--> DevKMS
     Rust <--> NATS

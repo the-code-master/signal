@@ -25,7 +25,7 @@ Start with the **[Master Architecture Index](./architecture/README.md)**, or jum
 | 10 | [Canonical API & Data Contracts](./architecture/10-api-and-data-contracts.md) | Contract-first gRPC/Protobuf, REST/WebSocket, Rust component trait & datasheet schemas |
 | 11 | [Phased Implementation Roadmap & Risk Register](./architecture/11-implementation-roadmap.md) | Milestone plan from Phase 0 foundation to GA, verification gates, technical risk register |
 | 12 | [Multi-AI-IDE Parallel Collaboration Protocol](./architecture/12-multi-ide-collaboration.md) | Deadlock-free workflow for Antigravity + Cursor working in parallel via worktrees, lanes & contracts |
-| 13 | [Version Control: Customer-Owned BYO-GitHub Org & Security Auditor](./architecture/13-vcs-git-server-and-storage-analysis.md) | Unified GitHub Org → Project Repo model (Fine-Grained PAT / GitHub App, zero Signal file custody, optional `ENCRYPTED_VAULT` mode, periodic Org vulnerability auditor) |
+| 13 | [Version Control: Customer-Owned BYO-Git (GitHub, GitLab & Bitbucket) & Security Auditor](./architecture/13-vcs-git-server-and-storage-analysis.md) | Unified `GitProviderAdapter` (GitHub / GitLab / Bitbucket Cloud & Self-Hosted), 2FA-gated tokens/apps, zero Signal file custody, `ENCRYPTED_VAULT` mode & periodic security auditor |
 | 14 | [Universal Scale, Global Accessibility & Future Expandability](./architecture/14-universal-scale-accessibility-and-expandability.md) | Zero-floor/infinite-ceiling design: kid's hobby project in developing nations to 100B-transistor GPU/ASIC & future multi-physics plugins |
 
 ## Parallel AI Development (Antigravity + Cursor)

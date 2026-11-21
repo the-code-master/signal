@@ -20,7 +20,7 @@ flowchart LR
     --> T4["Tier 4: Enterprise ASIC / GPU / 3D-IC\n(Advanced-Node SoCs, 100B+ Transistors,\nChiplets/UCIe, Distributed GPU Clusters,\nZero-Leak DLP, BYOK, ITAR)"]
 ```
 
-**Core Architectural Guarantee:** A circuit built by a 14-year-old student in **Explorer Mode** uses the **exact same `ElectronicModule` Rust physics engine**, **exact same `signal-graph`**, and **exact same GitHub Organization repository format** (`signal-git-sync`) as a flagship GPU tape-out—only the UI complexity profile, pod compute quota, and security/compliance policies scale up!
+**Core Architectural Guarantee:** A circuit built by a 14-year-old student in **Explorer Mode** uses the **exact same `ElectronicModule` Rust physics engine**, **exact same `signal-graph`**, and **exact same BYO-Git repository format** (`signal-git-sync` across GitHub, GitLab, or Bitbucket) as a flagship GPU tape-out—only the UI complexity profile, pod compute quota, and security/compliance policies scale up!
 
 ---
 
@@ -86,7 +86,7 @@ Electronics in the 2030s and 2040s will extend far beyond classical silicon CMOS
 
 ```mermaid
 flowchart TB
-    Kernel["Signal Core Kernel\nsignal-graph (Unified DAG) + signal-git-sync (BYO-GitHub/jj) + signal-geom (i64 nm) + AI Agent Bus"]
+    Kernel["Signal Core Kernel\nsignal-graph (Unified DAG) + signal-git-sync (BYO-Git/jj) + signal-geom (i64 nm) + AI Agent Bus"]
 
     subgraph Today["Built-In Domains (Phase 1–5)"]
         D1["Classical Analog/RF/Power SPICE"]

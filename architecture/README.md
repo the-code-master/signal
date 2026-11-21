@@ -120,7 +120,7 @@ Read in sequence for a top-down understanding, or jump to your assigned implemen
 12. **[`12-multi-ide-collaboration.md`](./12-multi-ide-collaboration.md)**  
     Deadlock-free engineering protocol enabling **Antigravity** and **Cursor** to develop Signal simultaneously without merge collisions, shared-file deadlocks, or contract drift.
 13. **[`13-vcs-git-server-and-storage-analysis.md`](./13-vcs-git-server-and-storage-analysis.md)**  
-    Single unified **Customer-Owned BYO-GitHub Organization** VCS architecture (`github.com` / GHEC / GHES, Fine-Grained PAT & GitHub App auth gated by 2FA, zero file-hosting liability on Signal, in-pod RAM `gitoxide` + `jj-lib`, optional `ENCRYPTED_VAULT` encryption, Git LFS / BYO-S3, and the **Periodic GitHub Org Security Vulnerability Auditor**).
+    Single unified **Customer-Owned BYO-Git** architecture supporting **GitHub** (Cloud/GHEC/GHES), **GitLab** (Cloud/Self-Managed EE), and **Bitbucket** (Cloud/Data Center) via `GitProviderAdapter`—with 2FA-gated org/group/workspace tokens & apps, zero file-hosting liability on Signal, RAM-only `gitoxide` + `jj-lib` sync, optional `ENCRYPTED_VAULT` mode, Git LFS / BYO-S3, and the **Periodic Multi-Provider Security Auditor**.
 14. **[`14-universal-scale-accessibility-and-expandability.md`](./14-universal-scale-accessibility-and-expandability.md)**  
     "Zero-Floor, Infinite-Ceiling" architecture spanning developing-nation student/hobbyist accessibility (`Explorer` / `Maker` modes, low-bandwidth transport, multilingual AI Tutor, Open Silicon) up to 100B-transistor GPU/ASIC multi-pod federation and future multi-physics plugins (Photonics, Quantum, MEMS).
 
@@ -130,11 +130,11 @@ Read in sequence for a top-down understanding, or jump to your assigned implemen
 
 | Term | Meaning in Signal |
 |---|---|
-| **Project** | Top-level product container (stored as a dedicated repository inside the customer's or user's connected GitHub Organization) storing metadata, templates, and one or more typed Sub-Projects (PRD, HFS, Schematic, PCB, IC, FPGA, Firmware, BIOS, etc.). |
+| **Project** | Top-level product container (stored as a dedicated repository inside the customer's connected GitHub Org, GitLab Group, or Bitbucket Workspace) storing metadata, templates, and one or more typed Sub-Projects (PRD, HFS, Schematic, PCB, IC, FPGA, Firmware, BIOS, etc.). |
 | **Sub-Project / Domain Module** | A typed engineering artifact tree inside a Project (e.g., `PCB`, `IC_ANALOG`, `FPGA_HDL`, `FIRMWARE`, `PRD`, `HFS`) linked via the unified Design Graph. |
 | **Electronic Module** | A self-contained, parameterized Rust module representing an electronic passive, active, IC, or subcircuit with typed ports, physics equations, tolerances, parasitics, thermal model, and SOA limits. |
-| **Project Pod** | A dedicated Kubernetes pod running `signal-engine` for one loaded Project. Clones the project's GitHub repo into RAM-only `tmpfs`; all concurrent users and AI agents working on that Project connect to this exact pod. |
-| **BYO-GitHub (`signal-git-sync` + `vcs-auditor`)** | Signal's unified Customer-Owned VCS model: every Enterprise or Individual connects their own GitHub Org (via 2FA-gated Fine-Grained PAT or GitHub App) where 1 Project = 1 Repo, continuously audited for security vulnerabilities & exposure drift by `services/vcs-auditor`. |
+| **Project Pod** | A dedicated Kubernetes pod running `signal-engine` for one loaded Project. Clones the project's Git repo into RAM-only `tmpfs`; all concurrent users and AI agents working on that Project connect to this exact pod. |
+| **BYO-Git (`signal-git-sync` + `vcs-auditor`)** | Signal's unified Customer-Owned VCS model: every Enterprise or Individual connects their own **GitHub Org**, **GitLab Group**, or **Bitbucket Workspace/Project** (via 2FA-gated scoped token or App) where 1 Project = 1 Repo, continuously audited for security vulnerabilities & exposure drift by `services/vcs-auditor`. |
 | **Zero-Leak Mode** | Enterprise DLP mode where the Rust engine renders viewports server-side on GPU and streams watermarked encrypted video/tiles so raw design data never enters the browser. |
 | **Authorized SFTP Target** | A 2FA-verified, SSH-key-authenticated, host-pinned SFTP server registered by an Enterprise Admin or Individual user—the ONLY permitted egress path for Signal design deliverables. |
 | **Universal Datasheet DB** | Signal's structured + vector + graph knowledge base of electronic component datasheets, curves, pinouts, models, and errata powering Hybrid RAG for AI Agents. |

@@ -60,13 +60,13 @@ Managed by a custom pure-Rust Kubernetes Operator (`signal-operator` built with 
 stateDiagram-v2
     [*] --> WarmStandby: Pre-provisioned in Warm Pool
     WarmStandby --> Claiming: First user opens Project X (distributed lock acquired)
-    Claiming --> Hydrating: Scoped Vault GitHub + KMS token issued, clone project repo into RAM-only tmpfs
+    Claiming --> Hydrating: Scoped Vault Git + KMS token issued, clone project repo into RAM-only tmpfs
     Hydrating --> Active: Decrypted (if ENCRYPTED_VAULT) in RAM, registered in Redis directory
-    Active --> Active: Users 2..N & AI agents join same pod + batched commits/checkpoints to Customer GitHub Org
+    Active --> Active: Users 2..N & AI agents join same pod + batched commits to Customer Git Provider (GitHub/GitLab/Bitbucket)
     Active --> Draining: Last user disconnects (idle grace timer e.g. 15 min)
     Draining --> Active: User reconnects before timeout (zero cold start)
     Draining --> Checkpointing: Grace timer expires
-    Checkpointing --> Terminating: Final commit/encrypted checkpoint verified on Customer GitHub Org, zeroize RAM & drop leases
+    Checkpointing --> Terminating: Final commit/encrypted checkpoint verified on Customer Git Repo, zeroize RAM & drop leases
     Terminating --> [*]: Pod destroyed (zero customer files retained on Signal!)
 ```
 
@@ -79,8 +79,8 @@ stateDiagram-v2
 3. **Sub-Second Startup via Warm Pools:**
    - Maintaining a dynamically sized warm pool of pre-started `signal-pod` containers removes container image pull and Kubernetes scheduling latency (turning 15–30 s cold starts into **< 1.5 s** hydration times via shallow/sparse `gitoxide` fetch into RAM).
 4. **Crash Recovery & Durability (Zero Permanent Signal Storage):**
-   - Active editing transactions are pushed as clean commits to the customer's GitHub Org repository (and optionally mirrored to a short-lived encrypted checkpoint ref/ephemeral crash buffer purged immediately once pushed to GitHub).
-   - If a Kubernetes node unexpectedly dies, `signal-operator` detects lease expiry within 5 seconds, claims a fresh Warm Standby pod, re-hydrates from the customer's GitHub Org repo + latest checkpoint ref, and seamlessly reconnects all active clients via automatic WebSocket/WebTransport resume.
+   - Active editing transactions are pushed as clean commits to the customer's Git repository (GitHub, GitLab, or Bitbucket) and optionally mirrored to a short-lived encrypted checkpoint ref purged immediately once pushed.
+   - If a Kubernetes node unexpectedly dies, `signal-operator` detects lease expiry within 5 seconds, claims a fresh Warm Standby pod, re-hydrates from the customer's Git repo + latest checkpoint ref, and seamlessly reconnects all active clients via automatic WebSocket/WebTransport resume.
 
 ---
 

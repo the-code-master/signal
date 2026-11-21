@@ -200,15 +200,15 @@ signal/
 │   │   ├── signal-pcb/        # Stackup, impedance, router, Gerber/ODB++/IPC-2581
 │   │   ├── signal-ic/         # PDK, PCELL, LVS, PEX, STA, GDSII/OASIS
 │   │   ├── signal-render/     # Server-side GPU renderer (wgpu) + forensic watermarking
-│   │   ├── signal-git-sync/   # RAM-only gitoxide + jj-lib sync & ENCRYPTED_VAULT cipher to Customer GitHub Org
-│   │   ├── signal-pod/        # Stateful project pod daemon (gRPC + WebRTC + KMS/GitHub Sync)
+│   │   ├── signal-git-sync/   # RAM-only gitoxide + jj-lib sync & ENCRYPTED_VAULT cipher (GitHub/GitLab/Bitbucket)
+│   │   ├── signal-pod/        # Stateful project pod daemon (gRPC + WebRTC + KMS/BYO-Git Sync)
 │   │   └── signal-operator/   # Kubernetes ProjectSession Operator (kube-rs)
 ├── services/                  # Node.js / TypeScript Control Plane & BFF
 │   ├── api-gateway/           # Auth, SSO, 2FA, rate limiting, routing
 │   ├── identity-org/          # Users, Enterprise onboarding approvals, RBAC/ABAC
 │   ├── project-catalog/       # Projects, multi-type modules, metadata, templates
-│   ├── vcs-connector/         # 2FA-gated Customer GitHub Org settings (Fine-Grained PAT / GitHub App) & repo provisioning
-│   ├── vcs-auditor/           # Periodic GitHub Org security vulnerability, DLP drift & CVE posture auditor
+│   ├── vcs-connector/         # 2FA-gated BYO-Git settings (GitHub/GitLab/Bitbucket) via GitProviderAdapter
+│   ├── vcs-auditor/           # Periodic multi-provider Org/Group/Workspace security vulnerability & DLP auditor
 │   ├── session-broker/        # Sticky routing proxy to K8s Rust pods
 │   ├── sftp-egress/           # 2FA-gated authorized SFTP registry & transfer engine
 │   └── audit-service/         # Immutable cryptographic audit pipeline

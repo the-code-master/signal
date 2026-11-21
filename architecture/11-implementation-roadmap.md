@@ -46,16 +46,16 @@ flowchart LR
   - Angular Schematic Canvas + Interactive Waveform Viewer + Live Component Parameter Inspector.
 - **Exit Criteria:** Series/parallel resistor chains, RLC filters, BJT/MOSFET amplifiers, and a synchronous buck converter simulate accurately (< 0.5% deviation vs. reference SPICE golden benchmarks) with live voltage/current/SOA probes in the Angular UI.
 
-### Phase 2 — Kubernetes Stateful Project Pods, BYO-GitHub Sync, Security Auditor & Unified Projects
+### Phase 2 — Kubernetes Stateful Project Pods, BYO-Git Sync (GitHub/GitLab/Bitbucket), Security Auditor & Unified Projects
 - **Deliverables:**
-  - `services/vcs-connector` & `engine/crates/signal-git-sync`: 2FA-gated Customer GitHub Organization setup (GitHub Org Name + Fine-Grained PAT or GitHub App, encrypted in Vault/HSM), automatic 1 Project → 1 Repo provisioning, RAM-only `gitoxide` + `jj-lib` sync, `ENCRYPTED_VAULT` (AES-256-GCM) vs. `PLAIN_CANONICAL` modes, and visual 3-way hardware diff.
-  - `services/vcs-auditor`: Periodic (6h/daily + webhook) GitHub Organization security vulnerability & posture auditor (public-repo drift, unauthorized human vault access, Org 2FA/SSO, Classic PAT detection, Secret Scanning, Dependabot CVEs, Posture Score 0–100, and 2FA-gated remediation).
+  - `services/vcs-connector` & `engine/crates/signal-git-sync`: 2FA-gated Customer BYO-Git setup via `GitProviderAdapter` supporting **GitHub** (Cloud/GHEC/GHES), **GitLab** (Cloud/Self-Managed EE), and **Bitbucket** (Cloud/Data Center), automatic 1 Project → 1 Repo provisioning, RAM-only `gitoxide` + `jj-lib` sync, `ENCRYPTED_VAULT` (AES-256-GCM) vs. `PLAIN_CANONICAL` modes, and visual 3-way hardware diff.
+  - `services/vcs-auditor`: Periodic (6h/daily + webhook) multi-provider Org/Group/Workspace security vulnerability & posture auditor (public-repo drift, unauthorized human vault access, Org/Group 2FA/SSO, insecure legacy personal tokens, Secret Scanning, Dependabot/Dependency CVEs + OSV fallback, Posture Score 0–100, and 2FA-gated remediation).
   - `signal-operator` (`kube-rs`) managing `ProjectSession` CRDs, Warm Standby Pod Pool, fenced distributed leases, and idle hibernation (zero customer files retained on Signal after pod termination).
   - `session-broker` implementing **sticky routing** so 2+ concurrent users opening Project X attach to the exact same Rust Engine Pod.
-  - Real-time CRDT multi-user sync, live cursors, presence, soft locks, and batched encrypted commits/checkpoints to the customer's GitHub Org.
+  - Real-time CRDT multi-user sync, live cursors, presence, soft locks, and batched encrypted commits/checkpoints to the customer's Git provider.
   - `identity-org` & `project-catalog`: Individual accounts, approval-gated Enterprise Onboarding, RBAC/ABAC, Multi-Type Projects (`PRD`, `HFS`, `SCHEMATIC`, `PCB`, `IC_*`, `FPGA`, `FIRMWARE`, `BIOS`), extensible metadata, cross-domain traceability links, Project Templates, and **Progressive UI Profiles (`EXPLORER` / `MAKER` / `PRO`)** with low-bandwidth vector delta transport.
   - Integrated PRD & HFS structured spec editor inside the Angular IDE.
-- **Exit Criteria:** Two browsers join the same project hydrated into RAM from the connected GitHub Org (or local GitHub mock on Mac), verify identical Pod IP assignment, commit & visually diff changes back to GitHub, trigger a simulated public-repo/2FA vulnerability that `vcs-auditor` catches and alerts immediately, edit schematics + PRD concurrently with < 50 ms sync, and survive simulated pod crash with zero data loss.
+- **Exit Criteria:** Two browsers join the same project hydrated into RAM from a connected GitHub/GitLab/Bitbucket namespace (or local multi-provider Git mock on Mac), verify identical Pod IP assignment, commit & visually diff changes back to the remote repo, trigger a simulated public-repo/2FA vulnerability that `vcs-auditor` catches and alerts immediately, edit schematics + PRD concurrently with < 50 ms sync, and survive simulated pod crash with zero data loss.
 
 ### Phase 3 — AI-Agent-First Orchestration, Multilingual Tutor & Universal Datasheet RAG
 - **Deliverables:**
@@ -77,11 +77,11 @@ flowchart LR
 ### Phase 5 — Full IC / GPU / Chip Suite, Multi-Pod Federation, FPGA/FW/BIOS Co-Design & Plugin SDK
 - **Deliverables:**
   - `signal-ic`: Encrypted PDK ingestion (plus Open Silicon `Sky130` / `GF180` / `IHP SG13G2` packs), BSIM4/BSIM-CMG/PSP Rust transistor modules, sandboxed WASM PCELLs, custom analog mask layout editor, hierarchical DRC/LVS/PEX, RTL-to-GDSII burst orchestration, 2.5D/3D-IC chiplet/SiP packaging, and in-memory GDSII/OASIS SFTP release.
-  - **GPU/ASIC Scale-Out:** `SILICON_SCALE` hierarchical multi-pod federation (mounting verified abstract IP-block repos from the Enterprise's GitHub Org across federated Project Pods) + Git LFS / Customer BYO-S3 pointer support for multi-GB PDKs and waveforms.
+  - **GPU/ASIC Scale-Out:** `SILICON_SCALE` hierarchical multi-pod federation (mounting verified abstract IP-block repos from the Enterprise's GitHub/GitLab/Bitbucket namespace across federated Project Pods) + Git LFS / Customer BYO-S3 pointer support for multi-GB PDKs and waveforms.
   - Embedded Monaco IDE + LSP inside Signal for FPGA (`SystemVerilog`/`VHDL`), Firmware (`C`/`C++`/`Rust`), and BIOS (`UEFI`/`Device Tree`/`Register Maps`), bi-directionally synchronized with schematics/IC pinouts.
   - Hardware-Firmware Co-Simulation (`signal-lib-firmware-bridge`) running virtual MCU code live against Rust SPICE peripherals.
   - Elastic K8s CPU/GPU Burst Worker pool + **Multi-Physics WASM/Rust Domain Plugin SDK** (foundation for future Photonics, Quantum/Cryo-CMOS, and MEMS modules).
-- **Exit Criteria:** Open-source PDK (SkyWater 130nm / GF180) analog/digital IC block passes Schematic → Post-Layout PEX SPICE → DRC/LVS Clean → SFTP GDSII delivery; multi-block hierarchical SoC mounts across federated Project Pods from separate GitHub Org IP repos; embedded firmware toggles a virtual GPIO and drives a simulated Rust buck/motor stage live in the browser.
+- **Exit Criteria:** Open-source PDK (SkyWater 130nm / GF180) analog/digital IC block passes Schematic → Post-Layout PEX SPICE → DRC/LVS Clean → SFTP GDSII delivery; multi-block hierarchical SoC mounts across federated Project Pods from separate Enterprise Git IP repos; embedded firmware toggles a virtual GPIO and drives a simulated Rust buck/motor stage live in the browser.
 
 ### Phase 6 — Enterprise Hardening, Scale Benchmarking & General Availability
 - **Deliverables:**

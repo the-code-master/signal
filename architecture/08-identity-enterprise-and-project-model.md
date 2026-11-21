@@ -76,8 +76,8 @@ erDiagram
     PROJECT ||--o{ PROJECT_METADATA_KV : "stores_rich_metadata"
     PROJECT ||--o{ PROJECT_REVISION : "versions"
     PROJECT ||--o{ RELEASE_PACKAGE : "delivers_via_sftp"
-    ORGANIZATION ||--o| GIT_ORG_CONNECTION : "connects_byo_github"
-    USER ||--o| GIT_ORG_CONNECTION : "personal_byo_github"
+    ORGANIZATION ||--o| GIT_ORG_CONNECTION : "connects_byo_git"
+    USER ||--o| GIT_ORG_CONNECTION : "personal_byo_git"
     GIT_ORG_CONNECTION ||--o{ VCS_SECURITY_AUDIT : "periodically_audited"
     SUB_PROJECT ||--o{ TRACEABILITY_LINK : "links_across_domains"
     SFTP_TARGET ||--o{ RELEASE_PACKAGE : "receives"
@@ -86,10 +86,10 @@ erDiagram
         uuid id PK
         uuid org_id FK "nullable if personal"
         uuid owner_user_id FK
-        string provider "GITHUB_COM|GHES"
+        string provider "GITHUB_COM|GITHUB_GHES|GITLAB_COM|GITLAB_SELF_MANAGED|BITBUCKET_CLOUD|BITBUCKET_DC"
         string api_base_url
-        string github_org_name
-        string auth_mode "FINE_GRAINED_PAT|GITHUB_APP"
+        string git_namespace "GitHub Org | GitLab Group | Bitbucket Workspace/Project"
+        string auth_mode "SCOPED_TOKEN|PROVIDER_APP_OAUTH"
         string vault_credential_ref "encrypted in Vault/HSM"
         string repo_encryption_mode "ENCRYPTED_VAULT|PLAIN_CANONICAL"
         int last_posture_score "0-100"
@@ -102,7 +102,7 @@ erDiagram
         uuid org_id FK
         string project_code
         string name
-        string github_repo_full_name "org/project-slug"
+        string git_repo_full_name "namespace/project-slug"
         string primary_type
         string lifecycle_stage
         string security_tier
