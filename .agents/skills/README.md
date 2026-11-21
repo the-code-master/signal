@@ -4,7 +4,7 @@
 
 ---
 
-## Available Skills (17)
+## Available Skills (18)
 
 | Skill Name | Scope / Lane | Purpose |
 |---|---|---|
@@ -16,12 +16,13 @@
 | [`signal-universal-parts-registry`](./signal-universal-parts-registry/SKILL.md) | Both | Universal Datasheet/Component repo, Master Pin Table, IEEE/IEC Symbols, Parametric Padstacks & 3-Tier AVL |
 | [`signal-cad-cam-plm-ops`](./signal-cad-cam-plm-ops/SKILL.md) | Both | Integrated Mechanical CAD, CNC CAM, 3D Printing, 3D Visualization, eBOM/mBOM, ECN/ECO/MCN/PCN/Deviations & Ops |
 | [`signal-angular-workbench`](./signal-angular-workbench/SKILL.md) | Lane B (`web/`) | Building Angular 19/20+ Zoneless Signals standalone workbenches (`web/libs/*`), `bigint`, WCAG |
+| [`signal-angular-ui-style-system`](./signal-angular-ui-style-system/SKILL.md) | Lane B (`web/`) | Enforcing `.component.ts`/`.html`/`.logic.ts`/`.model.ts` split, zero `@if`-soup & centralized `@signal/design-system` + `@signal/ui-kit` styles |
 | [`signal-zero-leak-canvas-and-dlp`](./signal-zero-leak-canvas-and-dlp/SKILL.md) | Both (`web/` + `engine/`) | Dual-Plane `Zstd-QOI`/WebP streaming, `HudOverlayPrimitive`, Multi-Monitor & Constellation DLP |
 | [`signal-nodejs-bff-control-plane`](./signal-nodejs-bff-control-plane/SKILL.md) | Lane B (`services/`) | Stateless Node.js 22 services, `@Require*` uniform `404`, RLS, PKCE cookies & Fail-Closed Outbox |
 | [`signal-byo-git-and-vault`](./signal-byo-git-and-vault/SKILL.md) | Both | Multi-provider BYO-Git, lazy repo pacer, Padmé-blinded `AES-256-GCM-SIV` & Dual-Fenced `Super-Commit` |
 | [`signal-security-isolation-audit`](./signal-security-isolation-audit/SKILL.md) | Both | OWASP ASVS L3 & "1 Project = 1 Security Cell" audit (PQC, H100/B200, eBPF, sandboxes, SFTP) |
 | [`signal-ai-neuro-symbolic-rag`](./signal-ai-neuro-symbolic-rag/SKILL.md) | Both (`ai/`) | Neuro-symbolic agents, Multimodal + Dual-LLM Quarantine, `GBNF`, 3-Tier `pgvector` & Proof re-check |
-| [`signal-local-mac-dev`](./signal-local-mac-dev/SKILL.md) | Both (`infra/local/`) | Apple Silicon `dev:lite`/`dev:full`, `lavapipe` WGSL CI, `local-git-mock` & `dev-guest-auth` guards |
+| [`signal-local-mac-dev`](./signal-local-mac-dev/SKILL.md) | Both (`infra/local/`) | Apple Silicon `dev:lite`/`dev:full`/`dev:k8s`, `lavapipe` WGSL CI, `local-git-mock` & `dev-guest-auth` guards |
 | [`signal-release-deploy-topology`](./signal-release-deploy-topology/SKILL.md) | Both (`infra/`, `releases/`) | Platform SemVer & Auto Release Notes, monorepo `justfile`/Docker/Helm/GitOps, and 3-tier K8s (`1–4` extensible Rust nodes) |
 | [`signal-verification-and-pr-gate`](./signal-verification-and-pr-gate/SKILL.md) | Both | Full Definition-of-Done verification, supply-chain vetting, journal update & clean PR creation |
 | [`signal-cross-ide-handoff`](./signal-cross-ide-handoff/SKILL.md) | Both (`coordination/`) | Immutable Antigravity ↔ Cursor handoff packets, blocker escalation & `> 24h` stale-claim takeover |

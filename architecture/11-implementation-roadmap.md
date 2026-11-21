@@ -35,7 +35,7 @@ flowchart LR
   - Automated Release Notes & Compatibility pipeline (`.github/workflows/release.yml`, `releases/compatibility.json` with `N-2` wire window & `physics_determinism_epoch`, `releases/notes/vX.Y.Z.{md,json}`, SLSA L3 + Cosign + `SPDX 3.0` SBOM) + Umbrella Helm Chart (`infra/k8s/helm/signal/`: **Tier 1 separate `signal-web` Angular+Node pod `pool-web`, Tier 2 dedicated HA `signal-api-gateway` + Envoy `signal-engine-bridge` `pool-api`, Tier 3 `1–4` baseline extensible to `N` Rust Engine worker nodes `pool-rust-engine`**).
   - Local macOS Apple Silicon dev harness (`just dev` / `dev:lite` `< 1.5 GB RAM` + `dev:full` Docker ARM64 + `just dev-k8s` 3-tier K8s parity; native Rust `cargo` + Angular HMR + Ollama/MLX/`deterministic_mock` auto-detection).
   - Hard-guarded local **`Guest` @ `Signal Design, Inc.`** (`local-guest-0001` in `local-git-mock`) & CI binary symbol guard verifying `dev-guest-auth` can never ship in release artifacts.
-  - Multi-AI-IDE collaboration setup (`.cursor/rules/*.mdc`, `.agents/skills/*/SKILL.md` [17 skills], `AGENTS.md`, `coordination/TASK_BOARD.md`).
+  - Multi-AI-IDE collaboration setup (`.cursor/rules/*.mdc`, `.agents/skills/*/SKILL.md` [18 skills], `AGENTS.md`, `docs/engineering/ANGULAR_UI_STYLE_GUIDE.md`, `coordination/TASK_BOARD.md`).
 - **Exit Criteria:** A developer on macOS runs `just dev` (or `just dev-k8s`), lands in the Angular shell as `Guest @ Signal Design, Inc.`, receives a health-check pong from both `signal-pod` (via `signal-engine-bridge`) and local Mac Ollama/MLX LLM, `just release-preview` emits valid Release Notes, and Antigravity + Cursor merge parallel PRs without conflict.
 
 ### Phase 1 — Core Rust Modular Component Engine, Equilibrated MNA SPICE & Schematic MVP

@@ -1,47 +1,52 @@
 # Signal — Angular 19/20+ Frontend & Zero-Leak Engineering Guide (`web/`)
 
 > **Applies To:** `web/apps/signal-web/` and all lazy workbench libraries under `web/libs/*`.  
+> **UI Style & Component Ecosystem Standard:** [`ANGULAR_UI_STYLE_GUIDE.md`](./ANGULAR_UI_STYLE_GUIDE.md) *(mandatory companion covering separate `.html`/`.ts`/`.logic.ts`/`.model.ts` files, anti-spaghetti templates, and centralized `@signal/design-system` + `@signal/ui-kit` styling)*.  
 > **Governing Specs:** [`architecture/06-frontend-angular-and-nodejs-bff.md`](../../architecture/06-frontend-angular-and-nodejs-bff.md), [`architecture/15-application-security-and-project-isolation.md`](../../architecture/15-application-security-and-project-isolation.md), [`architecture/17-extended-feature-specifications-ui-and-rust.md`](../../architecture/17-extended-feature-specifications-ui-and-rust.md), [`architecture/18-universal-component-and-datasheet-repository.md`](../../architecture/18-universal-component-and-datasheet-repository.md), [`architecture/19-cad-cam-3d-printing-and-plm-operations.md`](../../architecture/19-cad-cam-3d-printing-and-plm-operations.md), [`architecture/20-versioning-release-monorepo-build-and-k8s-topology.md`](../../architecture/20-versioning-release-monorepo-build-and-k8s-topology.md).
 
 ---
 
 ## 1. Modern Angular Core (Zoneless + Signals-First, Zero Legacy Patterns)
 
-Signal is a greenfield Angular 19/20+ application. Legacy NgModule / Zone.js / decorator boilerplate is **strictly prohibited**:
+Signal is a greenfield Angular 19/20+ application. Legacy NgModule / Zone.js / decorator boilerplate and inline/spaghetti templates are **strictly prohibited**:
 
 | Concern | ALWAYS USE (Signal Standard) | NEVER USE (Rejected in Review) |
 |---|---|---|
-| **Component Architecture** | Standalone Components (`standalone: true` default in v19+), `ChangeDetectionStrategy.OnPush`, **Zoneless** change detection | `NgModule`, `Zone.js` dirty-check loops, default change detection |
+| **Component Architecture & File Split** | Standalone Components, `ChangeDetectionStrategy.OnPush`, **Zoneless**, separate `.component.ts` (`<= 120 LOC`) + `.component.html` (`<= 150 LOC`) + `.logic.ts` (`<= 250 LOC`) + `.model.ts` | `NgModule`, `Zone.js`, inline `template:`, inline `styles:`, dumping business/UI branching into HTML or `.component.ts` |
 | **Inputs / Outputs / Queries** | Signal APIs: `input()`, `input.required()`, `output()`, `model()`, `viewChild()`, `contentChild()` | Legacy `@Input()`, `@Output()`, `@ViewChild()`, `EventEmitter` |
 | **Dependency Injection** | Function-based `inject(Service)` (`readonly` class fields) | Verbose constructor parameter lists |
-| **Template Control Flow** | Built-in `@if`, `@else`, `@for (...; track item.id)`, `@switch`, `@defer (on viewport/interaction)` | `*ngIf`, `*ngFor`, `*ngSwitch`, missing `track` keys |
+| **Template Control Flow & Anti-Spaghetti** | Built-in `@if`, `@for (...; track item.id)`, `@switch`, `@defer`; max nesting `<= 2`; pre-computed `vm()` flags & config arrays from `.logic.ts`; extract branches `> 15` lines | `*ngIf`, `*ngFor`, `*ngSwitch`, compound `&&`/`\|\|` role checks in HTML, copy-pasted `@if`/`@else` markup blocks |
 | **Reactive State** | Angular Signals (`signal`, `computed`, `linkedSignal`, `effect`), RxJS ONLY at async transport/stream boundaries (`toSignal` / `takeUntilDestroyed`) | Manual `BehaviorSubject` sprawl, unsubscribed `.subscribe()`, mutating arrays/objects in place |
-| **Styling & Design Tokens** | Scoped component styles (`styles`/`styleUrl`) using CSS custom properties (`--sig-*`) + Okabe-Ito color-blind-safe & stipple tokens | Hardcoded hex colors, `::ng-deep`, global CSS leakage |
+| **Platform Styling Ecosystem** | Centralized `@signal/design-system` (`--sig-*` tokens + `.sig-*` CSS primitives + Okabe-Ito color-blind-safe stipple themes) & `@signal/ui-kit` shared components (`sig-*`) — **ZERO per-component `.css`/`.scss` by default** | Ad-hoc component `.css`/`.scss` files (without approved `/* @sig-style-exception */` `<= 60 LOC`), inline `style="..."`, hardcoded `#hex`, `::ng-deep` |
 
 ---
 
 ## 2. Clean Library Structure & Strict Dependency Boundaries (`web/libs/*`)
 
-Every workbench library under `web/libs/<domain>/` follows one identical, human-scannable layout:
+Shared visual styling and reusable UI primitives live exclusively in **`web/libs/design-system/`** and **`web/libs/ui-kit/`**. Every workbench library under `web/libs/<domain>/` follows one identical, human-scannable layout:
 
 ```text
 web/libs/<domain>/
 ├── src/
-│   ├── index.ts                  # SOLE public API barrel (routes + exported facades/components)
-│   ├── <domain>.routes.ts        # Lazy route tree loaded via loadChildren()
-│   ├── feature/                  # Smart container components (wire stores <-> presentational UI)
-│   ├── ui/                       # Pure presentational components (input()/output() ONLY, zero injected services!)
-│   ├── data-access/              # Signal stores (*.store.ts) + typed build-time contract clients (*.client.ts)
-│   ├── overlays/                 # Zero-Leak HudOverlayPrimitive directives & canvas HUD widgets
-│   └── models/                   # View-models using ES2020 bigint for all 64-bit contract fields
+│   ├── index.ts                      # SOLE public API barrel (routes + exported facades/components)
+│   ├── <domain>.routes.ts            # Lazy route tree loaded via loadChildren()
+│   ├── feature/<name>/               # Smart container folder (NO .css/.scss!)
+│   │   ├── <name>.component.ts       # Thin Angular wiring (<= 120 LOC, templateUrl ONLY)
+│   │   ├── <name>.component.html     # Pure flat declarative markup (<= 150 LOC, @signal/ui-kit + .sig-*)
+│   │   ├── <name>.logic.ts           # Pure framework-agnostic TS logic/formatting/config maps
+│   │   └── <name>.model.ts           # readonly view-models using ES2020 bigint for 64-bit fields
+│   ├── ui/<name>/                    # Pure presentational component (same 4-file split, input()/output() ONLY!)
+│   ├── data-access/                  # Signal stores (*.store.ts) + typed build-time contract clients (*.client.ts)
+│   └── overlays/                     # Zero-Leak HudOverlayPrimitive directives & canvas HUD widgets
 └── project.json / package.json
 ```
 
-**Hard Boundary Rules (Enforced by ESLint `boundaries` / Nx module tags):**
+**Hard Boundary Rules (Enforced by ESLint `boundaries`, Stylelint & Custom Template Gates):**
 1. Cross-library imports MUST target `@signal/<lib>` (`src/index.ts`) — **never** reach into another library's `feature/`, `ui/`, or `data-access/`.
-2. `ui/` dumb components MUST stay pure (`input()` + `output()` only, `<= 200 LOC`) — trivial to read, reuse, and test!
+2. `ui/` dumb components MUST stay pure (`input()` + `output()` only, zero injected services) and delegate all mapping/branching to `<name>.logic.ts`.
 3. Workbench libraries NEVER import another workbench's internal store directly; cross-pane coordination (e.g., clicking a Schematic net highlights PCB + 3D CAD + Waveform + Firmware + BOM) flows through `@signal/workspace-bus` typed Signals!
-4. Initial shell bundle (`apps/signal-web`, deployed in its own `pool-web` K8s pod with `N-3` hashed chunk retention & In-App "What's New" release drawer) MUST stay **`< 250 KB` gzipped**; all 22 core + extended workbenches (including `library-studio`, `mcad-studio`, `cam-print`, `plm-ops`) load strictly via lazy `loadChildren` + `@defer`.
+4. Zero component-local stylesheets outside `web/libs/{design-system,ui-kit}/` unless marked with `/* @sig-style-exception: <reason> */`, `<= 60 LOC`, and 100% `var(--sig-*)` tokens ([`ANGULAR_UI_STYLE_GUIDE.md`](./ANGULAR_UI_STYLE_GUIDE.md)).
+5. Initial shell bundle (`apps/signal-web`, deployed in its own `pool-web` K8s pod with `N-3` hashed chunk retention & In-App "What's New" release drawer) MUST stay **`< 250 KB` gzipped**; all 22 core + extended workbenches (including `library-studio`, `mcad-studio`, `cam-print`, `plm-ops`) load strictly via lazy `loadChildren` + `@defer`.
 
 ---
 

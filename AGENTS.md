@@ -1,25 +1,23 @@
 # Signal — Canonical AI Agent Instructions (`AGENTS.md`)
 
-> **Applies To:** **Antigravity** AND **Cursor** (paired with [`.cursor/rules/*.mdc`](./.cursor/rules/signal-architecture.mdc) and [`.agents/skills/*/SKILL.md`](./.agents/skills/README.md)).  
-> **Single Source of Truth:** Architecture lives in [`architecture/`](./architecture/README.md); coding standards & Phase 0 launch playbooks live in [`docs/engineering/`](./docs/engineering/README.md).
+> **Applies To:** **Antigravity** & **Cursor** ([`.cursor/rules/*.mdc`](./.cursor/rules/signal-architecture.mdc) + [`.agents/skills/*/SKILL.md`](./.agents/skills/README.md)).  
+> **Single Source of Truth:** [`architecture/`](./architecture/README.md) & [`docs/engineering/`](./docs/engineering/README.md).
 
 ---
 
 ## 1. Current Phase & Hard Gate
 
-- **Current Phase:** **Architecture, Engineering Rules & Skills Complete** (Ready for Phase 0).
-- **Hard Gate:** **DO NOT write production application code (`engine/`, `services/`, `web/`, `ai/`, `contracts/`, `infra/`) until the user explicitly approves starting Phase 0.**
-- **Transition Runbook:** [`docs/engineering/PHASE0_LAUNCH_PLAYBOOK.md`](./docs/engineering/PHASE0_LAUNCH_PLAYBOOK.md) | **Backlog:** [`coordination/TASK_BOARD.md`](./coordination/TASK_BOARD.md).
+- **Phase:** **Architecture, Rules & Skills Complete** (Ready for Phase 0). **Gate:** **DO NOT write production code (`engine/`, `services/`, `web/`, `ai/`, `contracts/`, `infra/`) until explicit Phase 0 user approval.**
+- **Runbook:** [`PHASE0_LAUNCH_PLAYBOOK.md`](./docs/engineering/PHASE0_LAUNCH_PLAYBOOK.md) | **Backlog:** [`TASK_BOARD.md`](./coordination/TASK_BOARD.md).
 
 ---
 
-## 2. Mandatory Session-Start Ritual (Skill: `signal-session-start`)
+## 2. Session-Start Ritual (Skill: `signal-session-start`)
 
-Before modifying any file, **both Antigravity and Cursor** MUST:
+Before editing any file, **both IDEs** MUST:
 1. Run `git fetch origin --prune && git status -sb`.
-2. Read [`coordination/TASK_BOARD.md`](./coordination/TASK_BOARD.md), [`coordination/handoffs/`](./coordination/handoffs/README.md), and the **peer journal read-only** (Antigravity reads [`cursor.md`](./coordination/agents/cursor.md); Cursor reads [`antigravity.md`](./coordination/agents/antigravity.md)).
-3. Confirm **zero `touched_paths` overlap** with active peer tasks; branch from `origin/main` using `ag/<task-id>-<slug>`, `cursor/<task-id>-<slug>`, or serialized `contract/<task-id>-<slug>`.
-4. Activate only the matching scoped rules (`.cursor/rules/*.mdc`), portable skills (`.agents/skills/*/SKILL.md`), and architecture spec(s) below.
+2. Read [`TASK_BOARD.md`](./coordination/TASK_BOARD.md), [`handoffs/`](./coordination/handoffs/README.md), & peer journal read-only (Antigravity → [`cursor.md`](./coordination/agents/cursor.md); Cursor → [`antigravity.md`](./coordination/agents/antigravity.md)).
+3. Confirm zero `touched_paths` overlap; branch from `origin/main` (`ag/*`, `cursor/*`, or serialized `contract/*`) and load only matching rules/skills/specs.
 
 ---
 
@@ -27,16 +25,16 @@ Before modifying any file, **both Antigravity and Cursor** MUST:
 
 | Domain / Task Area | Read Spec / Guide | Activate Skill(s) |
 |---|---|---|
-| Product Vision, 120 Dual Features & Integrated CAD/CAM/3D-Print/PLM-Ops | [`01`](./architecture/01-product-vision-and-features.md), [`17`](./architecture/17-extended-feature-specifications-ui-and-rust.md), [`19`](./architecture/19-cad-cam-3d-printing-and-plm-operations.md) | `signal-token-efficient-editing`, `signal-cad-cam-plm-ops` |
-| System Topology, 3-Tier K8s (`1–4` Extensible Rust Nodes), Versioning, Monorepo Build/Deploy & Roadmap | [`02`](./architecture/02-system-architecture.md), [`11`](./architecture/11-implementation-roadmap.md), [`14`](./architecture/14-universal-scale-accessibility-and-expandability.md), [`20`](./architecture/20-versioning-release-monorepo-build-and-k8s-topology.md) | `signal-session-start`, `signal-release-deploy-topology` |
+| Product Vision, 120 Features & CAD/CAM/3D-Print/PLM-Ops | [`01`](./architecture/01-product-vision-and-features.md), [`17`](./architecture/17-extended-feature-specifications-ui-and-rust.md), [`19`](./architecture/19-cad-cam-3d-printing-and-plm-operations.md) | `signal-token-efficient-editing`, `signal-cad-cam-plm-ops` |
+| Topology, 3-Tier K8s (`1–4` Extensible Rust Nodes), Releases & Roadmap | [`02`](./architecture/02-system-architecture.md), [`11`](./architecture/11-implementation-roadmap.md), [`14`](./architecture/14-universal-scale-accessibility-and-expandability.md), [`20`](./architecture/20-versioning-release-monorepo-build-and-k8s-topology.md) | `signal-session-start`, `signal-release-deploy-topology` |
 | Rust EDA Core (`engine/**`, `benchmarks/**`) | [`03`](./architecture/03-rust-eda-engine.md), [`RUST_ENGINEERING_GUIDE.md`](./docs/engineering/RUST_ENGINEERING_GUIDE.md) | `signal-rust-crate-architect`, `signal-rust-physics-and-geometry` |
-| Angular 19/20+ Zoneless UI (`web/**`) & Zero-Leak Canvas | [`06`](./architecture/06-frontend-angular-and-nodejs-bff.md), [`ANGULAR_ENGINEERING_GUIDE.md`](./docs/engineering/ANGULAR_ENGINEERING_GUIDE.md) | `signal-angular-workbench`, `signal-zero-leak-canvas-and-dlp` |
+| Angular 19/20+ UI (`web/**`), Style System & Zero-Leak Canvas | [`06`](./architecture/06-frontend-angular-and-nodejs-bff.md), [`ANGULAR_ENGINEERING_GUIDE.md`](./docs/engineering/ANGULAR_ENGINEERING_GUIDE.md), [`ANGULAR_UI_STYLE_GUIDE.md`](./docs/engineering/ANGULAR_UI_STYLE_GUIDE.md) | `signal-angular-workbench`, `signal-angular-ui-style-system`, `signal-zero-leak-canvas-and-dlp` |
 | Node.js 22 BFF (`services/**`), Identity & Access Review | [`06`](./architecture/06-frontend-angular-and-nodejs-bff.md), [`08`](./architecture/08-identity-enterprise-and-project-model.md) | `signal-nodejs-bff-control-plane` |
-| Customer BYO-Git (GitHub/GitLab/Bitbucket) & Encrypted Vault | [`13`](./architecture/13-vcs-git-server-and-storage-analysis.md), [`07`](./architecture/07-security-encryption-dlp-and-sftp.md) | `signal-byo-git-and-vault` |
-| Complete Isolation, OWASP ASVS L3, K8s Pods, PQC & 148-Flaw Audit | [`04`](./architecture/04-kubernetes-runtime-and-collaboration.md), [`07`](./architecture/07-security-encryption-dlp-and-sftp.md), [`15`](./architecture/15-application-security-and-project-isolation.md), [`16`](./architecture/16-architectural-audit-flaws-and-futuristic-innovations.md) | `signal-security-isolation-audit` |
-| AI Agents, Multimodal Quarantine, 3-Tier `pgvector` RAG & Universal Parts (`ai/**`) | [`05`](./architecture/05-ai-agent-and-datasheet-rag.md), [`18`](./architecture/18-universal-component-and-datasheet-repository.md) | `signal-ai-neuro-symbolic-rag`, `signal-universal-parts-registry` |
-| Canonical Contracts (`contracts/**`: Proto, OpenAPI, Fixtures, Transcripts) | [`10`](./architecture/10-api-and-data-contracts.md) | `signal-contract-first` |
-| macOS Apple Silicon Dev (`infra/local/**`) & Parallel IDE Workflow | [`09`](./architecture/09-local-development-environment.md), [`12`](./architecture/12-multi-ide-collaboration.md), [`TOKEN_EFFICIENCY_AND_CLEAN_CODE.md`](./docs/engineering/TOKEN_EFFICIENCY_AND_CLEAN_CODE.md) | `signal-local-mac-dev`, `signal-cross-ide-handoff`, `signal-verification-and-pr-gate` |
+| Customer BYO-Git (GitHub/GitLab/Bitbucket) & Vault | [`13`](./architecture/13-vcs-git-server-and-storage-analysis.md), [`07`](./architecture/07-security-encryption-dlp-and-sftp.md) | `signal-byo-git-and-vault` |
+| Isolation, OWASP ASVS L3, K8s Pods, PQC & 148-Flaw Audit | [`04`](./architecture/04-kubernetes-runtime-and-collaboration.md), [`07`](./architecture/07-security-encryption-dlp-and-sftp.md), [`15`](./architecture/15-application-security-and-project-isolation.md), [`16`](./architecture/16-architectural-audit-flaws-and-futuristic-innovations.md) | `signal-security-isolation-audit` |
+| AI Agents, Quarantine, 3-Tier RAG & Universal Parts (`ai/**`) | [`05`](./architecture/05-ai-agent-and-datasheet-rag.md), [`18`](./architecture/18-universal-component-and-datasheet-repository.md) | `signal-ai-neuro-symbolic-rag`, `signal-universal-parts-registry` |
+| Canonical Contracts (`contracts/**`) | [`10`](./architecture/10-api-and-data-contracts.md) | `signal-contract-first` |
+| Mac Dev (`infra/local/**`) & Parallel IDE Workflow | [`09`](./architecture/09-local-development-environment.md), [`12`](./architecture/12-multi-ide-collaboration.md), [`TOKEN_EFFICIENCY_AND_CLEAN_CODE.md`](./docs/engineering/TOKEN_EFFICIENCY_AND_CLEAN_CODE.md) | `signal-local-mac-dev`, `signal-cross-ide-handoff`, `signal-verification-and-pr-gate` |
 
 ---
 
@@ -58,7 +56,7 @@ Before modifying any file, **both Antigravity and Cursor** MUST:
 - **Anti-Hallucination:** Verify paths, symbols, `.proto` fields, & deps via `rg`/`view_file`/`Cargo.toml`/`package.json`; claim pass ONLY on observed exit `0`; never recall pinouts/SI constants from memory; stop/ask or log `BLOCKED_ON_CONTRACT` on ambiguity.
 - **Modularity:** Files `80–250 LOC` (split `> 350`), functions `<= 40–60 LOC`, nesting `<= 3`, params `<= 4`, 3-line `Module / Invariants / Spec` header.
 - **Rust (`engine/`):** Rust 2024, `#![forbid(unsafe_code)]`, acyclic DAG, `signal-proto` + `cargo-hakari`, `thiserror`, zero `.unwrap()` on untrusted input, `SecretBox<T>`, `core_math`, `cargo vet`/`deny`.
-- **Angular (`web/`):** Angular 19/20+ Zoneless, Standalone ONLY, `OnPush`, Signals (`input()`/`output()`/`computed()`), `@if`/`@for`/`@defer`, `@signal/<lib>` `index.ts`, `bigint` SI types, `cdk-virtual-scroll`, WCAG 2.2 AA.
+- **Angular (`web/`):** Angular 19/20+ Zoneless, Standalone, `OnPush`, Signals (`input()`/`output()`/`computed()`), separate `.component.ts`/`.html` (`<= 150 LOC`, nesting `<= 2`, zero `@if`-soup/duplication)/`.logic.ts`/`.model.ts`, centralized `@signal/design-system` + `@signal/ui-kit` (NO per-component `.css`/`.scss` unless `@sig-style-exception`), `bigint` SI types, WCAG 2.2 AA.
 - **Node.js (`services/`):** Node 22 strict TS, stateless, fail-closed `@Require*` uniform-`404`, `withRlsTx` (`NOBYPASSRLS`), `Idempotency-Key`, `Redacted<T>`, zero physics.
 
 ---

@@ -21,7 +21,7 @@ You are collaborating in parallel on **Signal** (by **Signal Design, Inc.**): Pu
 5. **Contract-First `bigint` & Platform Releases (`20-*`):** All 64-bit contract fields (`_nm`, `_ps`, `fencing_epoch`) use ES2020 `bigint` (`longAsBigint: true`); build-time codegen ONLY. Monorepo `justfile`/`VERSION`/auto Release Notes (`CHANGELOG.md`, `releases/notes/`), `N-2` compat, LTS pinning, SLSA L3/Cosign, and Expand-and-Contract SQL.
 6. **Zero-Bypass Local Dev:** `dev-guest-auth` (`local-guest-0001`) executes full RBAC + encryption and MUST fail compilation in release/staging builds.
 
-## 3. Token Efficiency, 2–3 Sentence Dev Replies & Anti-Hallucination
-- **2–3 Sentence Coding Replies:** During code development/bug-fixing, reply in **2–3 sentences max** stating ONLY the issue, exact fix applied, and verification result—no verbose recaps or repeated diffs unless explicitly asked.
-- **Zero-Hallucination Discipline:** Always verify paths, symbols, versions (`Cargo.toml`/`package.json`), and contracts via `rg`/`view_file` before editing; NEVER claim tests/builds pass without observing exit code `0`; NEVER invent pinouts/SI constants; stop and ask (or log `BLOCKED_ON_CONTRACT`) when ambiguous.
-- **Clean Modularity:** Files `<= 300 LOC` (split `> 350 LOC`), functions `<= 40 LOC`, nesting `<= 3`, 3-line module header; load scoped `.cursor/rules/*.mdc` and `.agents/skills/*/SKILL.md` on demand.
+## 3. Token Efficiency, 2–3 Sentence Dev Replies, Clean UI & Anti-Hallucination
+- **2–3 Sentence Coding Replies:** During code development/bug-fixing, reply in **2–3 sentences max** (`Issue -> Fix -> Verification`) — omit recaps unless asked.
+- **Zero-Hallucination:** Verify paths, symbols, deps (`Cargo.toml`/`package.json`), & contracts via `rg`/`view_file` before editing; claim pass ONLY on observed exit `0`; never invent pinouts/SI constants; stop/ask or log `BLOCKED_ON_CONTRACT` on ambiguity.
+- **Clean Modularity & Standardized UI:** Files `<= 300 LOC`, functions `<= 40 LOC`, nesting `<= 3`, 3-line header; Angular MUST split `.component.ts`/`.html` (`<= 150 LOC`, zero `@if`-soup/copy-paste)/`.logic.ts`/`.model.ts` and use centralized `@signal/design-system` + `@signal/ui-kit` (NO per-component styles unless `@sig-style-exception`).

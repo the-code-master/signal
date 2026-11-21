@@ -30,7 +30,7 @@ Governing rules: `AGENTS.md` Section 7 | `architecture/12-multi-ide-collaboratio
 - **Angular & Node.js (`web/**`, `services/**`):**
   - `pnpm lint && pnpm typecheck && pnpm test --run`
   - `pnpm audit --ignore-scripts`
-  - Verify zero `Number()` casts on 64-bit `bigint` fields, zero `NgModule`/legacy decorators, zero `bypassSecurityTrust*`/`eval`/`child_process.exec`, zero browser disk design storage, and zero `/export`/`/download`/`/print` routes.
+  - Verify separate `.component.ts`/`.component.html` (`<= 150 LOC`, nesting `<= 2`, zero `@if`-soup/duplication)/`.logic.ts`/`.model.ts` files, zero inline `template:`/`styles:`, zero component-local `.css`/`.scss` outside `design-system`/`ui-kit` without `/* @sig-style-exception */`, zero `Number()` casts on `bigint`, zero `NgModule`/legacy decorators, zero `bypassSecurityTrust*`/`eval`/`child_process.exec`, zero browser disk design storage, and zero `/export`/`/download`/`/print` routes.
 
 ## 3. Anti-Hallucination Verification & 2–3 Sentence Reporting
 - **Observed Ground Truth Only:** Never report a check as passing unless you executed it after your final edit and observed exit code `0`; report exact failing command output or `"Unverified — <reason>"` if skipped.

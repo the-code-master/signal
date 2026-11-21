@@ -146,10 +146,10 @@ Even with disjoint swimlanes, certain files traditionally attract conflicts in m
 
 To ensure both AI IDEs enforce the exact same Signal architecture, security invariants (Complete Project Isolation, 3-Tier K8s Pod/Node Separation, Hybrid PQC, Padmé-blinded Vault, Dual-Gate External Fencing, Fail-Closed Tier-0 Audit, zero local files, no export/print, mandatory 2FA for SFTP/BYO-Git, RAM-only decryption, local `Guest @ Signal Design, Inc.` compile-guards), 2–3 sentence coding replies, anti-hallucination discipline, and coding standards:
 
-1. **Single Source of Truth:** Canonical [`AGENTS.md`](../AGENTS.md) (`< 12 KB`) at the repository root points directly to `architecture/01..20`, `docs/engineering/*`, and `.agents/skills/*/SKILL.md` (`17` portable skills) and codifies all invariants, session-start rituals, engineering standards, and definition-of-done gates.
+1. **Single Source of Truth:** Canonical [`AGENTS.md`](../AGENTS.md) (`< 12 KB`) at the repository root points directly to `architecture/01..20`, `docs/engineering/*`, and `.agents/skills/*/SKILL.md` (`18` portable skills) and codifies all invariants, session-start rituals, engineering standards, and definition-of-done gates.
 2. **IDE Adapter Files & Portable Skills (Progressive Disclosure):**
    - Cursor automatically loads [`.cursor/rules/signal-architecture.mdc`](../.cursor/rules/signal-architecture.mdc) (`alwaysApply: true`, `< 4 KB`) + 5 path-scoped `.cursor/rules/*.mdc` files → explicitly referencing `AGENTS.md`, `architecture/01..20`, and `.agents/skills/*/SKILL.md`.
-   - Both **Antigravity and Cursor** natively discover all **17 portable Open-Standard skills** under [`.agents/skills/`](../.agents/skills/README.md).
+   - Both **Antigravity and Cursor** natively discover all **18 portable Open-Standard skills** under [`.agents/skills/`](../.agents/skills/README.md).
 3. **Automated CI Guardrails (Enforced Equally on Both Agents via `just check` / `.github/workflows/pr-gate.yml`):**
    - `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace`, `cargo fmt --check`, `cargo vet`, `cargo deny check`, plus headless software-Vulkan (`lavapipe`) WGSL shader parity checks
    - `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm audit --ignore-scripts`, `helm lint` + `kubeconform`

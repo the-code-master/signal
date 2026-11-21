@@ -9,7 +9,7 @@
 Confirm all 5 readiness items before the user gives the `"Start Phase 0"` green light:
 - [x] All 20 architecture specifications (`01`–`20` + `README.md`) verified with `0` audit or link issues.
 - [x] `AGENTS.md` kept concise (`< 12 KB`, zero truncation) and synchronized with `.cursor/rules/*.mdc` (`< 4 KB`).
-- [x] All 17 cross-IDE Agent Skills published under `.agents/skills/*/SKILL.md` (natively discovered by both Antigravity & Cursor).
+- [x] All 18 cross-IDE Agent Skills published under `.agents/skills/*/SKILL.md` (natively discovered by both Antigravity & Cursor).
 - [x] Local Mac repo synced: `git -C ~/Developer/signal pull --rebase origin main`.
 - [ ] **Explicit User Approval:** User explicitly approves starting Phase 0 (`P0-01`).
 
@@ -44,7 +44,7 @@ flowchart LR
 | Task | Owner | Branch | Disjoint Paths | Skills to Activate | Exit Gate |
 |---|---|---|---|---|---|
 | **`P0-02`** | **Antigravity** | `ag/P0-02-rust-workspace-skeleton` | `engine/**`, `benchmarks/**` | `signal-rust-crate-architect`, `signal-token-efficient-editing`, `signal-verification-and-pr-gate` | `signal-proto` + `cargo-hakari` + `#![forbid(unsafe_code)]` crates compile cleanly (`cargo clippy -D warnings`, `cargo test`, `cargo deny`, `cargo vet`), `dev-guest-auth` compile-time release guard verified, `contracts/fixtures/` + `transcripts/` replay passes in Rust! |
-| **`P0-03`** | **Cursor** | `cursor/P0-03-angular-node-skeleton` | `web/**`, `services/**` | `signal-angular-workbench`, `signal-nodejs-bff-control-plane`, `signal-zero-leak-canvas-and-dlp`, `signal-verification-and-pr-gate` | Angular 19/20+ Zoneless shell boots at `/org/:org_slug/project/:proj_slug` (+ "What's New" feed), lazy route stubs for core + extended `web/libs/*`, `bigint` build-time TS contract codegen, ESLint DLP/bigint rules active, Node.js 22 stateless services + `@Require*` uniform-`404` + Fail-Closed Audit Outbox stub pass `pnpm lint/typecheck/test` + `contracts/fixtures/` replay! |
+| **`P0-03`** | **Cursor** | `cursor/P0-03-angular-node-skeleton` | `web/**`, `services/**` | `signal-angular-workbench`, `signal-angular-ui-style-system`, `signal-nodejs-bff-control-plane`, `signal-zero-leak-canvas-and-dlp`, `signal-verification-and-pr-gate` | Angular 19/20+ Zoneless shell + centralized `@signal/design-system` (tokens + `.sig-*` CSS) & `@signal/ui-kit` (`sig-*` components) boot at `/org/:org_slug/project/:proj_slug` (+ "What's New" feed), lazy route stubs for 22 `web/libs/*`, `bigint` build-time TS contract codegen, ESLint/Stylelint gates (zero inline template/styles, zero unauthorized local `.css`, HTML `<= 150 LOC`, DLP/bigint) active, Node.js 22 stateless services + `@Require*` uniform-`404` + Fail-Closed Audit Outbox stub pass `pnpm lint/typecheck/test` + `contracts/fixtures/` replay! |
 | **`P0-04`** | **Antigravity** | `ag/P0-04-monorepo-build-local-k8s` | `VERSION`, `CHANGELOG.md`, `justfile`, `releases/**`, `.github/workflows/**`, `infra/**` | `signal-local-mac-dev`, `signal-release-deploy-topology`, `signal-security-isolation-audit` | `just dev` (`dev:lite` `< 1.5 GB RAM`) and `just dev-k8s` (3-tier Umbrella Helm Chart: separate `signal-web` pod, HA `signal-api` + Envoy `signal-engine-bridge`, `1–4` extensible Rust engine nodes) boot cleanly; `just release-preview` generates valid Release Notes & `compatibility.json`; `local-git-mock` + DevKMS + Mock SFTP + Ollama/MLX/`deterministic_mock` health checks green! |
 
 ---

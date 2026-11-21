@@ -240,10 +240,10 @@ signal/
 │   └── rag-service/           # 3-Tier Sharded Hybrid RAG + Bulk-Mirrored/Chaff-Padded supply-chain & carbon
 ├── web/                       # Angular 19+ Web Platform (Tier 1 Separate Web Pod: signal-web)
 │   ├── apps/signal-web/       # Main IDE shell, Omni-Palette, Radial Menu, Multi-Monitor, What's New & 120 FPS HUD
-│   └── libs/                  # Core + Extended Workbenches (schematic, pcb, ic, sim-viewer, code-ide, specs,
-│                              #   visual-diff, review, admin, magnetics, power-studio, emc-lab, safety-wcca,
-│                              #   fpga-studio, harness-3d, dfm-panel, library-studio, bringup-lab, academy,
-│                              #   mcad-studio, cam-print, plm-ops)
+│   └── libs/                  # Centralized UI Ecosystem (design-system, ui-kit, workspace-bus) + 22 Lazy Workbenches
+│                              #   (schematic, pcb, ic, sim-viewer, code-ide, specs, visual-diff, review, admin,
+│                              #   magnetics, power-studio, emc-lab, safety-wcca, fpga-studio, harness-3d, dfm-panel,
+│                              #   library-studio, bringup-lab, academy, mcad-studio, cam-print, plm-ops)
 ├── benchmarks/                # Continuous NGSPICE parity, Sky130 DRC/LVS, IPC-2581 & SignalBench-AI suites
 ├── infra/                     # Default Monorepo Build/Deploy/Local Infra (20-*)
 │   ├── docker/                # Multi-arch (amd64/arm64) Dockerfiles (web, api, engine-bridge, rust-pod, operator, ai)
