@@ -1,6 +1,7 @@
 # 07 — Zero-Trust Security, Encryption, DLP & Authorized SFTP
 
-> **Scope:** Defines Signal's end-to-end IP protection architecture—ensuring **zero local copies of design files**, **full encryption at rest and in transit**, **no export / no print / anti-screenshot controls**, and **2FA-mandatory Authorized SFTP** as the sole permitted channel to share or release design deliverables.
+> **Scope:** Defines Signal's end-to-end IP protection architecture—ensuring **zero local copies of design files**, **full encryption at rest and in transit**, **no export / no print / anti-screenshot controls**, and **2FA-mandatory Authorized SFTP** as the sole permitted channel to share or release design deliverables.  
+> **Companion Spec:** For full OWASP ASVS L3 Application Security, MicroVM/eBPF/RLS **Complete Project Isolation**, anti-SSRF, AI prompt-injection defense, and CI security gates, see [`15-application-security-and-project-isolation.md`](./15-application-security-and-project-isolation.md).
 
 ---
 

@@ -27,6 +27,7 @@ Start with the **[Master Architecture Index](./architecture/README.md)**, or jum
 | 12 | [Multi-AI-IDE Parallel Collaboration Protocol](./architecture/12-multi-ide-collaboration.md) | Deadlock-free workflow for Antigravity + Cursor working in parallel via worktrees, lanes & contracts |
 | 13 | [Version Control: BYO-Git (GitHub, GitLab & Bitbucket), Multi-Repo Projects & Security Auditor](./architecture/13-vcs-git-server-and-storage-analysis.md) | Unified `GitProviderAdapter`, 1 Project → `<project>-meta` + `<project>-<type>` repos, Org/Repo user gating, `ENCRYPTED_VAULT` & periodic security auditor |
 | 14 | [Universal Scale, Global Accessibility & Future Expandability](./architecture/14-universal-scale-accessibility-and-expandability.md) | Zero-floor/infinite-ceiling design: kid's hobby project in developing nations to 100B-transistor GPU/ASIC & future multi-physics plugins |
+| 15 | [Application Security & Complete Project Isolation](./architecture/15-application-security-and-project-isolation.md) | 7-ring OWASP ASVS L3 AppSec, "1 Project = 1 Security Cell" (MicroVM/gVisor, Cilium eBPF, PostgreSQL RLS, per-project KMS DEK/SPIFFE SVID, WASM sandbox, AI prompt-injection defense & SDLC gates) |
 
 ## Parallel AI Development (Antigravity + Cursor)
 

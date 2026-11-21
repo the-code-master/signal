@@ -123,6 +123,8 @@ Read in sequence for a top-down understanding, or jump to your assigned implemen
     Single unified **Customer-Owned BYO-Git** architecture supporting **GitHub**, **GitLab**, and **Bitbucket** via `GitProviderAdapter`—mapping **1 Project → `<project>-meta` + neatly prefixed `<project>-<type>` repos**, provider Org/Repo user authorization + Admin Access Review, RAM-only multi-repo `gitoxide`/`jj-lib` sync, `ENCRYPTED_VAULT` mode, Git LFS / BYO-S3, and the **Periodic Multi-Provider Security Auditor**.
 14. **[`14-universal-scale-accessibility-and-expandability.md`](./14-universal-scale-accessibility-and-expandability.md)**  
     "Zero-Floor, Infinite-Ceiling" architecture spanning developing-nation student/hobbyist accessibility (`Explorer` / `Maker` modes, low-bandwidth transport, multilingual AI Tutor, Open Silicon) up to 100B-transistor GPU/ASIC multi-pod federation and future multi-physics plugins (Photonics, Quantum, MEMS).
+15. **[`15-application-security-and-project-isolation.md`](./15-application-security-and-project-isolation.md)**  
+    Dedicated **Application Security (OWASP ASVS L3)** and **Complete Project Isolation ("1 Project = 1 Isolated Security Cell")** blueprint covering browser/API AppSec, PostgreSQL RLS, per-project KMS DEKs & SPIFFE SVIDs, Kata/gVisor MicroVMs, Cilium eBPF default-deny, anti-SSRF, WASM/parser sandboxing, OWASP LLM prompt-injection defense, Falco/Tetragon runtime monitoring, and CI isolation tests.
 
 ---
 

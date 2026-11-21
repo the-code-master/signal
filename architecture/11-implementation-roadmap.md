@@ -84,13 +84,14 @@ flowchart LR
   - Elastic K8s CPU/GPU Burst Worker pool + **Multi-Physics WASM/Rust Domain Plugin SDK** (foundation for future Photonics, Quantum/Cryo-CMOS, and MEMS modules).
 - **Exit Criteria:** Open-source PDK (SkyWater 130nm / GF180) analog/digital IC block passes Schematic → Post-Layout PEX SPICE → DRC/LVS Clean → SFTP GDSII delivery; multi-block hierarchical SoC mounts across federated Project Pods from separate Enterprise Git IP repos; embedded firmware toggles a virtual GPIO and drives a simulated Rust buck/motor stage live in the browser.
 
-### Phase 6 — Enterprise Hardening, Scale Benchmarking & General Availability
+### Phase 6 — Enterprise Hardening, Complete Project Isolation Verification & General Availability
 - **Deliverables:**
-  - Enterprise BYOK/HYOK KMS, Kata/gVisor microVM pod sandboxing, SAML/OIDC/SCIM enterprise IdP certification.
-  - External penetration testing (red-teaming DLP, pod escape, multi-tenant isolation, SFTP egress, prompt-injection safety).
+  - Enterprise BYOK/HYOK KMS, **Kata/Firecracker MicroVM & gVisor** pod sandboxing, Cilium eBPF zero-lateral-movement policies, **PostgreSQL RLS** enforcement, **SPIFFE/SPIRE** per-project SVIDs, anti-SSRF egress proxy, and **Falco/Tetragon** eBPF runtime quarantine.
+  - SAML/OIDC/SCIM enterprise IdP certification + SLSA Level 3 Cosign signed builds + Kyverno admission gates.
+  - Automated **Cross-Project Isolation & OWASP ASVS L3/LLM Red-Team Test Suite** + external penetration testing (MicroVM escape, BOLA/IDOR, RLS leakage, DLP/watermark bypass, AI prompt injection, SFTP/SSRF).
   - Large-scale performance benchmarks (50,000-net PCB, multi-million-polygon IC block, 25 concurrent collaborators on one Project Pod).
-  - SOC 2 Type II, ISO 27001, and ITAR-ready deployment blueprints.
-- **Exit Criteria:** Zero critical/high pen-test findings, SLA benchmarks met under load testing, production multi-region readiness complete.
+  - SOC 2 Type II, ISO 27001, TISAX, and ITAR-ready deployment blueprints.
+- **Exit Criteria:** Zero critical/high pen-test findings, 100% pass rate on automated cross-project isolation tests, SLA benchmarks met under load testing, production multi-region readiness complete.
 
 ---
 

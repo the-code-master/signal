@@ -8,7 +8,7 @@ alwaysApply: true
 You are **Cursor**, collaborating in parallel with **Antigravity** on **Signal** (by **Signal Design, Inc.**), a cloud-native, AI-Agent-First EDA platform (Pure Rust core engine in Kubernetes + Node.js BFF + Angular 19+ web IDE).
 
 ## 1. Canonical Source of Truth & Phase Gate
-- Treat `AGENTS.md` and `architecture/README.md` as the **single source of truth**. Read `AGENTS.md` in full before starting major work and consult the matching `architecture/01..14-*.md` spec for your task domain.
+- Treat `AGENTS.md` and `architecture/README.md` as the **single source of truth**. Read `AGENTS.md` in full before starting major work and consult the matching `architecture/01..15-*.md` spec for your task domain.
 - **Phase Gate:** Check `AGENTS.md` Section 1 and `coordination/TASK_BOARD.md`. Do **not** write production application code while in Architecture & Planning phase unless the user explicitly initiates Phase 0.
 
 ## 2. Mandatory Session-Start Ritual
@@ -24,6 +24,7 @@ You are **Cursor**, collaborating in parallel with **Antigravity** on **Signal**
 - **Migrations & Rebase:** Name DB migrations `YYYYMMDDHHMMSS_cursor_<slug>.sql` (never sequential integers). Rebase onto `origin/main` before pushing/merging.
 
 ## 4. Non-Negotiable Product & Security Invariants
+- **Complete Project Isolation ("1 Project = 1 Security Cell") & AppSec (`architecture/15-*`):** Enforce PostgreSQL RLS (`NOBYPASSRLS`), fail-closed BOLA/IDOR auth decorators on every route, anti-SSRF IP pinning on self-hosted Git/SFTP hosts, Angular Trusted Types + CSP nonces (never `bypassSecurityTrust*`), zero `eval`/`child_process.exec`, per-project KMS DEK & SPIFFE SVID, Kata/gVisor pod isolation, Cilium eBPF default-deny, and zero privilege escalation for AI agents.
 - **Rust owns physics, geometry & multi-repo pod Git sync (`ElectronicModule`, `signal-git-sync`):** Never implement SPICE, circuit math, DRC/LVS/PEX, routing, or Gerber/GDSII generation in Node.js or Angular.
 - **Multi-Repo BYO-Git (GitHub / GitLab / Bitbucket) & Periodic Security Auditor:** Under the customer's connected GitHub Org, GitLab Group, or Bitbucket Workspace/Project (`GitProviderAdapter`, 2FA-gated token/App in Vault/HSM), 1 Signal Project provisions `<project>-meta` + **1 neatly prefixed repository per added Project Type** (`<project>-prd`, `<project>-schematic`, `<project>-pcb`, `<project>-ic-*`, `<project>-firmware`, `<project>-bios`, etc.). Default Enterprise repos to `ENCRYPTED_VAULT` (AES-256-GCM before push so local `git clone` yields ciphertext). Signal stores ZERO permanent customer design files and runs periodic `services/vcs-auditor` scans across all three providers.
 - **Provider Org/Repo User Auth & Admin Access Review:** Authenticate users via GitHub/GitLab/Bitbucket OAuth/OIDC (`provider_user_id`) and allow viewing/editing a Project or Sub-Project **ONLY** if listed in the provider's Org and specific `<project>-*` repo user list (with instant pod eviction on removal). Always expose the full live access roster for review by both **Organization Admins** and **Project Admins**.
