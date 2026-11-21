@@ -13,13 +13,13 @@ Governing rules: `AGENTS.md` Section 7 | `architecture/12-multi-ide-collaboratio
    git fetch origin --prune && git rebase origin/main
    ```
 2. Inspect `git status -sb` and `git diff --stat`:
-   - Confirm ONLY declared `touched_paths` (plus your own `coordination/agents/<agent>.md`) changed.
-   - Confirm ZERO edits to the peer agent's journal, ZERO committed generated stubs, ZERO `.DS_Store` or stray temp artifacts, and ZERO secret values.
+   - Confirm ONLY declared `touched_paths` (plus your own `coordination/agents/<agent>.md` and your own single-writer `plan/TODO-LEDGER-*.md`) changed.
+   - Confirm ZERO edits to the peer agent's journal or peer `plan/TODO-LEDGER-*.md`, ZERO committed generated stubs, ZERO `.DS_Store` or stray temp artifacts, and ZERO secret values.
 
 ## 2. Domain Verification Gates (Run `./signal.sh check --changed` or Applicable Checks)
 - **Unified CI/Local Gate (`signal.sh` + `scripts/**`):**
   - Prefer `./signal.sh check --changed` (runs identical checks locally and in CI). When editing `signal.sh` or `scripts/**`, verify `bash -n signal.sh`, `uv run ruff check scripts/`, `uv run pyright scripts/`, `uv run bandit -r scripts/ -ll`, `uv run pytest scripts/tests/ -q`, zero third-party bootstrap imports in `scripts/`, and thin `.github/workflows/*.yml` delegation only.
-- **Planning / Docs / Rules Changes:**
+- **Planning / Docs / Rules Changes (`architecture/**`, `plan/**`, `docs/**`):**
   - Verify UTF-8 + LF endings, valid relative links & anchors, balanced code fences, exact GFM table column counts (escape any literal `|` inside table cells), valid Mermaid syntax (no HTML tags, balanced `subgraph`/`end`, quoted parens), escaped prose `\$`, and `git fsck --full`.
 - **Contracts (`contracts/**`):**
   - `buf lint`, `buf breaking --against '.git#branch=main'`, OpenAPI 3.1 / JSON-Schema validation (zero drift against FastAPI), Rust↔Python↔TS `bigint` fixture round-trip & `contracts/transcripts/*.jsonl` replay.
@@ -36,6 +36,7 @@ Governing rules: `AGENTS.md` Section 7 | `architecture/12-multi-ide-collaboratio
   - `uv run bandit -r services/ ai/ -ll && uv run pip-audit --strict`
   - Verify startup route-auth introspection gate (`Depends(require_*)` + uniform `404`), PostgreSQL `19+` `with_rls_tx` (`NOBYPASSRLS`), Fail-Closed 3x Quorum Audit Outbox, zero `eval`/`exec`/`pickle`/`shell=True`, and zero `/export`/`/download`/`/print` routes.
 
-## 3. Anti-Hallucination Verification & 2–3 Sentence Reporting
-- **Observed Ground Truth Only:** Never report a check as passing unless you executed it after your final edit and observed exit code `0`; report exact failing command output or `"Unverified — <reason>"` if skipped.
-- **2–3 Sentence Dev Summary:** After completing a coding fix/PR gate, respond to the user in **2–3 sentences max** (`Issue -> Fix -> Verification command & result`), updating ONLY your own journal (`coordination/agents/antigravity.md` OR `coordination/agents/cursor.md`) and committing with a clean Conventional Commit (`docs:`, `contract:`, `feat:`, `fix:`, `refactor:`, `chore:`).
+## 3. Anti-Hallucination Verification, TODO Ledger Tick & 2–3 Sentence Reporting
+- **Observed Ground Truth Only:** Never report a check as passing or tick a TODO box unless you executed verification after your final edit and observed exit code `0`; report exact failing command output or `"Unverified — <reason>"` if skipped.
+- **Tick Single-Writer TODO Ledger & Journal:** Upon exit `0`, tick `- [x] **<Task-ID>** (Done: YYYY-MM-DD | Commit: <sha>)` in ONLY your lane's ledger (`plan/TODO-LEDGER-ANTIGRAVITY-LANE-A.md`, `plan/TODO-LEDGER-CURSOR-LANE-B.md`, or `plan/TODO-LEDGER-SHARED-CONTRACTS.md`) and update your own journal (`coordination/agents/antigravity.md` OR `coordination/agents/cursor.md`).
+- **2–3 Sentence Dev Summary:** Respond to the user in **2–3 sentences max** (`Issue -> Fix -> Verification command & result`), and commit with a clean Conventional Commit (`docs:`, `contract:`, `feat:`, `fix:`, `refactor:`, `chore:`).

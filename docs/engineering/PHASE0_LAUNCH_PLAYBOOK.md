@@ -6,12 +6,13 @@
 
 ## 1. Pre-Flight Readiness Checklist (Before Lifting Phase-0 Gate)
 
-Confirm all 5 readiness items before the user gives the `"Start Phase 0"` green light:
+Confirm all 6 readiness items before the user gives the `"Start Phase 0"` green light:
 - [x] All 21 architecture specifications (`01`–`21` + `README.md`) verified with `0` audit or link issues.
 - [x] `AGENTS.md` kept concise (`< 12 KB`, zero truncation) and synchronized with `.cursor/rules/*.mdc` (`< 4 KB`).
 - [x] All 19 cross-IDE Agent Skills published under `.agents/skills/*/SKILL.md` (natively discovered by both Antigravity & Cursor).
+- [x] Complete 9-Phase Modular Execution Plan (`plan/phase-0..8-*.md`), 100% Feature Traceability Matrix ([`plan/00-FEATURE-TRACEABILITY-MATRIX.md`](../../plan/00-FEATURE-TRACEABILITY-MATRIX.md)), and 3 Single-Writer Tickable TODO Ledgers ([`plan/README.md`](../../plan/README.md)) verified.
 - [x] Local Mac repo synced: `git -C ~/Developer/signal pull --rebase origin main`.
-- [ ] **Explicit User Approval:** User explicitly approves starting Phase 0 (`P0-01`).
+- [ ] **Explicit User Approval:** User explicitly approves starting Phase 0 (`P0-01` / `C-P0-01`).
 
 ---
 

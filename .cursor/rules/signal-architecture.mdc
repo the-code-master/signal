@@ -8,10 +8,10 @@ alwaysApply: true
 **Signal** (Signal Design, Inc.): **Rust `1.100+`** EDA/CAD/CAM engine (K8s `1.37+`) + **Python `3.15+` FastAPI** (`Granian`/`Pydantic v2`) Control Plane + **Angular `v22+` ONLY** Zoneless UI (**Node `26 LTS+`** Tier 1 edge).
 
 ## 1. Sources of Truth & Phase Gate
-- **Rules & Docs:** [`AGENTS.md`](../../AGENTS.md) | `architecture/01..21-*.md` | `docs/engineering/*.md` | `.agents/skills/*/SKILL.md`.
-- **Phase Gate:** Check `AGENTS.md` §1 & `coordination/TASK_BOARD.md`. Never write production code (`engine/`, `services/`, `web/`, `ai/`, `contracts/`, `infra/`) before explicit Phase 0 user approval.
-- **Session Start:** Run `git fetch origin --prune`, read `TASK_BOARD.md`, peer journal (`coordination/agents/antigravity.md` read-only for Cursor), & `coordination/handoffs/`. Branch `cursor/*` or `contract/*` with zero `touched_paths` overlap.
-- **Single-Writer Journals:** Cursor edits ONLY `coordination/agents/cursor.md`; Antigravity edits ONLY `coordination/agents/antigravity.md`.
+- **Rules & Plans:** [`AGENTS.md`](../../AGENTS.md) | [`plan/README.md`](../../plan/README.md) (`phase-0..8`) | `architecture/01..21-*.md` | `docs/engineering/*.md` | `.agents/skills/*/SKILL.md`.
+- **Phase Gate:** Check `AGENTS.md` §1 & `TASK_BOARD.md`. Never write production code (`engine/`, `services/`, `web/`, `ai/`, `contracts/`, `infra/`) before explicit Phase 0 approval.
+- **Session Start:** Run `git fetch origin --prune`, read `plan/README.md`, `TASK_BOARD.md`, peer journal/ledger read-only, & `coordination/handoffs/`. Branch `cursor/*` or `contract/*` with zero `touched_paths` overlap.
+- **Single-Writer Journals & Ledgers:** Cursor edits ONLY `coordination/agents/cursor.md` & `plan/TODO-LEDGER-CURSOR-LANE-B.md`; Antigravity edits ONLY `antigravity.md` & `plan/TODO-LEDGER-ANTIGRAVITY-LANE-A.md` (`TODO-LEDGER-SHARED-CONTRACTS.md` in `contract/*` PRs).
 
 ## 2. Hard Red-Line Invariants (PR Rejection If Violated)
 1. **1 Project = 1 Cell & 3-Tier K8s (`20-*`):** Separate `signal-web` (`pool-web`, Angular `v22+` + Node `26 LTS+`), HA FastAPI `signal-api` + Envoy `signal-engine-bridge` (`pool-api`), & `1–4 -> N` `pool-rust-engine` nodes (Rust `1.100+` `signal-cell-wasm` or Kata/`CONFIDENTIAL_SILICON` + Exclusive `H100 CC`/`B200 TEE-I/O` MIG); Postgres `19+` RLS (`NOBYPASSRLS`), Hybrid PQC DEK/SVID, Cilium 100% lateral drop, uniform `404`, epoch-fenced Rust `signal-egress-proxy`.

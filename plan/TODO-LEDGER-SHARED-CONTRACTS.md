@@ -1,0 +1,56 @@
+# Signal — Single-Writer TODO Ledger: Serialized Contract Freeze (`C-P0` – `C-P8`)
+
+> **Single-Writer Rule:** Ticked (`- [ ]` → `- [x]`) **ONLY inside serialized `contract/*` PRs** touching `contracts/**` (merged to `main` at the start of each phase before parallel `AG-*` and `CU-*` waves begin).  
+> **Tick Rule:** NEVER tick a box unless `./signal.sh check --target contracts` (or `buf lint && buf breaking`) exits with code `0`. Append `(Done: YYYY-MM-DD | Commit: <sha>)` when ticking.
+
+---
+
+## Phase 0 — Core SI-Unit `bigint` Contracts, OpenAPI 3.1, Schemas & Transcripts ([`phase-0`](./phase-0-foundation-contracts-and-cicd.md))
+- [ ] **`C-P0-01`** | **Branch:** `contract/C-P0-01-core-protobufs` | **Paths:** `contracts/buf.yaml`, `contracts/buf.gen.yaml`, `contracts/proto/signal/v1/**` | **Skills:** `signal-contract-first` | **Deliverable:** Buf workspace + 12 foundational `.proto` packages with explicit SI suffixes (`_nm`, `_ps`, `_fs`, `_uv`, `_na`, `_hz`) & `[jstype = JS_STRING]` on 100% of 64-bit integer fields (`F-101`, `F-104`, `F-107`, `F-109`, `F-144`) | **Verify:** `buf lint && buf format -d --exit-code`
+- [ ] **`C-P0-02`** | **Branch:** `contract/C-P0-02-openapi-and-schemas` | **Paths:** `contracts/openapi/**`, `contracts/schemas/**` | **Skills:** `signal-contract-first`, `signal-security-isolation-audit` | **Deliverable:** `control-plane.v1.yaml` (URL-scoped `/org/:org_slug`, `Idempotency-Key`, uniform `404`, zero `/export` or `/download` routes, `F-084`, `F-097`, `F-102`) + 11 core JSON Schemas (`Draft 2020-12`) | **Verify:** `./signal.sh check --target contracts`
+- [ ] **`C-P0-03`** | **Branch:** `contract/C-P0-03-fixtures-and-transcripts` | **Paths:** `contracts/fixtures/**`, `contracts/transcripts/**` | **Skills:** `signal-contract-first` | **Deliverable:** Golden `> 2^53 - 1` `bigint` cross-language fixtures (`contracts/fixtures/*.json`, `F-144`) + stateful handshake transcript (`contracts/transcripts/session_hydrate_and_edit.jsonl`, `F-145`) | **Verify:** `./signal.sh check --target contracts`
+
+---
+
+## Phase 1 — Schematic, Design Graph, `HudOverlayPrimitive`, SPICE & Arrow Waveform Contracts ([`phase-1`](./phase-1-rust-spice-core-and-schematic-ide.md))
+- [ ] **`C-P1-01`** | **Branch:** `contract/C-P1-01-schematic-and-hud-protos` | **Paths:** `contracts/proto/signal/v1/{design_graph,render_stream,component}.proto`, `contracts/fixtures/schematic_*.json` | **Skills:** `signal-contract-first` | **Deliverable:** Complete RPCs & `bigint` messages for `FEAT-001`–`FEAT-010`, `FEAT-091`–`FEAT-093`, `FEAT-099`, `FEAT-100`, `HudOverlayPrimitive`, and Dual-Plane `Zstd-QOI`/WebP + `HEVC 4:4:4`/Dual-Luma negotiation (`F-126`) | **Verify:** `./signal.sh check --target contracts`
+- [ ] **`C-P1-02`** | **Branch:** `contract/C-P1-02-spice-and-waveform-protos` | **Paths:** `contracts/proto/signal/v1/simulation.proto`, `contracts/fixtures/simulation_*.json`, `contracts/transcripts/spice_buck_converter.jsonl` | **Skills:** `signal-contract-first` | **Deliverable:** DC/AC/Transient/Noise/PSS/HB/Monte-Carlo, Filippov Saltation Adjoint (`I-01`), `<= 1 MB` Apache Arrow IPC chunks, and `FEAT-081`–`FEAT-086`, `FEAT-090`, `FEAT-113`, `FEAT-114` contracts | **Verify:** `./signal.sh check --target contracts`
+
+---
+
+## Phase 2 — BYO-Git, Dual-Fenced `Super-Commit`, K8s Leases & Universal Parts (`18-*`) Contracts ([`phase-2`](./phase-2-k8s-cells-byo-git-parts-and-identity.md))
+- [ ] **`C-P2-01`** | **Branch:** `contract/C-P2-01-vcs-and-session-protos` | **Paths:** `contracts/proto/signal/v1/{vcs_sync,session}.proto`, `contracts/schemas/super-commit-manifest.schema.json`, `contracts/transcripts/super_commit_and_fencing.jsonl` | **Skills:** `signal-contract-first`, `signal-byo-git-and-vault` | **Deliverable:** `GitProviderAdapter`, `provider_repo_id`, Padmé `.signal/vault.merkle.sig`, Dual-Fenced 2PC `Super-Commit` (`I-12`), and `FEAT-094`, `FEAT-097`, `FEAT-098`, `FEAT-111`, `FEAT-119` contracts | **Verify:** `./signal.sh check --target contracts`
+- [ ] **`C-P2-02`** | **Branch:** `contract/C-P2-02-universal-parts-protos` | **Paths:** `contracts/proto/signal/v1/universal_parts.proto`, `contracts/schemas/universal-part-manifest.schema.json`, `contracts/fixtures/universal_part_*.json` | **Skills:** `signal-contract-first`, `signal-universal-parts-registry` | **Deliverable:** `UniversalComponentRevision`, `MasterPinRecord`, IEEE/IEC `SymbolGraphicAst`, `PadstackDef`, `FootprintPackageModel`, 5-Gate `PartVerificationReport`, `ProjectPartsLockfile`, and `FEAT-071`–`FEAT-077`, `FEAT-079` contracts | **Verify:** `./signal.sh check --target contracts`
+
+---
+
+## Phase 3 — AI Agents, Quarantine, Hybrid RAG, Formal (`I-03`), Surrogate (`I-02`) & Legacy Import (`I-10`) Contracts ([`phase-3`](./phase-3-ai-agents-quarantine-and-hybrid-rag.md))
+- [ ] **`C-P3-01`** | **Branch:** `contract/C-P3-01-ai-rag-formal-import-protos` | **Paths:** `contracts/proto/signal/v1/**`, `contracts/schemas/datasheet-record.schema.json`, `contracts/fixtures/ai_rag_*.json` | **Skills:** `signal-contract-first`, `signal-ai-neuro-symbolic-rag` | **Deliverable:** `ConditionCurveSet` (`C(V,T,f)`, `L(I,T)`, copper $R_{\theta JA}`), `ProofBundle`, `FormalEquivalenceReport` (`I-03`), `ParetoCandidate`, `CleanRoomImportReport` (`I-10`), and `FEAT-078`, `FEAT-101`–`FEAT-110` contracts | **Verify:** `./signal.sh check --target contracts`
+
+---
+
+## Phase 4 — High-Speed PCB, 3D EM (`I-04`), Magnetics, Power, EMC, Safety, Aging (`I-05`), DFM & 2FA SFTP Contracts ([`phase-4`](./phase-4-pcb-224g-si-pi-power-emc-and-sftp.md))
+- [ ] **`C-P4-01`** | **Branch:** `contract/C-P4-01-pcb-em-power-emc-protos` | **Paths:** `contracts/proto/signal/v1/**`, `contracts/schemas/fab-capability-profile.schema.json` | **Skills:** `signal-contract-first` | **Deliverable:** High-speed PCB, 224G 3D EM (`I-04`), Magnetics, Power Integrity, EMC, Functional Safety, 15-Yr Aging (`I-05`), `fab-capability-profile.schema.json` (`F-135`), and `FEAT-011`–`FEAT-040`, `FEAT-087`, `FEAT-089`, `FEAT-095`, `FEAT-096` contracts | **Verify:** `./signal.sh check --target contracts`
+- [ ] **`C-P4-02`** | **Branch:** `contract/C-P4-02-dfm-and-sftp-protos` | **Paths:** `contracts/proto/signal/v1/sftp_release.proto`, `contracts/schemas/sftp-release-manifest.schema.json`, `contracts/transcripts/sftp_stepup_2fa_release.jsonl` | **Skills:** `signal-contract-first`, `signal-security-isolation-audit` | **Deliverable:** `sftp_release.proto`, `sftp-release-manifest.schema.json`, Zero-Leak Constellation watermark metadata, and `FEAT-063`–`FEAT-069`, `FEAT-080` contracts | **Verify:** `./signal.sh check --target contracts`
+
+---
+
+## Phase 5 — Mechanical CAD (`CAD_MCAD`), Harness 3D, CNC (`CAM_CNC`), 3D Printing (`PRINT_3D`) & PLM/Ops (`PLM_OPS`) Contracts ([`phase-5`](./phase-5-cad-cam-3d-printing-and-plm-ops.md))
+- [ ] **`C-P5-01`** | **Branch:** `contract/C-P5-01-mcad-cam-print-protos` | **Paths:** `contracts/proto/signal/v1/mcad_cam_print.proto`, `contracts/schemas/mcad-feature-tree.schema.json`, `contracts/fixtures/mcad_cam_*.json` | **Skills:** `signal-contract-first`, `signal-cad-cam-plm-ops` | **Deliverable:** `mcad_cam_print.proto` (`McadFeatureNode`, `EcadMcadAnchor`, `CncOperation`, `Print3dJob`, `SlicingReport`) + `FEAT-020`, `FEAT-061`, `FEAT-062` contracts | **Verify:** `./signal.sh check --target contracts`
+- [ ] **`C-P5-02`** | **Branch:** `contract/C-P5-02-plm-ops-protos` | **Paths:** `contracts/proto/signal/v1/plm_ops.proto`, `contracts/schemas/mbom-structure.schema.json`, `contracts/transcripts/ecn_deviation_sftp_gate.jsonl` | **Skills:** `signal-contract-first`, `signal-cad-cam-plm-ops` | **Deliverable:** `plm_ops.proto` & `mbom-structure.schema.json` (`eBOM`/`mBOM`/`sBOM`, `ECR`/`ECO`/`ECN`, `MCN`, `PCN`, `DeviationWaiver`, `NcrCapaRecord`, `ClearToBuildReport`) | **Verify:** `./signal.sh check --target contracts`
+
+---
+
+## Phase 6 — IC/ASIC, UPF (`I-07`), DFT (`I-08`), Photonics/Cryo, HW Security, FPGA, Co-Sim & Digital Twin (`I-06`) Contracts ([`phase-6`](./phase-6-ic-asic-fpga-firmware-bios-and-twin.md))
+- [ ] **`C-P6-01`** | **Branch:** `contract/C-P6-01-ic-photonics-security-protos` | **Paths:** `contracts/proto/signal/v1/**`, `contracts/schemas/upf-power-intent.schema.json` | **Skills:** `signal-contract-first` | **Deliverable:** IC/ASIC, IEEE 1801 UPF (`I-07`), DFT/Scan/ATPG (`I-08`), signed `*.lef.sig`/`*.halo.gds.sig` (`F-125`), Baseband CPO & 4K Cryo (`F-148`), and `FEAT-041`–`FEAT-050` contracts | **Verify:** `./signal.sh check --target contracts`
+- [ ] **`C-P6-02`** | **Branch:** `contract/C-P6-02-fpga-cosim-twin-protos` | **Paths:** `contracts/proto/signal/v1/**`, `contracts/fixtures/cosim_twin_*.json` | **Skills:** `signal-contract-first` | **Deliverable:** FPGA, Firmware/BIOS Co-Sim, Protocol Decoder, Lab Bench Digital Twin (`I-06`), and `FEAT-051`–`FEAT-060`, `FEAT-070`, `FEAT-088` contracts | **Verify:** `./signal.sh check --target contracts`
+
+---
+
+## Phase 7 — 5-Team Collaboration Space, Project Status Control Tower & Automated Review Engine Contracts ([`phase-7`](./phase-7-collab-space-status-and-auto-reviews.md))
+- [ ] **`C-P7-01`** | **Branch:** `contract/C-P7-01-collab-and-reviews-protos` | **Paths:** `contracts/proto/signal/v1/collab_review.proto`, `contracts/schemas/{project-status-review,collab-channel-policy}.schema.json`, `contracts/transcripts/weekly_and_stage_gate_review.jsonl` | **Skills:** `signal-contract-first`, `signal-collab-and-status-reviews` | **Deliverable:** `collab_review.proto` (`CollabChannelService`, `ProjectStatusService`, `AutomatedReviewService` for Weekly, Monthly Executive & Stage-Gate Reviews, `21-*`, `FEAT-109`) | **Verify:** `./signal.sh check --target contracts`
+
+---
+
+## Phase 8 — Signal Academy, Open-Silicon MPW, WASM Policy-as-Code, FinOps & Campus Edge Contracts ([`phase-8`](./phase-8-academy-finops-compliance-and-ga.md))
+- [ ] **`C-P8-01`** | **Branch:** `contract/C-P8-01-academy-finops-policy-campus-protos` | **Paths:** `contracts/proto/signal/v1/**`, `contracts/fixtures/academy_finops_*.json` | **Skills:** `signal-contract-first` | **Deliverable:** Academy LTI 1.3 Auto-Grader (`FEAT-112`), Open-Silicon MPW Shuttle (`FEAT-115`), FinOps Metering (`FEAT-116`), Signed WASM Policy/Plugin SDK (`FEAT-117`), Portfolio Blast-Radius (`FEAT-118`), and `Signal Campus Edge` (`FEAT-120`) contracts | **Verify:** `./signal.sh check --target contracts`

@@ -42,7 +42,9 @@ flowchart TB
 5. **[`FASTAPI_ENGINEERING_GUIDE.md`](./FASTAPI_ENGINEERING_GUIDE.md)**  
    **Python `3.15+` + FastAPI (`0.165+`) + Rust-powered Granian (`2.8+`) + Pydantic v2 (`2.14+`)** Control-Plane API architecture (`services/`, unified `uv` workspace with `ai/`), strict 4-layer layout, fail-closed `Depends(require_*)` + startup route-auth introspection gate, uniform `404`, PostgreSQL `19+` `with_rls_tx` (`NOBYPASSRLS`), 3x Quorum Audit Outbox, optional `PyO3` Rust hotspot bridge, and `ruff`/`pyright`/`pytest`/`bandit`/`pip-audit` gates.
 6. **[`PHASE0_LAUNCH_PLAYBOOK.md`](./PHASE0_LAUNCH_PLAYBOOK.md)**  
-   Exact step-by-step execution runbook to transition from Architecture into Phase 0 coding (`P0-01` serialized contract freeze → parallel `P0-02` Antigravity Rust `1.100+` + `P0-03` Cursor Angular `v22+` / Python `3.15+` FastAPI + `P0-04` Monorepo Build, Release & 3-Tier Local/K8s `1.37+` Harness).
+   Exact step-by-step execution runbook to transition from Architecture into Phase 0 coding (`P0-01` serialized contract freeze → parallel `P0-02` Antigravity Rust `1.100+` + `P0-03` Cursor Angular `v22+` / Python `3.15+` FastAPI + `P0-04` Unified `./signal.sh` CI/CD CLI & 3-Tier Local/K8s `1.37+` Harness).
+7. **[`../../plan/README.md`](../../plan/README.md) — 9-Phase Modular Execution Plan & Single-Writer Tickable TODO Ledgers (`plan/`)**  
+   Splits the entire platform into 9 phase plans (`phase-0`–`phase-8`), a 100% Zero-Miss Feature Traceability Matrix ([`00-FEATURE-TRACEABILITY-MATRIX.md`](../../plan/00-FEATURE-TRACEABILITY-MATRIX.md)), and 3 single-writer tickable TODO ledgers ([`TODO-LEDGER-SHARED-CONTRACTS.md`](../../plan/TODO-LEDGER-SHARED-CONTRACTS.md), [`TODO-LEDGER-ANTIGRAVITY-LANE-A.md`](../../plan/TODO-LEDGER-ANTIGRAVITY-LANE-A.md), [`TODO-LEDGER-CURSOR-LANE-B.md`](../../plan/TODO-LEDGER-CURSOR-LANE-B.md)) covering `108` disjoint micro-tasks.
 
 ---
 
