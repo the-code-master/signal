@@ -27,6 +27,8 @@ contracts/
 │   ├── magnetics_power.proto  # Planar/bobbin iGSE magnetics, PDN Z_target, 3D creepage, hot-loop, BMS/FOC
 │   ├── emc_safety.proto       # CISPR/FCC emissions, ESD/surge, ISO 26262 FMEDA/WCCA, Rad-Hard SEU, Derating
 │   ├── dfm_harness.proto      # Multi-board 3D mate, rigid-flex bend, 1:1 nailboard, panels, fatigue, should-cost
+│   ├── mcad_cam_print.proto   # Parametric B-Rep CAD, sheet-metal, CNC CAM toolpaths & direct-B-Rep 3D slicing
+│   ├── plm_ops.proto          # Multi-view eBOM/mBOM/sBOM, ECO/ECN, MCN, PCN, Deviations, NCR/CAPA & CTB
 │   ├── fpga_firmware.proto    # FPGA SLR/SSO floorplan, SAT pinmux, protocol decoders, battery energy & DSP/FSM
 │   ├── hw_security.proto      # DPA/TVLA side-channel leakage, laser fault-injection & RTL GLIFT Trojan audits
 │   ├── digital_twin.proto     # Lab oscilloscope / VNA / ATE Shmoo measurement ingestion & board-map bring-up
@@ -35,9 +37,9 @@ contracts/
 │   ├── render_stream.proto    # Dual-Plane Zstd-QOI/WebP dirty tiles, HudOverlayPrimitive, 6-DOF & Constellation
 │   ├── agent_tools.proto      # RBAC-scoped Neuro-Symbolic AI tools, Pareto explorer, Red-Team & NL rule compiler
 │   ├── academy_campus.proto   # Breadboard twin, deterministic lab grader, TinyTapeout wizard & Campus Edge sync
-│   └── sftp_release.proto     # Fail-closed PQC-signed RAM-to-SFTP manufacturing/regulatory/MCAD/nailboard release
+│   └── sftp_release.proto     # Fail-closed PQC-signed RAM-to-SFTP fab/CNC/3D-print/ECN/MCN/turnkey CM release
 ├── openapi/
-│   └── control-plane.v1.yaml  # URL-scoped (/org/:slug) Auth, Access Review, BYO-Git, Parts/AVL, FinOps & SFTP
+│   └── control-plane.v1.yaml  # URL-scoped (/org/:slug) Auth, Access Review, BYO-Git, Parts/AVL, PLM-Ops & SFTP
 ├── schemas/
 │   ├── datasheet-record.schema.json
 │   ├── universal-part-manifest.schema.json
@@ -48,7 +50,14 @@ contracts/
 │   ├── parts-lockfile.schema.json
 │   ├── project-template.schema.json
 │   ├── fab-capability-profile.schema.json
+│   ├── mcad-feature-tree.schema.json
+│   ├── cam-print-job.schema.json
+│   ├── mbom-structure.schema.json
 │   ├── ecn-change-order.schema.json
+│   ├── mcn-change-notice.schema.json
+│   ├── pcn-triage.schema.json
+│   ├── deviation-waiver.schema.json
+│   ├── ncr-capa.schema.json
 │   ├── upf-power-intent.schema.json
 │   ├── winding-magnetics.schema.json
 │   ├── emc-safety-policy.schema.json
@@ -112,6 +121,8 @@ Every passive, active, IC, RF, optical, cryo-quantum, digital, and hierarchical 
   - `DfmHarnessService`: `CheckMultiBoardClearance`, `EvaluateRigidFlexBend`, `GenerateHarnessNailboard`, `ComposeFabPanel`, `RunDfaAndSolderFatigue`, `EstimateLiveShouldCost`, `ComputeIctTestCoverage`, `GenerateIpc7351FootprintStep`.
   - `FpgaSecurityService`: `ValidateFpgaFloorplanAndSso`, `SolveSatPinmux`, `DecodeBusProtocolStream`, `ProfileFirmwareBatteryLife`, `SynthesizeFsmOrDsp`, `AuditHwSideChannelAndIft`, `GradeAcademyLab`.
   - `UniversalPartsService` (`18-*`): `ResolveUniversalPart` (3-Tier Global + Org AVL + Project Lockfile), `AdaptPadstackToFabProfile`, `VerifyMasterPinBijection`, `VerifyThreeWayStepPadAlignment`, `ComputePartRevisionDiff`, `PinPartInLockfile`.
+  - `McadCamPrintService` (`19-*`): `SolveSketchConstraints`, `EvaluateBRepFeatureTree`, `UnfoldSheetMetal`, `SyncEcadMcadAnchors`, `GenerateCncToolpathAndSim`, `SliceBRepFor3dPrint`, `StreamUnified3dScene`.
+  - `PlmOpsService` (`19-*`): `CompileMultiViewBom` (`eBOM`/`mBOM`/`sBOM`/`Costed`), `AnalyzeChangeBlastRadius`, `TransitionChangeOrder` (`ECR`/`ECO`/`ECN`/`MCN`/`PCN`/`Deviation`/`NCR`), `VerifyDeviationGate`, `ComputeClearToBuild`.
 
 ---
 

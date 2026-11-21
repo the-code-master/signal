@@ -175,11 +175,11 @@ sequenceDiagram
 
 ```text
 signal/
-├── architecture/              # Master design, security, 148-flaw, 120-feature & Universal Parts specs (01..18)
+├── architecture/              # Master design, security, 148-flaw, 120-feature, Universal Parts & CAD/CAM/PLM (01..19)
 ├── contracts/                 # Source of truth: Protobuf (.proto), OpenAPI, JSON Schemas, Golden Fixtures
 │   ├── proto/signal/v1/       # SI-unit-suffixed gRPC (int64 -> bigint) + Arrow binary framing contracts
 │   ├── openapi/               # Control-plane REST APIs
-│   ├── schemas/               # Datasheet, Universal Part/Padstack/Symbol/Footprint, UPF, FabProfile, ECN & SFTP
+│   ├── schemas/               # Datasheet, Universal Parts, MCAD/CAM/3D-Print, BOM/ECO/MCN/PCN/Deviation & SFTP
 │   ├── fixtures/              # Cross-language golden conformance vectors (Antigravity <-> Cursor)
 │   └── transcripts/           # Stateful multi-step gRPC/WebTransport conformance transcripts (*.jsonl)
 ├── engine/                    # Pure Rust Workspace (Cargo workspace — shared build-time proto codegen)
@@ -207,9 +207,12 @@ signal/
 │   │   ├── signal-emc/        # CISPR/FCC pre-compliance, ESD/surge, ISO 26262 FMEDA/FTA, WCCA, Rad-Hard, piezo
 │   │   ├── signal-dfm/        # Panelization, MLCC flex-crack, reflow/tombstone DFA, fatigue, should-cost, ICT
 │   │   ├── signal-harness/    # Multi-board 3D BVH clearance, 1:1 wire-harness formboard, rigid-flex bend strain
+│   │   ├── signal-mcad/       # Parametric 2D sketcher, B-Rep 3D solids, sheet-metal unfold, assemblies, STEP AP242
+│   │   ├── signal-cam/        # 2.5D/3/5-axis CNC CAM toolpaths + native direct-B-Rep 3D-printing slicer
+│   │   ├── signal-plm/        # Multi-view eBOM/mBOM/sBOM compiler, change blast-radius & cryptographic CCB ledger
 │   │   ├── signal-fpga/       # FPGA SLR/SSO floorplan, SAT pinmux, protocol decoders, battery/FSM/DSP co-sim
 │   │   ├── signal-security-hw/# Hardware DPA/TVLA side-channel, laser fault injection & RTL IFT Trojan audit
-│   │   ├── signal-render/     # wgpu Zstd-QOI/WebP dirty-tile + HEVC/Dual-Luma video & Constellation watermarks
+│   │   ├── signal-render/     # Unified wgpu PBR 3D + Zstd-QOI/WebP dirty-tile + HEVC/Dual-Luma & watermarks
 │   │   ├── signal-git-sync/   # Multi-repo gitoxide + jj-lib, Dual-Fenced 2PC Super-Commit & Padme GCM-SIV
 │   │   ├── signal-cell-wasm/  # < 8 MB Wasmtime EXPLORER isolate cell runtime (auto-promotes to Kata MicroVM)
 │   │   ├── signal-pod/        # MicroVM project pod daemon, child OSDI/AMI sandbox, BYOK continuity WAL
@@ -219,6 +222,7 @@ signal/
 │   ├── identity-org/          # Provider OAuth + SAML dual-binding, 2FA, Enterprise onboarding, Access Review
 │   ├── project-catalog/       # Multi-repo Projects, metadata, SPDX license gate, Templates, Portfolio DAG
 │   ├── parts-registry/        # Universal Parts search, BLAKE3 CAS gateway, Org AVL overlays & Where-Used scans
+│   ├── plm-ops/               # Native ECN/ECO, MCN, PCN, Deviation/Waiver, NCR/CAPA, CTB supply-chain & ERP sync
 │   ├── vcs-connector/         # 2FA BYO-Git settings (GitHub/GitLab/Bitbucket), GraphQL/ETag sync
 │   ├── vcs-auditor/           # Periodic multi-provider security posture, drift, CVE & contractor-expiry auditor
 │   ├── session-broker/        # Sticky pod resolution, Ed25519 stream tickets, FinOps metering & cloud clipboard
@@ -233,7 +237,8 @@ signal/
 │   ├── apps/signal-web/       # Main IDE shell, Omni-Palette, Radial Menu, Multi-Monitor & 120 FPS HUD overlay
 │   └── libs/                  # Core + Extended Workbenches (schematic, pcb, ic, sim-viewer, code-ide, specs,
 │                              #   visual-diff, review, admin, magnetics, power-studio, emc-lab, safety-wcca,
-│                              #   fpga-studio, harness-3d, dfm-panel, library-studio, bringup-lab, academy)
+│                              #   fpga-studio, harness-3d, dfm-panel, library-studio, bringup-lab, academy,
+│                              #   mcad-studio, cam-print, plm-ops)
 ├── benchmarks/                # Continuous NGSPICE parity, Sky130 DRC/LVS, IPC-2581 & SignalBench-AI suites
 ├── infra/                     # Helm charts, Kata/Cilium/Kyverno policies, Anti-SSRF Egress Proxy, Campus Edge
 └── coordination/              # Multi-AI-IDE task board & single-writer per-agent journals

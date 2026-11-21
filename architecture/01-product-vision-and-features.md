@@ -61,7 +61,11 @@ flowchart LR
   - `BIOS` — Bootloader, UEFI/BIOS, ACPI tables, Device Trees (DTS), Bring-Up Diagnostics
   - `SOFTWARE` — Kernel drivers, SDKs, Test-bench & ATE automation scripts
   - `VERIFICATION` — Simulation suites, formal properties, compliance matrices, hardware test plans
-  - `MECHANICAL_REF` — Enclosure keep-outs, mounting holes, thermal heatsink STEP references (view-only / co-design bounds)
+  - `CAD_MCAD` — Parametric 3D Mechanical CAD (enclosures, heatsinks, chassis, sheet metal, assemblies, kinematic mates, GD&T drawings) linked live to PCB & thermal domains
+  - `CAM_CNC` — Subtractive CNC CAM (2.5D/3/5-axis milling, laser/waterjet cutting, tool cribs, fixture collision, stock removal, signed post-processors)
+  - `PRINT_3D` — Additive Manufacturing & 3D Printing (FDM/SLA/SLS/MJF/DMLS direct-B-Rep slicing, orientation, supports, infill, embedded-PCB pause layers)
+  - `PLM_OPS` — Native PLM, Multi-View BOM (`eBOM`/`mBOM`/`sBOM`), Change Control (`ECR`/`ECO`/`ECN`, `MCN`, `PCN`/`PDN`, `Deviation`/`Waiver`, `NCR`/`CAPA`), Clear-to-Build (`CTB`) Supply-Chain & Factory Operations
+  - `MECHANICAL_REF` — External read-only enclosure/heatsink STEP references when full `CAD_MCAD` authoring is not required
 
 ### 2.2 Bi-Directional Cross-Domain Traceability
 - **Requirement → Circuit → Layout → Firmware → Verification:**
@@ -152,6 +156,11 @@ Above and beyond the baseline capabilities in Sections 3.1–3.6, **[`17-extende
 - **EMC/EMI Pre-Compliance, Safety & Reliability (`FEAT-031`–`FEAT-040`):** `CISPR`/`FCC`/`MIL-STD-461` emissions simulator, Middlebrook EMI filter synthesizer, `IEC 61000-4-2/-4/-5` ESD/surge clamping tracer, shield-can resonance, automated ISO 26262 FMEDA (`SPFM`/`LFM`/`PMHF`) & Fault-Tree cut-sets, adjoint WCCA, Rad-Hard SEU/SET injection, MLCC piezo-singing acoustic detector, and org derating policy engine.
 - **Advanced IC, 3D-IC & Hardware Security (`FEAT-041`–`FEAT-050`):** `gm/Id` lookup explorer, automated common-centroid analog layout, custom cell-to-Liberty `.lib` characterizer, Backside Power (`BSPDN`/PowerVia), interactive SoC/NoC floorplanner, CTS skew/mesh studio, interactive STA critical-path waterfall, chiplet bump/RDL negotiator, OPC/CMP hotspot visualizer, and DPA/TVLA + RTL IFT hardware security auditor.
 - **FPGA Studio, Firmware/BIOS, Harness, DFM, Library, Lab, AI & Academy (`FEAT-051`–`FEAT-120`):** FPGA SLR/SSO die floorplan, SAT pinmux solver, live bus protocol decoders, firmware battery-life profiler, 1:1 wire-harness formboards, multi-up panelization + MLCC flex-crack guard, solder-joint fatigue, live DFM should-cost HUD, IPC-7351 parametric footprint+STEP generator, virtual bench instruments, TDR-to-trace-mm mapper, Shmoo plots, Multi-Monitor Zero-Leak pop-outs, SpaceMouse WebHID, AI Pareto/breaking-point/red-team agents, Breadboard↔Schematic↔PCB twin, safe visual smoke sandbox, `TinyTapeout` wizard, and `Signal Campus Edge`.
+
+### 3.8 Integrated Mechanical CAD/CAM, 3D Printing, 3D Visualization & Native PLM / Operations
+Detailed in **[`19-cad-cam-3d-printing-and-plm-operations.md`](./19-cad-cam-3d-printing-and-plm-operations.md)**, Signal embeds full mechanical product realization and factory change governance directly inside every Project:
+- **Parametric Mechanical CAD (`CAD_MCAD`), CNC CAM (`CAM_CNC`) & Direct-B-Rep 3D Printing (`PRINT_3D`):** Pure-Rust parametric B-Rep modeling, sheet-metal unfolding, assembly kinematics, live ECAD↔MCAD hole/connector sync, 2.5D/3/5-axis adaptive CNC toolpaths + gouge/fixture collision sim, FDM/SLA/SLS/DMLS 3D slicing with embedded-PCB pause layers, and one unified `wgpu` 3D visualization viewport (Zero-Leak SFTP egress for `STEP AP242`/`DXF`/`G-code`/`3MF`).
+- **Native PLM, Change Governance & Supply-Chain Operations (`PLM_OPS`):** Automatic multi-view `eBOM`/`mBOM`/`sBOM`/`Costed BOM` compilation, signed CCB state machines for **`ECR`/`ECO`/`ECN`**, **`MCN`**, **`PCN`/`PDN`** (with cross-project Where-Used blast radius), time- and quantity-bounded **`Deviation`/`Waiver`** release gates, **`NCR`/`CAPA`** quality loops, live **Clear-to-Build (`CTB`)** supply-chain shortage cockpit, interactive 3D assembly work instructions, and `signal-egress-proxy` ERP/MES sync.
 
 ---
 

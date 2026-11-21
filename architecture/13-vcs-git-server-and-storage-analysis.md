@@ -61,7 +61,11 @@ Given a Signal Project with slug `ev-inverter` inside namespace `acme-hw`:
 | **Sub-Project: `BIOS`** | `acme-hw/ev-inverter-bios` | Bootloader, UEFI/ACPI tables, Linux Device Trees (`.dts`) |
 | **Sub-Project: `SOFTWARE`** | `acme-hw/ev-inverter-software` | Host drivers, SDKs, ATE test-bench automation & `signal-twin` correlation fixtures |
 | **Sub-Project: `VERIFICATION`** | `acme-hw/ev-inverter-verification` | Compact **Declarative Sim Recipes & Formal Assertions (`< 10 KB` text)** re-computable in Pod RAM; raw waveforms pushed to Git LFS / BYO-S3 (`*.byo-ptr`) **only** when explicitly pinned for sign-off (saving 99% LFS quota!) |
-| **Sub-Project: `MECHANICAL_REF`** | `acme-hw/ev-inverter-mechanical` | Enclosure keep-out bounds, STEP references (Git LFS / BYO-S3) |
+| **Sub-Project: `CAD_MCAD`** | `acme-hw/ev-inverter-cad` | Parametric B-Rep feature trees (`*.mcad.sig`), sheet-metal bends, assembly mates, GD&T drawings & live PCB anchor links |
+| **Sub-Project: `CAM_CNC`** | `acme-hw/ev-inverter-cam` | 2.5D/3/5-axis CNC setups, tool cribs, fixture specs, deterministic toolpath recipes (`*.cam.sig`) & signed post-processor configs |
+| **Sub-Project: `PRINT_3D`** | `acme-hw/ev-inverter-3dprint` | FDM/SLA/SLS/DMLS build-plate layouts (`*.3dp.sig`), orientations, support/infill modifiers & embedded-PCB pause layers |
+| **Sub-Project: `PLM_OPS`** | `acme-hw/ev-inverter-ops` | Multi-view `eBOM`/`mBOM`/`sBOM` specs, signed `ECO`/`ECN`, `MCN`, `PCN`, `Deviation`/`Waiver`, `NCR`/`CAPA` ledgers & 3D assembly work instructions |
+| **Sub-Project: `MECHANICAL_REF`** | `acme-hw/ev-inverter-mechanical` | External read-only enclosure keep-out bounds & STEP references (Git LFS / BYO-S3) |
 
 *(Slug rules: lowercase alphanumeric + hyphens, deterministic collision-free suffixing when multiple instances of the same Sub-Project type exist, e.g., `ev-inverter-pcb-main` and `ev-inverter-pcb-sensor`. Every repo is created `private` by default for Enterprise & Individual Private projects.)*
 
