@@ -15,43 +15,46 @@ Most "AI in CAD" tools fail because LLMs cannot reliably do raw electrical math,
 
 ```mermaid
 flowchart TB
-    User["Engineer Prompt / Canvas Selection / Continuous Guardian"] --> Sup["Supervisor Agent (Planner & Router)"]
+    User["Engineer Prompt / Canvas Selection / Quiescent Guardian"] --> Sup["Supervisor Agent (K-Hop Cone Slicer & Budget Guard)"]
 
-    subgraph Specialists["Domain Specialist Agents"]
-        A1["PRD & HFS Architect Agent"]
-        A2["Schematic & Circuit Synthesis Agent"]
-        A3["Simulation & Verification Agent"]
-        A4["PCB Floorplan, Routing & SI/PI Agent"]
-        A5["IC / Analog Sizing / RTL & FPGA Agent"]
-        A6["Firmware, BIOS & Register-Sync Agent"]
-        A7["BOM, Compliance & DFM Release Agent"]
+    subgraph Specialists["Neuro-Symbolic Domain Specialist Agents"]
+        A1["PRD, HFS & Whiteboard Agent"]
+        A2["Schematic & Adjoint Synthesis Agent"]
+        A3["Simulation, Formal & Aging Agent"]
+        A4["Multimodal PCB, 3D EM & SI/PI Agent"]
+        A5["IC, Analog Sizing & FPGA Agent"]
+        A6["Firmware, BIOS & Bring-Up Agent"]
+        A7["BOM, Supply-Chain & Sustainability Agent"]
     end
 
     Sup <--> Specialists
 
-    subgraph Grounding["Grounding & Deterministic Execution"]
-        RAG["Hybrid RAG Engine\n(Parametric SQL + Vector + Graph)"]
-        DSDB[("Universal Datasheet DB\n& Verified Rust Modules")]
-        Tools["Typed Engine Tool Bridge (gRPC)"]
-        Branch["Speculative CoW Branch inside Rust Project Pod"]
-        Sim["Rust SPICE / DRC / LVS / Thermal / STA"]
+    subgraph Grounding["Dual-LLM Quarantine, Partitioned RAG & Adjoint Physics"]
+        Quar["Quarantined Reader LLM (Zero Tools -> GBNF Facts)"]
+        RAG["Partitioned Hybrid RAG (SQL + Per-Org pgvector HNSW + Graph)"]
+        DSDB["Dual-VLM Universal Datasheet, Errata & Supply-Chain DB"]
+        Tools["Typed Protobuf Engine Tool Bridge (gRPC)"]
+        Branch["Speculative jj CoW Branch inside Rust Project Pod"]
+        Sim["Rust Adjoint signal-diff-sim / SPICE / Formal / 3D EM / DRC"]
     end
 
-    subgraph Inference["Pluggable LLM & GPU Gateway"]
+    subgraph Inference["Grammar-Constrained (GBNF) LLM & GPU Gateway"]
         Router["signal-llm-gateway"]
-        Local["Local Dev Default:\nMac Ollama / MLX / llama.cpp"]
-        VPC["Enterprise Private:\nK8s GPU vLLM / TensorRT-LLM"]
+        Local["Local Dev Default: Mac Ollama / MLX / llama.cpp"]
+        VPC["Enterprise Private: Confidential GPU vLLM / TensorRT-LLM"]
         Cloud["Zero-Retention Cloud Frontier APIs"]
     end
 
     Specialists <--> RAG
-    RAG <--> DSDB
+    RAG <--> Quar
+    Quar <--> DSDB
     Specialists <--> Tools
     Tools <--> Branch
     Branch <--> Sim
-    Sim -->|"Deterministic Metrics, Waveforms & Violations"| Specialists
+    Sim -->|"Exact Gradients, Proofs, Waveforms & Violations"| Specialists
     Sup <--> Router
     Specialists <--> Router
+    Quar --> Router
     Router --> Local
     Router --> VPC
     Router --> Cloud
@@ -63,91 +66,73 @@ flowchart TB
 
 | Agent | Responsibilities | Core Rust Engine & RAG Tools Used |
 |---|---|---|
-| **Supervisor / Planner Agent** | Decomposes high-level engineering goals across domains (PRD → Schematic → PCB → Firmware), enforces org guardrail policies, manages execution budgets, coordinates specialist handoffs. | `read_project_tree`, `query_requirements`, `spawn_branch`, `request_human_approval` |
-| **PRD & HFS Architect Agent** | Drafts/audits requirements, builds block diagrams, calculates system power trees, clock trees, pin budgets, and interface matrices; flags contradictory specs. | `create_requirement`, `link_traceability`, `build_power_tree`, `rag_search_architectures` |
-| **Schematic & Circuit Synthesis Agent** | Selects real qualified components via Hybrid RAG, instantiates Rust component modules, wires subcircuits, calculates bias/compensation/filter/protection networks. | `rag_parametric_parts`, `place_component_module`, `connect_ports`, `run_erc`, `inspect_datasheet_pinout` |
-| **Simulation & Verification Agent** | Builds DC/AC/Transient/Noise/Monte-Carlo/Corner/Thermal testbenches, executes Rust `signal-sim`, interprets waveforms (phase margin, ripple, overshoot, ringing, SOA stress), iteratively tunes component values until all requirements pass. | `configure_sim`, `run_simulation`, `measure_waveform`, `check_soa_violations`, `sweep_parameters` |
-| **PCB Layout, Routing & SI/PI Agent** | Proposes thermal/EMI floorplanning zones, optimizes critical loops (buck switch node, crystal, decoupling caps), guides differential pair & length-matched routing, runs impedance/PDN checks, auto-repairs DRC/DFM issues. | `propose_placement`, `set_net_class_rules`, `route_critical_nets`, `run_field_solver`, `run_drc_dfm` |
-| **IC, Analog & FPGA Agent** | Performs `gm/Id` transistor sizing across PVT corners, generates PCELL floorplans, authors SystemVerilog/VHDL + assertions, syncs FPGA pinouts with PCB symbols, analyzes STA/DRC/LVS violations. | `size_transistors`, `run_corner_sweep`, `generate_rtl`, `sync_fpga_pinmux`, `run_lvs_drc_pex` |
-| **Firmware, BIOS & Driver Agent** | Generates pinmux configs, C/C++/Rust HAL drivers, register headers from canonical register maps, Linux Device Trees (`.dts`), UEFI/ACPI tables, and virtual bring-up tests executed against simulated hardware. | `read_netlist_pins`, `read_register_map`, `generate_code_patch`, `run_fw_cosim` |
-| **BOM, Compliance & Release Agent** | Audits lifecycle/obsolescence, suggests pin-compatible alternates via RAG, verifies RoHS/REACH/AEC-Q/ISO-26262 derating margins, prepares DFM sign-off & SFTP release checklists. | `audit_bom_lifecycle`, `find_alternate_parts`, `generate_compliance_matrix`, `prepare_sftp_bundle` |
+| **Supervisor / Planner Agent** | Decomposes goals across domains, enforces org guardrails & **hard Token/Iteration/Wall-Clock budgets**, performs **K-Hop Cone-of-Influence graph slicing** (`< 16k` prompt tokens even on 100B-transistor chips), and compiles **Immutable AI Design Proof Bundles**. | `read_cone_slice`, `query_requirements`, `spawn_cow_branch`, `request_human_approval` |
+| **PRD, HFS & Whiteboard Agent** | Drafts/audits requirements, parses whiteboard sketches (`signal-import`), builds UPF power trees, clock trees, pin budgets, and interface matrices; flags contradictory specs. | `create_requirement`, `link_traceability`, `build_upf_power_tree`, `ingest_whiteboard_sketch` |
+| **Schematic & Neuro-Symbolic Synthesis Agent** | Selects `SILVER`/`GOLD`-verified, in-stock components via Hybrid RAG (co-checking Silicon Errata!), wires Rust `ElectronicModule`s, and delegates numerical component sizing to **`signal-diff-sim` Adjoint / Bayesian Pareto Optimizer** (eliminating LLM trial-and-error oscillation!). | `rag_parametric_parts`, `place_component_module`, `connect_ports`, `run_adjoint_pareto_opt`, `run_erc` |
+| **Simulation, Formal & Aging Agent** | Runs DC/AC/Transient/Noise/Monte-Carlo/PVT/Thermal + **15-yr BTI/HCI/EM Aging (`signal-aging`)** + **Formal SVA/LEC proofs (`signal-formal`)** + `< 50 ms` PINN previews (`signal-surrogate`). | `configure_sim`, `run_simulation`, `run_formal_proof`, `check_soa_and_aging`, `correlate_digital_twin` |
+| **Multimodal PCB, 3D EM & SI/PI Agent** | Combines **Vision-Canvas top/bottom/thermal snapshots** with deterministic Rust **Analytical Electro-Thermal Placer & Negotiated-Congestion Router** tools, 3D EM breakout checks (`signal-em3d`), and DRC/DFM auto-healing. | `inspect_viewport_vision`, `run_analytical_placer`, `route_critical_nets`, `run_em3d_check`, `run_drc_dfm` |
+| **IC, Analog Sizing & FPGA Agent** | Performs `gm/Id` + **Adjoint Differentiable `(W/L)` sizing** across PVT/aging corners, evaluates WASM PCELLs, authors SystemVerilog/VHDL + formal SVA, verifies UPF power islands, and analyzes MMMC STA/DRC/LVS. | `size_transistors_adjoint`, `run_corner_sweep`, `generate_rtl_and_sva`, `sync_fpga_pinmux`, `run_lvs_drc_pex` |
+| **Firmware, BIOS & Bring-Up Agent** | Generates pinmux configs, C/C++/Rust HALs, SystemRDL CSRs, Linux `.dts`, UEFI/ACPI tables, factory JTAG/POST diagnostics, and runs **3-Speed Variable-Fidelity Co-Sim** (`100+ MIPS` ISS → RTL → SPICE). | `read_netlist_pins`, `read_register_map`, `generate_code_patch`, `run_3speed_fw_cosim` |
+| **BOM, Supply-Chain & Sustainability Agent** | Queries **k-anonymous live distributor stock/lead-time/pricing**, flags PCN/EOL & geo-fab risks, computes **Embodied Carbon ($\text{kgCO}_2\text{e}$) & PFAS/RoHS Digital Product Passports**, executes **Zero-Spin BOM Rescue**, and prepares 2FA SFTP checklists. | `audit_bom_supply_chain`, `find_dropin_alternates`, `compute_carbon_passport`, `prepare_sftp_bundle` |
 
 ---
 
-## 3. Closed-Loop Autonomous Design Example (Verify-and-Fix Loop)
+## 3. Closed-Loop Neuro-Symbolic Design Flow (Topology by LLM + Sizing by Adjoint Physics)
 
 ```mermaid
 sequenceDiagram
     participant Eng as Engineer
     participant Agent as Schematic & Sim Agents
-    participant RAG as Universal Datasheet RAG
-    participant Pod as Rust Project Pod (CoW Branch)
+    participant RAG as Verified Datasheet + Supply-Chain RAG
+    participant Pod as Rust Project Pod (Live-Rebasing CoW Branch)
 
-    Eng->>Agent: "Design 12V->3.3V 3A Buck, <15mV ripple, >90% eff, -40..85C"
-    Agent->>RAG: Parametric Query (Vin>=18V, Iout>=4A, Sync Buck, Active) + App Notes
-    RAG-->>Agent: Top 3 ICs + Verified Pinouts + Recommended Inductor/Cap Formulas + Citations
-    Agent->>Pod: Create CoW Speculative Branch "ai/buck-3v3-v1"
-    Agent->>Pod: Place IC, Inductor (with B-H saturation), MLCCs (with DC-bias derating), Feedback Divider
-    Agent->>Pod: Run Rust Transient + AC Bode + Thermal + SOA Audit
-    Pod-->>Agent: Result: Ripple = 22mV (FAIL), Phase Margin = 38 deg (WARN), Eff = 92.4% (PASS)
-    Agent->>Pod: Adjust Output MLCC + Type-III Compensation Network (Iteration 2)
-    Agent->>Pod: Re-Run Transient + AC Bode + 100-Run Monte Carlo (-40C..85C)
-    Pod-->>Agent: Result: Worst-Case Ripple = 11.4mV (PASS), PM = 61 deg (PASS), All SOA Safe (PASS)
-    Agent-->>Eng: Present Annotated Schematic Diff + Bode/Ripple Waveforms + Datasheet Citations
-    Eng->>Pod: Click "Approve & Merge" -> Committed to Live Shared Project Graph
+    Eng->>Agent: "Design 12V->3.3V 3A Buck, <15mV ripple, >90% eff, -40..125C, 10yr automotive"
+    Agent->>RAG: Query (Vin>=18V, Iout>=4A, AEC-Q100, Trust>=SILVER, In-Stock) + Silicon Errata
+    RAG-->>Agent: Top 3 Orderable MPNs (with exact Package Pinout + Errata + Digitized Curves)
+    Agent->>Pod: Spawn Port-Encapsulated CoW Branch "ai/buck-3v3" (Live-Rebasing)
+    Agent->>Pod: Wire Buck IC + Saturating Inductor + DC-Bias MLCCs + Type-III Comp Network
+    Agent->>Pod: Invoke signal-diff-sim Adjoint Pareto Optimizer (200 gradient steps in 40ms!)
+    Pod-->>Agent: Optimal L/C/R_comp Values Found -> Run Full SPICE + 100-Run Monte Carlo + 10yr Aging
+    Pod-->>Agent: Worst-Case Ripple = 10.8mV (PASS), PM = 63 deg (PASS), Eff = 93.1% (PASS), 0 SOA/DRC Errors
+    Agent-->>Eng: Present Visual Semantic Diff + Immutable Proof Bundle (Equations, Plots, Page/BBox Citations)
+    Eng->>Pod: Click "Approve & Merge" -> Committed Atomically to Shared Project Graph
 ```
 
 ---
 
-## 4. Universal Datasheet Database & Hybrid RAG Architecture
+## 4. Universal Datasheet Database & Partitioned Hybrid RAG Architecture
 
-A foundational pillar of Signal is maintaining a **Universal Electronic Component & Datasheet Knowledge Base** that serves both human search and grounded AI Agent reasoning.
+### 4.1 High-Assurance Multi-Modal Ingestion & Trust Tiers (`ai/datasheet-ingest`)
+Single-pass PDF OCR can misread `1.8 V` as `18 V` or swap QFN pad numbers—destroying hardware. Signal enforces a **Zero-Hallucination High-Assurance Ingestion Pipeline** inside zero-network parser sandboxes:
 
-### 4.1 Multi-Modal Datasheet Ingestion Pipeline (`ai/datasheet-ingest`)
-Datasheets are notoriously dense—mixing multi-column prose, complex parametric tables, pinout diagrams, truth tables, register bitfields, and log-log characteristic curves. Signal's ingestion pipeline processes every component into **structured truth + semantic chunks**:
+1. **Orderable MPN + Package + Die-Revision Normalization:** Every record is keyed by exact **Orderable MPN + Package Code (`LQFP48` vs `TFBGA100`) + Silicon Revision**, automatically co-linking **Manufacturer Silicon Errata PDFs, PCNs, and App Notes**.
+2. **Dual-VLM Consensus + Physics Sanity Verification:**
+   - Two independent layout/Vision-Language extractors parse **AbsMax Ratings**, **Electrical/Thermal Tables**, **Pinout Maps**, **SystemRDL Register Bitfields**, and **Digitized Curves** (`MLCC DC-bias`, `Rds_on vs Tj`, `SOA`). Any disagreement quarantines the field for steward review!
+   - Automated **3-Way Symbol ↔ IPC-7351 Footprint ↔ 3D STEP Pin Intersection Check** + SPICE sanity testbench verifies that simulated module curves match extracted datasheet tables within tolerance.
+3. **Cryptographic Datasheet Trust Badges (`VerificationBadge`):**
+   - `BRONZE_PARSED`: Automated dual-extractor consensus passed; unverified SPICE curve.
+   - `SILVER_SIM_MATCHED`: Automated physics, pin-pad 3D check, and SPICE curve-fit verified (`< 2%` RMS error).
+   - `GOLD_ATTESTED`: Manufacturer-signed feed or human librarian sign-off (Enterprise templates can mandate `SILVER`/`GOLD` parts only!).
 
-1. **Source Acquisition & Licensing:** Manufacturer feeds, authorized distributor APIs, open-source foundry PDKs, and **tenant-private uploaded datasheets** (strictly isolated in per-tenant encrypted partitions so proprietary/NDA datasheets NEVER leak across companies!).
-2. **Layout-Aware Document Parsing:** Vision-Language & document-layout models extract:
-   - **Absolute Maximum Ratings** (structured min/max bounds with units)
-   - **Electrical & Thermal Characteristics Tables** (conditions, min/typ/max, units)
-   - **Pinout & Pin-Function Tables** (pin number, name, I/O type, voltage domain, ESD rating)
-   - **Register Maps** (offset, reset value, bitfields, access mode — directly usable by Firmware Agent!)
-   - **Characteristic Curves Digitization** (efficiency vs. load, MLCC capacitance vs. DC bias, MOSFET `Rds_on` vs. `Tj`, SOA curves — digitized into lookup tables for the Rust component modules!)
-   - **Application Notes, Typical Schematics & Errata**
-3. **Model Binding & Verification:**
-   - Links vendor SPICE/IBIS/S-parameter models, footprints, and 3D STEP geometry to the component record.
-   - Automatically transpiles/wraps models into verified **Rust `ElectronicModule` parameters** and runs automated sanity simulations (e.g., verify simulated diode Vf or MOSFET threshold matches the extracted datasheet table; flag discrepancies for review).
+### 4.2 Partitioned Three-Tier Hybrid RAG + Live Supply-Chain (`ai/rag-service`)
 
-### 4.2 Three-Tier Hybrid RAG Storage & Retrieval (`ai/rag-service`)
-
-Pure vector search fails on hardware queries like *"N-channel MOSFET, Vds ≥ 80V, Rds_on ≤ 4mΩ at Vgs=4.5V, QFN-5x6, AEC-Q100"*. Signal uses **Hybrid Multi-Stage Retrieval**:
-
-| Tier | Store | Role in Retrieval |
+| Tier | Store & Isolation | Role in Retrieval |
 |---|---|---|
-| **1. Structured Parametric Index** | PostgreSQL (normalized parametric tables + unit-canonicalized SI columns) | Exact deterministic filtering on voltage, current, tolerance, package, temp range, lifecycle, AEC/MIL qualification, and org Approved Vendor List (AVL). |
-| **2. Dense + Sparse Semantic Index** | PostgreSQL `pgvector` (scale-out: Qdrant) + BM25 Full-Text | Semantic search over datasheet prose, design guidelines, layout recommendations, thermal notes, errata, and application circuits. |
-| **3. Component Knowledge Graph** | Relational/Graph adjacency tables | Tracks pin-to-pin drop-in alternates, functional equivalents, complementary pairs (e.g., gate driver ↔ GaN FET), known incompatibilities, and verified reference subcircuits. |
-
-**Retrieval Flow for an LLM Prompt:**
-1. Query Planner extracts hard parametric predicates (SQL) + semantic intent (Vector + BM25) + tenant ACL scope (Global Universal DB + Tenant Private NDA DB).
-2. Executes hard parametric filter FIRST → narrows millions of parts to valid electrical candidates.
-3. Ranks candidates using semantic relevance + availability + AVL preference + cross-encoder reranker.
-4. Injects **compact, structured JSON specs + verbatim table excerpts + exact `(datasheet_id, page, section)` citations** into the Agent's prompt—keeping context clean and hallucination-free.
+| **1. Structured Parametric & Supply-Chain Index** | PostgreSQL (`NOBYPASSRLS`) + **k-Anonymous Hashed Prefix Supply-Chain Cache** | Deterministic SI-normalized filtering on `V/I/R/Package/Temp/AEC-Q/TrustTier/AVL` + live stock, lead-time, pricing, and embodied-carbon/PFAS metrics without leaking customer BOMs to distributors! |
+| **2. Partitioned Dense + Sparse Semantic Index** | **Physically Partitioned `pgvector` HNSW Indexes** (`GLOBAL_VERIFIED` partition vs. per-org `ORG_PRIVATE_NDA` partitions + `hnsw.iterative_scan`) + BM25 | Eliminates RLS ANN post-filter recall collapse and cross-tenant timing side channels while retrieving application notes, layout rules, and **Silicon Errata**. |
+| **3. Component & Equivalence Knowledge Graph** | Relational/Graph adjacency tables | Pin-compatible drop-in alternates (**Zero-Spin BOM Rescue**), complementary gate-driver/FET pairs, and verified reference subcircuits. |
 
 ---
 
-## 5. LLM & GPU Infrastructure Strategy (`ai/llm-gateway`)
-
-Signal is completely model-agnostic through an OpenAI-compatible internal **Model Gateway** that routes requests by task tier and security policy:
+## 5. Grammar-Constrained & Quarantine-Hardened LLM Gateway (`ai/llm-gateway`)
 
 | Capability Tier | Purpose | Production Cloud / Enterprise VPC | Local Mac Dev Default |
 |---|---|---|---|
-| **Tier 1: Fast / Interactive** | Autocomplete, quick ERC explanation, query classification, UI assistance | Quantized fast model on VPC vLLM / low-latency API | Local Apple Silicon Ollama / MLX (`qwen2.5-coder:7b` / `llama3.2` / equivalent) |
-| **Tier 2: Deep Engineering Reasoning** | Circuit architecture, multi-step debug, RTL/firmware generation, closed-loop sim reasoning | Enterprise VPC Frontier Open-Weights (e.g., DeepSeek/Qwen/Llama 70B+ on H100/B200) or Zero-Retention Frontier API | Local Mac Ollama / MLX (`qwen2.5-coder:32b` or best model fitting Mac Unified Memory) |
-| **Tier 3: Vision / Multimodal** | Datasheet table/curve extraction, hand-drawn block diagram parsing, PCB layout visual inspection | Vision-Language model on GPU cluster | Local Mac Vision model (`llama3.2-vision` / `qwen2.5-vl` via Ollama/MLX) |
-| **Tier 4: Embeddings & Reranking** | Universal Datasheet RAG indexing & retrieval | GPU embedding microservice (`bge-m3` / equivalent) | Local Ollama / MLX embedding model (`nomic-embed-text` / `bge-m3`) |
+| **Tier 1: Fast / Quarantine Reader** | Autocomplete, ERC explanation, **Zero-Tool Untrusted Text/PDF Quarantine Summarizer** (defeats Indirect Prompt Injection!) | Quantized fast model on VPC vLLM | Local Apple Silicon Ollama / MLX (`qwen2.5-coder:7b` / `llama3.2`) |
+| **Tier 2: Deep Neuro-Symbolic Reasoning** | Circuit topology synthesis, multi-domain debug, RTL/SVA/firmware generation | VPC Frontier Open-Weights on **Confidential H100/B200 GPUs** or Zero-Retention API | Local Mac Ollama / MLX (`qwen2.5-coder:32b` or best model fitting Unified Memory) |
+| **Tier 3: Vision / Spatial Multimodal** | Dual-VLM datasheet extraction, whiteboard/sketch import, PCB Vision-Canvas critique | Vision-Language cluster on VPC GPUs | Local Mac Vision model (`qwen2.5-vl` / `llama3.2-vision`) |
+| **Tier 4: Embeddings & Reranking** | Partitioned Datasheet & Errata RAG | GPU embedding + cross-encoder reranker (`bge-m3`) | Local Ollama / MLX (`nomic-embed-text` / `bge-m3`) |
 
-### Strict Enterprise AI Privacy Guarantees
-- **Zero Model Training on Customer IP:** Customer schematics, layouts, firmware, and private NDA datasheets are NEVER used to train foundation models.
-- **Data Residency & Air-Gapped / VPC Mode:** Enterprises can enforce **VPC-Only Inference** (all LLM calls remain inside the customer's/Signal's private Kubernetes GPU cluster with zero third-party API calls).
-- **Prompt & Output Telemetry Scrubbing:** AI observability logs record latency, token counts, and tool success rates without leaking raw proprietary circuit netlists into third-party analytics tools.
+### Reliability & Enterprise AI Privacy Guarantees
+- **100% Valid Tool Calls via Grammar-Constrained Decoding (`GBNF`):** `ai/llm-gateway` enforces JSON-Schema / Protobuf state-machine decoding (`Outlines` / `llama.cpp GBNF`) + **Dynamic Tool Subset Routing (5–8 tools per specialist step)** so even 7B Local Mac models emit zero syntax errors.
+- **Zero Model Training, Confidential GPU Inference & Telemetry Redaction:** Customer IP and private NDA datasheets are NEVER used for model training; VPC Confidential GPUs encrypt model weights and prompts in hardware VRAM; observability spans pass through `SecretBox` netlist scrubbers.

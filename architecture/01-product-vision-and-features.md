@@ -94,74 +94,76 @@ Every component is a composable **Rust Module** (detailed in [`03-rust-eda-engin
 
 | Domain | Simulation & Analysis Capabilities |
 |---|---|
-| **Analog & SPICE** | DC Operating Point, DC Sweep, AC Small-Signal (Bode, Nyquist, Stability/Phase Margin), Transient (nonlinear time-domain), Harmonic Balance / PSS (RF), Noise (thermal/flicker/shot/integrated SNR), Pole-Zero, Sensitivity, Transfer Function. |
-| **Statistical & Reliability** | Monte Carlo (tolerance + mismatch distributions), PVT Corner Analysis (Process, Voltage, Temperature), Worst-Case Analysis (EVA/RSS), Component Stress / SOA / Derating Audit, Fault Injection (open, short, parameter drift, ESD pulse, FMEA/FMEDA automation). |
-| **RF & High-Speed SI/PI** | S-Parameter (Touchstone `.sNp`), Smith Chart, TDR/TDT impedance profiling, Eye Diagram & BER with IBIS/IBIS-AMI models, Crosstalk (NEXT/FEXT), Power Delivery Network (PDN) target impedance & decoupling capacitor optimization, IR Drop & DC Current Density. |
-| **Thermal & EMI/EMC** | Coupled Electro-Thermal simulation (component self-heating feeding back into temperature-dependent resistance/Vbe/Rds_on), PCB copper thermal spreading, near-field EMI hotspot estimation, return-path discontinuity checks. |
-| **Digital & Mixed-Signal (AMS)** | Event-driven IEEE 1164 digital logic simulation, Verilog/SystemVerilog/VHDL behavioral & RTL simulation, True Analog-Digital Mixed-Signal co-simulation (ADC/DAC, PLL, PWM motor drive). |
-| **Hardware-Firmware Co-Sim** | Virtual MCU/RISC-V/ARM execution coupled to live schematic/SPICE peripherals (verify SPI/I2C/CAN/PWM firmware against real analog circuit dynamics before tape-out or board spin!). |
-| **Waveform & Post-Processing** | GPU-accelerated interactive waveform viewer (billion-sample pan/zoom), FFT/spectrum analyzer, custom measurement expressions, automated Pass/Fail assertions linked directly back to PRD/HFS requirements. |
+| **Analog, SPICE & Differentiable Physics** | DC Operating Point, DC Sweep, AC Small-Signal (Bode, Nyquist, Stability/Phase Margin), Transient (charge/flux-conserving nonlinear time-domain), Harmonic Balance / PSS (RF), Noise (thermal/flicker/shot/SNR), Pole-Zero, Transfer Function, and **End-to-End Adjoint Differentiable Physics (`signal-diff-sim`)** computing exact gradients across 1,000+ parameters in one transpose solve. |
+| **Physics-Informed Neural Surrogates** | **GPU Neural Operators (`signal-surrogate`)** delivering `< 50 ms` interactive field, thermal, IR-drop, and eye-diagram previews during live editing—always paired with **mandatory exact Rust MNA/FEM sign-off** before commit or release. |
+| **Statistical, Aging & Reliability** | Monte Carlo (tolerance + correlated IC mismatch), PVT Corner Analysis, Worst-Case (EVA/RSS), Component Stress / SOA / Derating Audit, **10–15 Year Mission-Profile Aging (`signal-aging`: NBTI/PBTI, HCI, TDDB, Electromigration & passive wear-out)**, and Fault Injection (open, short, drift, ESD, automated ISO-26262 FMEDA). |
+| **RF, 3D Full-Wave EM & 224G SI/PI** | S-Parameters (Touchstone `.sNp` with passive/causal Vector-Fitting macromodels), Smith Chart, **GPU 3D Full-Wave PEEC/FDTD/FEM (`signal-em3d`)** for vias/BGAs/antennas, TDR/TDT, IBIS-AMI 112G/224G PAM4 SerDes Eye/BER, Crosstalk, PDN decap optimization, IR Drop, and **Co-Packaged Optics (CPO) electro-optical co-simulation**. |
+| **Thermal, Mechanical & EMI/EMC** | Multi-rate coupled Electro-Thermal simulation (self-heating leapfrog feedback into `T_j`), PCB copper spreading, chip-package-board thermal warpage bounds, near-field EMI hotspots, and return-path discontinuity checks. |
+| **Digital, Mixed-Signal & Formal Proofs** | Event-driven IEEE 1164 logic, SystemVerilog/VHDL RTL simulation, True Analog-Digital Mixed-Signal (AMS), and **Neuro-Symbolic Formal Verification (`signal-formal`: SAT/SMT/IC3 property proving, RTL-to-Gate LEC, CDC/RDC, and IEEE 1801 UPF low-power state verification)**. |
+| **3-Speed Hardware-Firmware Co-Sim** | Variable-fidelity virtual MCU/RISC-V/ARM execution (`100+ MIPS` fast Rust ISS for RTOS/UEFI boot → cycle-accurate RTL → full lock-step analog SPICE on peripheral triggers). |
+| **Post-Silicon Digital Twin & Waveforms** | GPU billion-sample waveform studio, FFT, assertions linked to `REQ-xxx`, and **Lab Bench / Post-Silicon Digital Twin Bridge (`signal-twin`)** overlaying real oscilloscope/VNA/ATE silicon measurements directly against simulated curves to auto-calibrate Rev B parasitics. |
 
 ### 3.3 PCB Design, Layout & Manufacturing Preparation
-- **Layer Stackup & Material Manager:** Multi-layer rigid, rigid-flex, flex, metal-core (MCPCB), HDI microvia/stacked/staggered via builds, dielectric loss (`Dk`/`Df`) models, built-in 2D field-solver impedance calculator (microstrip, stripline, coplanar waveguide, single-ended & differential).
-- **Floorplanning & Component Placement:** Cross-probing with schematics, thermal/EMI zoning, room/channel replication, automated placement proposals by AI Layout Agent, 3D collision & enclosure keep-out checks.
+- **Layer Stackup & Material Manager:** Multi-layer rigid, rigid-flex (with 3D dynamic bend-radius & copper-strain checks), flex, metal-core (MCPCB), HDI microvia/stacked/staggered via builds, frequency-dependent `Dk`/`Df` models, instant 2DBEM stackup impedance calculator + 3D via transition extraction.
+- **Floorplanning, Placement & Spatial Review:** Cross-probing with schematics, thermal/EMI zoning, room/channel replication, AI electro-thermal placement proposals, 3D enclosure collision checks, and **Canvas-Anchored Spatial Review Redlining & Live Review Huddles** (eliminating screenshot-based Slack/slide reviews).
 - **Interactive & Constraint-Driven Routing:**
-  - Push-and-shove, hug-and-push, walkaround, glossing/teardrops.
-  - High-speed differential pair routing, phase/skew tuning, serpentine/trombone length matching (DDR4/5, PCIe Gen4/5/6, USB4, Ethernet, MIPI).
+  - Push-and-shove, hug-and-push, walkaround, any-angle/arc RF routing, glossing/teardrops.
+  - High-speed differential pair routing, phase/skew tuning, serpentine/trombone length matching (DDR4/5, PCIe Gen4/5/6, USB4, 224G Ethernet, MIPI).
   - BGA escape/fanout automation, via-in-pad, back-drilling, via stitching & shielding fences.
   - Dynamic copper pours, split planes, thermal reliefs, creepage & clearance enforcement (IPC-2221 / IEC 62368 high-voltage rules).
-- **Multi-Board & Cable/Harness Co-Design:** Stackable mezzanines, backplanes, board-to-board connector mate verification, wire harness pin-to-pin continuity.
-- **3D ECAD/MCAD Visualization:** Real-time GPU-rendered 3D PCB with realistic copper, solder mask, silkscreen, component STEP geometry, thermal heatmaps, and mechanical enclosure clearance inspection.
-- **DRC, DFM, DFA, DFT Sign-Off:** Real-time + batch geometric/electrical DRC, acid traps, slivers, annular rings, solder mask bridges, tombstone risk, pick-and-place nozzle clearance, test-point coverage (ICT/flying probe).
+- **Multi-Board, Backplane & Cable/Harness Co-Design:** Stackable mezzanines, backplanes, connector mate pin-swap verification, wire harness topology, 3D bundle routing, and harness voltage-drop/weight calculation.
+- **3D ECAD/MCAD Visualization:** Real-time GPU-rendered 3D PCB with realistic copper, solder mask, silkscreen, component STEP geometry (with automated 3-way Symbol ↔ IPC-7351 Footprint ↔ 3D STEP pin-pad intersection check), and thermal heatmaps.
+- **DRC, DFM, DFA, DFT & JTAG Sign-Off:** Real-time + batch geometric/electrical DRC, acid traps, slivers, annular rings, solder mask bridges, tombstone risk, pick-and-place nozzle clearance, **IEEE 1149.1 / 1687 IJTAG boundary-scan chain synthesis**, and automated ICT/flying-probe nail-bed coverage.
 - **Manufacturing Package Generation (SFTP-Only Delivery):** Gerber X2/X3, Excellon/NC Drill, ODB++, IPC-2581, IPC-D-356 netlist, Pick-and-Place (CPL), Structured BOM, Fabrication & Assembly drawings—generated inside the encrypted Rust pod and transmitted exclusively to an **Authorized SFTP Server**.
 
 ### 3.4 Integrated Circuit (IC), Chip & Chiplet Design Suite
 Signal supports both **Custom Analog/Mixed-Signal IC** and **Digital RTL-to-GDSII** flows:
-- **PDK & Foundry Management:** Encrypted tenant-scoped Process Design Kits (PDKs), technology files, layer maps, BSIM4/BSIM-CMG/PSP/EKV compact transistor models (compiled into native Rust component modules), standard cell libraries (Liberty `.lib`, LEF/DEF), and DRM/DRC/LVS rule decks.
+- **PDK & Foundry Management:** Encrypted tenant-scoped Process Design Kits (PDKs) plus built-in Open-Silicon PDKs (`Sky130`, `GF180`, `IHP SG13G2`), BSIM4/BSIM-CMG/PSP/EKV compact transistor models, standard cell libraries (Liberty `.lib`/`.db`, LEF/DEF), and DRM/DRC/LVS rule decks.
 - **Analog & Custom IC Design:**
-  - Transistor-level schematic capture with parameterized MOSFET/FinFET/BJT/MOM-cap/spiral-inductor Rust modules.
-  - Automated analog sizing & corner optimization (gm/Id methodology powered by AI + Rust SPICE).
+  - Transistor-level schematic capture with parameterized MOSFET/FinFET/GAAFET/BJT/MOM-cap/spiral-inductor Rust modules.
+  - Automated analog sizing & multi-corner optimization (`gm/Id` + **Adjoint Differentiable Sizing** across PVT & 15-year BTI/HCI aging corners).
   - Parameterized Layout Generators (**PCELLs**), common-centroid / interdigitated matching, guard rings, dummy fills, electromigration (EM) wire sizing.
-- **Digital IC / SoC RTL-to-GDSII Flow:**
-  - RTL authoring (SystemVerilog/Verilog/Chisel/VHDL), linting, CDC/RDC (Clock/Reset Domain Crossing) checks, formal equivalence checking.
-  - Logic synthesis, Design-for-Test (DFT: scan chain insertion, BIST, ATPG).
-  - Physical implementation: Floorplanning, macro placement, power grid synthesis, standard-cell placement, Clock Tree Synthesis (CTS), global & detailed routing, Static Timing Analysis (STA — setup/hold/OCV/POCV), dynamic IR drop.
+- **Digital IC / SoC RTL-to-GDSII & Low-Power (UPF) Flow:**
+  - RTL authoring (SystemVerilog/Verilog/Chisel/VHDL), linting, formal CDC/RDC checks, **IEEE 1801 UPF multi-voltage power-island/retention/isolation intent**, and formal Logic Equivalence Checking (LEC).
+  - Logic synthesis, **Design-for-Test (DFT: scan chain insertion, MBIST/LBIST, JTAG/IJTAG, compression & ATPG vector generation)**.
+  - Physical implementation: Hierarchical floorplanning, macro placement, power grid synthesis, standard-cell placement, Clock Tree Synthesis (CTS), global & detailed routing, MMMC Static Timing Analysis (OCV/POCV), dynamic EM/IR drop, and lithography/CMP hotspot awareness.
 - **Physical Verification & Sign-Off:**
-  - **DRC** (Design Rule Check), **LVS** (Layout vs. Schematic), **ERC**, **Antenna checks**, **PEX** (Parasitic R/C/CC extraction back-annotated directly into the Rust SPICE engine for post-layout simulation), CMP dummy metal fill.
+  - **DRC**, **LVS**, **ERC**, **Antenna checks**, **PEX** (parasitic R/L/C/CC extraction back-annotated directly into `signal-sim`), and CMP dummy metal fill.
 - **Packaging & Chiplet (2.5D/3D-IC) Co-Design:**
-  - Die bump/pad-ring planning, wirebond/flip-chip RDL routing, silicon interposer routing, UCIe die-to-die link verification, chip-package-board unified SI/PI/thermal co-simulation.
-- **Tape-Out Delivery (SFTP-Only):** Stream-out of verified GDSII / OASIS + mask-prep checklists directly to foundry/enterprise **Authorized SFTP**.
+  - Die bump/pad-ring planning, wirebond/flip-chip RDL routing, silicon interposer routing, UCIe / BoW die-to-die link verification, Co-Packaged Optics (CPO), and unified chip-package-board SI/PI/thermal/warpage co-simulation.
+- **Tape-Out Delivery (SFTP-Only):** Stream-out of verified GDSII / OASIS + cryptographic mask-prep manifests directly to foundry/enterprise **Authorized SFTP**.
 
 ### 3.5 FPGA, Embedded Firmware, BIOS & Software Co-Design
-- **FPGA Workspace:** Integrated HDL editor, IP integrator, live pin-planner bidirectionally linked to PCB symbols, timing constraint editor (SDC/XDC), RTL simulation, synthesis/P&R orchestration hooks (open-source Yosys/nextpnr built-in + enterprise vendor toolchain runners in isolated K8s worker pods).
-- **Register Map & Hardware-Software Interface (HSI) Generator:** Single canonical SystemRDL / JSON register map auto-generating RTL CSRs, CMSIS-SVD, C/C++/Rust register headers, Linux Device Tree (`.dts`), UEFI/ACPI tables, and HFS documentation tables.
-- **Firmware & BIOS IDE:** Embedded C/C++/Rust & UEFI/EDK2 code editor inside Signal, hardware-aware code intelligence (hovering a GPIO macro highlights the exact net and LED/sensor on the schematic!), cloud cross-compilation in sandboxed K8s build pods, and virtual hardware-in-the-loop testing against the Rust circuit simulator.
+- **FPGA Workspace:** Integrated HDL editor, IP integrator, live pin-planner & bank-voltage rules bidirectionally synced to PCB symbols, timing constraints (SDC/XDC), RTL simulation, and synthesis/P&R orchestration (built-in Yosys/nextpnr + isolated enterprise vendor runners).
+- **Register Map & Hardware-Software Interface (HSI) Generator:** Single canonical SystemRDL / JSON register map auto-generating glitch-free RTL CSRs, CMSIS-SVD, C/C++/Rust safe register crates, Linux Device Tree (`.dts`), UEFI/ACPI tables, and HFS documentation tables.
+- **Firmware, BIOS & Factory Bring-Up IDE:** Embedded C/C++/Rust & UEFI/EDK2 editor with schematic-aware LSP (hovering a GPIO macro highlights the exact schematic net and PCB trace!), cloud cross-compilation in zero-egress build pods, automated **Factory Bring-Up POST / Boundary-Scan Diagnostic Generator**, and 3-speed virtual HIL testing.
 
-### 3.6 BOM, Component Intelligence & Compliance
-- **Live Parametric BOM:** Real-time roll-up across multi-board/multi-subproject hierarchies, variant diffing, cost breakdown, lifecycle status (`Active`, `NRND`, `EOL`, `Obsolete`), dual-source alternate recommendations via Datasheet RAG, RoHS/REACH/Conflict-Minerals tracking.
-- **Compliance & Audit Trails:** Automated requirements verification matrix (RVM), design review checklists, electronic sign-off gates, and immutable revision history suitable for ISO 26262, DO-254, IEC 62304, and AS9100 workflows.
+### 3.6 BOM, Live Supply-Chain Intelligence, Sustainability & Legacy Migration
+- **Live Parametric & Privacy-Preserving Supply-Chain BOM:** Real-time roll-up across multi-board hierarchies, variant diffing, lifecycle (`Active`, `NRND`, `EOL`, `Obsolete`), PCN alerts, **k-anonymous live distributor stock/lead-time/pricing**, geographic fab-concentration risk, and instant **AI "Zero-Spin BOM Rescue"** drop-in alternates via Datasheet RAG.
+- **Sustainability & Digital Product Passport:** Real-time calculation of embodied carbon ($\text{kgCO}_2\text{e}$), 5-year active energy footprint, RoHS/REACH/PFAS-free/Conflict-Minerals compliance, and EU Digital Product Passport readiness.
+- **Sandboxed Clean-Room Legacy CAD & Sketch Migration (`signal-import`):** Inbound-only zero-network sandboxed importers converting legacy Altium, KiCad, OrCAD, Eagle, LTspice, GDSII/OASIS, LEF/DEF, and whiteboard block-diagram photos into native Signal `ElectronicModule` projects (outbound sharing remains strictly 2FA SFTP!).
+- **Regulated Compliance & Electronic Signatures:** Automated Requirements Verification Matrix (RVM) and **FDA 21 CFR Part 11 / ISO 26262 / DO-254 cryptographic sign-off gates** (`ML-DSA/Ed25519` + Step-Up 2FA).
 
 ---
 
 ## 4. AI-Agent-First Capabilities ("The Agent Does the Heavy Lifting")
 
-Unlike traditional tools with a passive sidebar chatbot, Signal is architected as an **Agent-Native Engineering Environment**:
+Unlike traditional tools with a passive sidebar chatbot, Signal is architected as a **Neuro-Symbolic, Physics-Grounded Engineering Environment**:
 
-1. **Specification-to-Architecture Generation:** Upload or draft a PRD → AI Agent generates a structured HFS, power budget, clock tree, interface matrix, and initial block diagram with datasheet-backed IC selections and engineering trade-off tables.
-2. **Autonomous Circuit Synthesis & Closed-Loop Verification:** Ask *"Design a 24V-to-5V 4A synchronous buck converter with <20mV ripple, >92% efficiency, AEC-Q100 qualified parts"* → Agent queries Universal Datasheet RAG, places real Rust component modules, calculates inductor/compensation/FET sizing, runs Rust DC/AC/Transient/Monte-Carlo/Thermal simulations, sees phase margin is 41°, automatically adjusts compensation network to hit 62°, proves compliance across `-40°C to +125°C`, and presents the verified circuit with waveforms and citations.
-3. **Interactive Canvas-Aware Co-Design:** Highlight any subcircuit, PCB region, IC block, or waveform anomaly and ask *"Why is this gate-drive ringing at 85MHz?"* → Agent inspects parasitic inductances in the live Rust graph, runs sensitivity analysis, and proposes exact gate resistor + snubber + layout loop-area fixes.
-4. **AI-Assisted Placement, Routing & DRC Auto-Healing:** Agent groups schematic functional blocks into optimal thermal/EMI PCB floorplans, proposes high-speed routing topologies, and iteratively resolves DRC/SI/LVS violations using deterministic engine feedback.
-5. **Automated Analog IC Sizing & RTL Generation:** Agent explores transistor `(W/L)` design space across PVT corners via parallel Rust SPICE sweeps; generates SystemVerilog RTL + UVM/SVA testbenches from HFS state machines.
-6. **Hardware-Aware Firmware & Bring-Up Generator:** Agent reads the live schematic netlist, IC datasheets (via RAG), and register maps to generate complete initialization drivers, I2C/SPI/PMIC bring-up code, power-on self-test (POST) sequences, and BIOS/Device-Tree tables.
-7. **Continuous Background Design Guardian:** Silently monitors edits across all collaborators for subtle issues—unterminated clock lines, missing decoupling caps near IC power pins, voltage rating margin violations, ESD vulnerability, or requirement regressions—surfacing actionable one-click fixes.
+1. **Specification-to-Architecture & Whiteboard Ingestion:** Draft a PRD or snap a whiteboard block diagram → AI Agent generates a structured HFS, UPF power tree, clock tree, interface matrix, and initial schematic block diagram with `SILVER`/`GOLD`-verified datasheet IC selections and trade-off tables.
+2. **Autonomous Neuro-Symbolic Circuit Synthesis & Adjoint Sizing:** Ask *"Design a 24V-to-5V 4A synchronous buck converter with <20mV ripple, >92% efficiency, AEC-Q100 qualified parts"* → Agent queries Universal Datasheet RAG (checking stock & errata), wires real Rust component modules on a speculative CoW branch, invokes **`signal-diff-sim` Adjoint / Pareto optimization** to tune compensation & inductor/MLCC sizing in milliseconds, proves compliance across `-40°C to +125°C` + 15-year aging corners, and presents waveforms + verbatim citations.
+3. **Interactive Canvas-Aware Co-Design & Neural Previews:** Highlight any subcircuit, PCB region, IC block, or waveform anomaly and ask *"Why is this gate-drive ringing at 85MHz?"* → Agent inspects parasitic inductances in the live graph, runs adjoint sensitivity + `< 50 ms` PINN field preview, and proposes exact gate resistor + snubber + return-path layout fixes.
+4. **Multimodal Placement, Routing & DRC Auto-Healing:** Agent combines Vision-Canvas inspection with deterministic Rust electro-thermal placement and negotiated-congestion routing tools to iteratively clear DRC/SI/LVS/EM violations.
+5. **Automated Analog IC Sizing, Formal SVA & RTL Generation:** Agent optimizes transistor `(W/L)` across PVT/aging corners; synthesizes SystemVerilog RTL + formal SVA properties proven mathematically by `signal-formal`.
+6. **Hardware-Aware Firmware, BIOS & Post-Silicon Bring-Up:** Agent generates HAL drivers, PMIC sequencing, UEFI/Device-Tree tables, and factory self-tests—and correlates real lab oscilloscope captures against `signal-twin` during board bring-up.
+7. **Quiescent-State Background Design Guardian:** Runs silently on idle/commit boundaries (interrupting immediately *only* on catastrophic short-circuit/AbsMax hazards to avoid alert fatigue)—catching missing level shifters, MLCC DC-bias derating shortfalls, unterminated clocks, or requirement regressions with one-click fixes.
 
 ---
 
-## 5. Security, Governance & Zero-Exfiltration Experience
+## 5. Security, Multi-Repo BYO-Git & Complete Project Isolation
 
-Every product feature operates strictly inside Signal's Zero-Trust security boundary (detailed in [`07-security-encryption-dlp-and-sftp.md`](./07-security-encryption-dlp-and-sftp.md)):
-- **100% Cloud Web Platform:** Zero local installation, zero local design files.
-- **End-to-End Encrypted Persistence:** All project files, specs, schematics, layouts, firmware, and simulation results encrypted at rest (AES-256-GCM + KMS/BYOK) and in transit.
-- **No Export, No Print, No Screenshot:** Zero download buttons or APIs; printing disabled; Enterprise Zero-Leak mode renders designs on server GPUs and streams dynamically watermarked frames so raw IP never touches browser memory.
-- **2FA-Gated Authorized SFTP Delivery:** Enterprises (after approval-based onboarding) and Individuals configure authorized SFTP endpoints protected by mandatory 2FA. Manufacturing/release bundles leave Signal *only* through audited, encrypted SFTP pushes.
-- **Local Development Mode:** Supports instant Mac development with a local LLM default and local `Guest` user under `Signal Design, Inc.` (strictly compile-guarded out of production).
+Every product feature operates strictly inside Signal's Zero-Trust & Complete Project Isolation boundary ([`07`](./07-security-encryption-dlp-and-sftp.md), [`08`](./08-identity-enterprise-and-project-model.md), [`13`](./13-vcs-git-server-and-storage-analysis.md), [`15`](./15-application-security-and-project-isolation.md)):
+- **100% Cloud Web Platform & Complete Project Isolation:** Zero local design files; every Project runs in a dedicated, hardware-isolated Kubernetes Security Cell (Kata/gVisor MicroVM + Cilium eBPF default-deny + PostgreSQL RLS + per-project KMS DEK & SPIFFE SVID).
+- **Customer-Owned Multi-Repo BYO-Git + Provider Auth:** 1 Project provisions `<project>-meta` + neatly prefixed `<project>-<type>` repos in the customer's GitHub, GitLab, or Bitbucket namespace (`ENCRYPTED_VAULT` default for Enterprise, audited periodically by `services/vcs-auditor`), visible strictly to authorized Org/Repo users and reviewable by Org & Project Admins.
+- **Hybrid Post-Quantum Encryption, No Export/Print/Screenshot & 2FA SFTP-Only Egress:** Hybrid PQC (`ML-KEM-768` / `ML-DSA-65`) + AES-256-GCM encryption; Enterprise Zero-Leak GPU streaming with collusion-resistant forensic watermarks; manufacturing releases egress *exclusively* via **2FA-gated Authorized SFTP**.
+- **Local Development Mode:** Supports instant Mac Apple Silicon development with a default Local LLM and hard-guarded `Guest` user under `Signal Design, Inc.`.

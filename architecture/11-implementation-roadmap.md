@@ -37,61 +37,53 @@ flowchart LR
   - Multi-AI-IDE collaboration setup (`.cursor/rules/`, `AGENTS.md`, `coordination/TASK_BOARD.md`, Git worktree scripts).
 - **Exit Criteria:** A developer on macOS runs one bootstrap command, lands in the Angular shell as `Guest @ Signal Design, Inc.`, receives a health-check pong from both `signal-engine` and local Mac Ollama/MLX LLM, and Antigravity + Cursor merge parallel PRs without conflict.
 
-### Phase 1 — Core Rust Modular Component Engine, MNA SPICE & Schematic MVP
+### Phase 1 — Core Rust Modular Component Engine, Equilibrated MNA SPICE & Schematic MVP
 - **Deliverables:**
-  - `signal-component`: Full `ElectronicModule` trait (ports, tolerances, TCR, parasitics, thermal self-heating, SOA watchdog, fault injection, hierarchical subcircuits).
-  - `signal-lib-passive` & `signal-lib-semiconductor`: Resistors, MLCCs (DC-bias), Inductors (saturation), Diodes, BJTs, MOSFETs, Op-Amp macro, Voltage/Current sources.
-  - `signal-sim`: Pure-Rust sparse MNA solver supporting DC Operating Point, DC Sweep, AC Bode/Noise, Transient, and local parallel Monte Carlo.
-  - `signal-graph`: In-memory ECS graph with transactional Undo/Redo and instant Copy-on-Write (CoW) branching.
-  - Angular Schematic Canvas + Interactive Waveform Viewer + Live Component Parameter Inspector.
-- **Exit Criteria:** Series/parallel resistor chains, RLC filters, BJT/MOSFET amplifiers, and a synchronous buck converter simulate accurately (< 0.5% deviation vs. reference SPICE golden benchmarks) with live voltage/current/SOA probes in the Angular UI.
+  - `signal-core` & `signal-component`: Strongly-typed SI units (`m` vs `Meg` safe), `SecretBox`, Hybrid PQC primitives, and full `ElectronicModule` trait (charge/flux-conserving ports, tolerances, TCR, parasitics, thermal self-heating, SOA watchdog, fault injection, hierarchical subcircuits).
+  - `signal-lib-passive`, `signal-lib-semiconductor` & `signal-module-sdk` (multi-dialect SPICE parser): Resistors, MLCCs (DC-bias), Inductors (saturation), Diodes, BJTs, SiC/GaN MOSFETs, Op-Amp macro.
+  - `signal-sim` & `benchmarks/`: Ruiz-equilibrated `f64`/`f128` sparse MNA solver (`0.5-ULP` deterministic `core_math`), `C^2` smooth limiting, TR-BDF2, DC/AC/Noise/Transient/Monte-Carlo, and continuous **NGSPICE/XYCE Golden Parity Suite**.
+  - `signal-graph`: In-memory ECS graph with topological-invariant CRDT, per-actor selective causal Undo/Redo, and Copy-on-Write (CoW) branching.
+  - Angular Schematic Canvas + Color-Blind-Safe Palettes + Interactive Arrow-Streamed Waveform Viewer.
+- **Exit Criteria:** Series/parallel chains, RLC filters, BJT/MOSFET stages, and a 2 MHz GaN synchronous buck converter simulate deterministically (`ARM64 Mac == x86_64 Linux`, `< 0.2%` deviation vs. golden SPICE benchmarks) with live SOA probes in Angular.
 
-### Phase 2 — Kubernetes Stateful Project Pods, Multi-Repo BYO-Git, Provider Auth/Access Review & Unified Projects
+### Phase 2 — K8s MicroVM Project Pods, Two-Phase Multi-Repo BYO-Git, Provider Auth & Access Review
 - **Deliverables:**
-  - `services/vcs-connector` & `engine/crates/signal-git-sync`: 2FA-gated Customer BYO-Git setup via `GitProviderAdapter` supporting **GitHub** (Cloud/GHEC/GHES), **GitLab** (Cloud/Self-Managed EE), and **Bitbucket** (Cloud/Data Center); automatic **Multi-Repo-Per-Project provisioning** (`<project>-meta` + neatly prefixed `<project>-<type>[-<instance>]` repos created as each type is added), multi-repo RAM-only `gitoxide` + `jj-lib` sync, `ENCRYPTED_VAULT` (AES-256-GCM) vs. `PLAIN_CANONICAL` modes, and visual 3-way hardware diff.
-  - **Provider-Driven User Auth & Access Review Console:** GitHub/GitLab/Bitbucket OAuth/OIDC login (`provider_user_id`), strict Org + Repo user visibility enforcement (including per-Sub-Project repo RBAC & instant pod eviction on removal), and live **Org Admin & Project Admin Access Review Dashboards** with compliance attestation sign-offs and 2FA-gated revocation.
-  - `services/vcs-auditor`: Periodic (6h/daily + webhook) multi-provider Org/Group/Workspace security vulnerability & access-drift auditor (public-repo drift, unreviewed repo users, Org/Group 2FA/SSO, insecure legacy personal tokens, Secret Scanning, Dependabot/Dependency CVEs + OSV fallback, Posture Score 0–100, and 2FA-gated remediation).
-  - `signal-operator` (`kube-rs`) managing `ProjectSession` CRDs, Warm Standby Pod Pool, fenced distributed leases, and idle hibernation (zero customer files retained on Signal after pod termination).
-  - `session-broker` implementing **sticky routing** so 2+ concurrent authorized users opening Project X attach to the exact same Rust Engine Pod.
-  - Real-time CRDT multi-user sync, live cursors, presence, soft locks, and batched encrypted commits/checkpoints to each `<project>-<type>` repo.
-  - `identity-org` & `project-catalog`: Individual accounts, approval-gated Enterprise Onboarding, RBAC/ABAC, Multi-Type Projects (`PRD`, `HFS`, `SCHEMATIC`, `PCB`, `IC_*`, `FPGA`, `FIRMWARE`, `BIOS`), extensible metadata, cross-domain traceability links, Project Templates, and **Progressive UI Profiles (`EXPLORER` / `MAKER` / `PRO`)** with low-bandwidth vector delta transport.
-  - Integrated PRD & HFS structured spec editor inside the Angular IDE.
-- **Exit Criteria:** Creating a multi-type Project auto-provisions `<project>-meta`, `<project>-prd`, `<project>-schematic`, and `<project>-pcb` in the connected Git provider (or local mock); two authorized repo users join the exact same Pod while a non-member is denied (`403`) and a PCB-only user sees only `<project>-pcb`; Org & Project Admins review and attest the full user matrix; removing a user evicts their pod session immediately; `vcs-auditor` catches simulated public-repo/2FA/unreviewed-user drift.
+  - `services/vcs-connector` & `engine/crates/signal-git-sync`: 2FA-gated Customer BYO-Git setup (`GitProviderAdapter` for **GitHub**, **GitLab**, **Bitbucket**, `ORG_NAMESPACE` + student `USER_NAMESPACE`, custom PKI CA), automatic `<project>-meta` + `<project>-<type>` repo provisioning (bound by immutable `provider_repo_id`), **Two-Phase `Super-Commit` lockstep**, convergent `AES-256-GCM-SIV` `ENCRYPTED_VAULT` (95%+ Git dedup), and visual semantic diff (`libs/visual-diff`).
+  - **Provider-Driven User Auth & Access Review Console:** Dual-bound OAuth PKCE + SAML SSO, GraphQL/`ETag` roster sync, uniform `404` RBAC, contractor `expires_at`, and live **Org & Project Admin Access Review Consoles** with 21 CFR Part 11 `ML-DSA` attestations.
+  - `services/vcs-auditor`: Periodic + webhook multi-provider security vulnerability, drift & CVE auditor + Posture Score `0–100`.
+  - `signal-operator` (`kube-rs`) & `session-broker`: Linearizable K8s `Lease` fencing, predictive Warm Pool, in-pod Memory Governor, `< 150 ms` Live Pod Resize/Migration, Envoy zero-copy WebTransport/`turns:443` sticky relay, conflating ring buffers, and ephemeral BYOK continuity WAL.
+  - Multi-Type Projects (`PRD`, `HFS`, etc.), SPDX license gate, Templates, spatial review redlining (`libs/review`), and **Progressive UI Profiles (`EXPLORER` / `MAKER` / `PRO`)**.
+- **Exit Criteria:** Multi-repo Project provisions `<project>-*` repos with atomic `Super-Commit`s; two authorized users join the exact same Pod while unauthorized/contractor scopes are strictly isolated; live pod resize completes with zero dropped collaborators; `vcs-auditor` catches simulated drift.
 
-### Phase 3 — AI-Agent-First Orchestration, Multilingual Tutor & Universal Datasheet RAG
+### Phase 3 — Neuro-Symbolic AI Agents, Differentiable Sizing & Verified Datasheet/Supply-Chain RAG
 - **Deliverables:**
-  - `ai/datasheet-ingest`: Multi-modal PDF parser (tables, pinouts, AbsMax, curves, register maps) + automated SPICE-to-Rust module validation.
-  - `ai/rag-service`: Hybrid RAG (PostgreSQL parametric SQL + `pgvector` semantic + knowledge graph) with strict global vs. tenant-private NDA isolation.
-  - `ai/llm-gateway`: Unified router supporting Local Mac Ollama/MLX (default in local dev), VPC GPU vLLM, and zero-retention cloud APIs.
-  - `ai/orchestrator`: Supervisor + PRD/HFS Agent, Schematic Synthesis Agent, Simulation Verification Agent, and **Multilingual Socratic AI Tutor** (for `EXPLORER`/`MAKER` education users) executing closed-loop verify-and-fix iterations inside anonymous `jj` / CoW Rust branches with visual diffs & citations.
-- **Exit Criteria:** Prompting *"Design a 24V→5V 3A regulator meeting ripple & thermal specs"* autonomously selects datasheet-backed parts, builds the circuit on a CoW branch, iterates via Rust SPICE until all specs & Monte-Carlo corners pass, and commits cleanly upon engineer approval—working seamlessly on both Local Mac LLM and Cloud GPU models.
+  - `ai/datasheet-ingest`: Sandboxed **Dual-VLM consensus parser** (`orderable_mpn + package + die_rev` + Silicon Errata), 3-way Symbol-Footprint-STEP pin verifier, and `BRONZE`/`SILVER`/`GOLD` cryptographic trust badges.
+  - `ai/rag-service`: Physically partitioned `pgvector` HNSW indexes (`GLOBAL_VERIFIED` vs. per-org `ORG_PRIVATE_NDA` RLS) + **k-anonymous live supply-chain stock/lead-time & Embodied Carbon / PFAS Digital Product Passports**.
+  - `engine/crates/signal-diff-sim`, `signal-surrogate` & `signal-import`: **End-to-End Adjoint Differentiable Optimizer**, `< 50 ms` GPU PINN surrogate previews, and **Sandboxed Clean-Room Legacy CAD (KiCad/Altium/OrCAD) & Whiteboard Importer**.
+  - `ai/llm-gateway` & `ai/orchestrator`: **`GBNF` grammar-constrained decoding**, Dual-LLM prompt-injection quarantine, K-Hop cone-of-influence slicing, **Multilingual Socratic AI Tutor**, and **SignalBench-AI** 200-task benchmark.
+- **Exit Criteria:** Autonomous buck/LDO/filter synthesis converges in milliseconds via `signal-diff-sim` (zero LLM oscillation), produces an Immutable Design Proof Bundle, and passes all Monte-Carlo corners on both Local Mac LLM and VPC GPUs.
 
-### Phase 4 — Full PCB Suite, Zero-Leak GPU Streaming & 2FA-Gated SFTP Egress
+### Phase 4 — Full PCB, Harness, 3D EM, Zero-Leak `YUV 4:4:4` Stream & Atomic 2FA SFTP
 - **Deliverables:**
-  - `signal-geom` & `signal-pcb`: Exact nanometer geometry, R-tree spatial DRC, stackup + 2D impedance field solver, push-and-shove router, differential pairs, length tuning, copper pours, 3D PCB renderer, and in-memory Gerber X2 / ODB++ / IPC-2581 / BOM / CPL generators.
-  - `signal-render`: Server-side `wgpu` GPU renderer with WebRTC encrypted pixel/tile streaming + burned-in visible & invisible forensic watermarks (Enterprise Zero-Leak Mode).
-  - Full DLP Enforcement: Print blocking, privacy curtain, zero download endpoints, `ENCRYPTED_VAULT` + `vcs-auditor` pre-release security gate, Enterprise Secure Browser policy hooks.
-  - `sftp-egress`: **Mandatory Step-Up 2FA** (WebAuthn/TOTP) to register/verify SFTP targets (Enterprise & Individual), HSM ED25519 keys, host-key pinning, optional PGP encryption, 4-eyes approval, and immutable hash-chained audit logs.
-  - AI PCB Floorplan, Routing & DFM Auto-Repair Agent.
-- **Exit Criteria:** End-to-end flow from PRD → HFS → AI-verified Schematic → 6-layer high-speed PCB (zero DRC) → 2FA-approved SFTP push of Gerber/ODB++/BOM to a remote SFTP server, while verifying zero raw CAD payloads touch browser storage or DevTools in Zero-Leak Mode.
+  - `signal-geom`, `signal-pcb` & `signal-em3d`: Overflow-proof `i128`/Shewchuk exact predicates + arc/Bézier curves, 2D BEM + **GPU 3D Full-Wave EM**, analytical placer + push-and-shove/224G diff-pair router, multi-board cable/harness co-design, **IEEE 1149.1/1687 JTAG & ICT synthesis**, and RAM-only Gerber X2 / ODB++ / IPC-2581 writers.
+  - `signal-render`: Composited Multi-Pane GPU Atlas (`YUV 4:4:4` lossless `AV1-SCC`/WebP dirty tiles + motion stream + `80 ms` crisp settle) + **Tardos collusion-resistant forensic watermarks**.
+  - `sftp-egress`: Step-Up Passkey/burn-listed TOTP 2FA, socket-pinned anti-SSRF, disposable `russh` write-only workers, **atomic `.tmp.part` → SHA-256 read-back → `rename`**, Hybrid `ML-DSA-65` manifest signing, and GDPR-safe pseudonymous WORM Merkle audit logs.
+- **Exit Criteria:** PRD → HFS → AI Schematic → 8-layer high-speed PCB (zero DRC/SI errors) → 2FA atomic SFTP release verified end-to-end with razor-sharp Zero-Leak rendering behind a TCP-443-only firewall.
 
-### Phase 5 — Full IC / GPU / Chip Suite, Multi-Pod Federation, FPGA/FW/BIOS Co-Design & Plugin SDK
+### Phase 5 — IC / 100B-GPU Suite, Formal/UPF/Aging, 3-Speed FW Co-Sim & Digital Twin
 - **Deliverables:**
-  - `signal-ic`: Encrypted PDK ingestion (plus Open Silicon `Sky130` / `GF180` / `IHP SG13G2` packs), BSIM4/BSIM-CMG/PSP Rust transistor modules, sandboxed WASM PCELLs, custom analog mask layout editor, hierarchical DRC/LVS/PEX, RTL-to-GDSII burst orchestration, 2.5D/3D-IC chiplet/SiP packaging, and in-memory GDSII/OASIS SFTP release.
-  - **GPU/ASIC Scale-Out:** `SILICON_SCALE` hierarchical multi-pod federation (mounting verified abstract IP-block repos from the Enterprise's GitHub/GitLab/Bitbucket namespace across federated Project Pods) + Git LFS / Customer BYO-S3 pointer support for multi-GB PDKs and waveforms.
-  - Embedded Monaco IDE + LSP inside Signal for FPGA (`SystemVerilog`/`VHDL`), Firmware (`C`/`C++`/`Rust`), and BIOS (`UEFI`/`Device Tree`/`Register Maps`), bi-directionally synchronized with schematics/IC pinouts.
-  - Hardware-Firmware Co-Simulation (`signal-lib-firmware-bridge`) running virtual MCU code live against Rust SPICE peripherals.
-  - Elastic K8s CPU/GPU Burst Worker pool + **Multi-Physics WASM/Rust Domain Plugin SDK** (foundation for future Photonics, Quantum/Cryo-CMOS, and MEMS modules).
-- **Exit Criteria:** Open-source PDK (SkyWater 130nm / GF180) analog/digital IC block passes Schematic → Post-Layout PEX SPICE → DRC/LVS Clean → SFTP GDSII delivery; multi-block hierarchical SoC mounts across federated Project Pods from separate Enterprise Git IP repos; embedded firmware toggles a virtual GPIO and drives a simulated Rust buck/motor stage live in the browser.
+  - `signal-ic`, `signal-formal` & `signal-aging`: Encrypted foundry + Open-Silicon PDKs, BSIM-CMG/PSP + OpenVAF Verilog-A compiler, WASM PCELLs, **SAT/SMT/IC3 Formal & LEC (`signal-formal`)**, **IEEE 1801 UPF low-power verification**, **15-yr BTI/HCI/TDDB/EM aging (`signal-aging`)**, DFT/ATPG, hierarchical DRC/LVS/PEX, MMMC STA, UCIe 3D-IC & Co-Packaged Optics (CPO), and GDSII/OASIS SFTP release.
+  - **100B-Transistor GPU Scale-Out:** `SILICON_SCALE` federation via **signed immutable abstract views + `signal-federation-broker`** (zero direct pod-to-pod lateral traffic!).
+  - `signal-lib-firmware-bridge` & `signal-twin`: Embedded Monaco HDL/C/Rust/UEFI IDE, **3-Speed Co-Sim (`100+ MIPS` ISS → RTL → SPICE)**, and **Post-Silicon Lab Oscilloscope/VNA Digital Twin Calibration**.
+  - Multi-Physics WASM/Rust Domain Plugin SDK (Photonics, Quantum/Cryo-CMOS, MEMS).
+- **Exit Criteria:** Sky130/GF180 mixed-signal IC passes Schematic → Adjoint Sizing → Formal LEC/UPF → PEX/Aging SPICE → DRC/LVS Clean → atomic SFTP GDSII tape-out; RTOS boots at `100+ MIPS` and interacts live with simulated analog hardware.
 
-### Phase 6 — Enterprise Hardening, Complete Project Isolation Verification & General Availability
+### Phase 6 — Confidential Silicon Computing, Isolation Red-Teaming & General Availability
 - **Deliverables:**
-  - Enterprise BYOK/HYOK KMS, **Kata/Firecracker MicroVM & gVisor** pod sandboxing, Cilium eBPF zero-lateral-movement policies, **PostgreSQL RLS** enforcement, **SPIFFE/SPIRE** per-project SVIDs, anti-SSRF egress proxy, and **Falco/Tetragon** eBPF runtime quarantine.
-  - SAML/OIDC/SCIM enterprise IdP certification + SLSA Level 3 Cosign signed builds + Kyverno admission gates.
-  - Automated **Cross-Project Isolation & OWASP ASVS L3/LLM Red-Team Test Suite** + external penetration testing (MicroVM escape, BOLA/IDOR, RLS leakage, DLP/watermark bypass, AI prompt injection, SFTP/SSRF).
-  - Large-scale performance benchmarks (50,000-net PCB, multi-million-polygon IC block, 25 concurrent collaborators on one Project Pod).
-  - SOC 2 Type II, ISO 27001, TISAX, and ITAR-ready deployment blueprints.
-- **Exit Criteria:** Zero critical/high pen-test findings, 100% pass rate on automated cross-project isolation tests, SLA benchmarks met under load testing, production multi-region readiness complete.
+  - Enterprise BYOK/HYOK, **`CONFIDENTIAL_SILICON` (AMD SEV-SNP / Intel TDX + NVIDIA Confidential H100/B200 GPUs)**, Kata MicroVMs, Cilium eBPF + Tetragon/Falco auto-quarantine, SLSA L3 Cosign + Kyverno gates, and ≥2 Super Admin M-of-N break-glass recovery.
+  - Automated **Cross-Project Isolation & OWASP ASVS L3/LLM Red-Team Suite** + external penetration testing + 50,000-net PCB / 100B-transistor federated SoC load benchmarks.
+  - SOC 2 Type II, ISO 27001, TISAX, 21 CFR Part 11, and ITAR sovereign deployment certification.
+- **Exit Criteria:** Zero critical/high pen-test findings, 100% pass on cross-project isolation & golden physics suites, GA launch ready.
 
 ---
 
@@ -99,10 +91,10 @@ flowchart LR
 
 | Risk | Severity | Impact | Mitigation Built Into Architecture |
 |---|---|---|---|
-| **SPICE Non-Convergence on Nonlinear Switching / IC Circuits** | High | Simulation stalls or fails, undermining engineer & AI trust. | Multi-stage convergence ladder (Gmin stepping, source stepping, pseudo-transient continuation, analytical Jacobians per Rust module, golden benchmark CI suite against NGSPICE/Spectre references). |
-| **LLM Hallucinated Pinouts or Unsafe Circuit Designs** | High | Wrong footprints, burned hardware, or wasted engineering time. | Strict grounding via Hybrid RAG (structured pinout/AbsMax tables with citations) + mandatory deterministic validation in Rust `signal-sim` / ERC / SOA before any AI edit can be merged. |
-| **Browser DLP Bypass via OS Tools / Phone Camera** | High | Screenshot leakage despite web controls. | Defense-in-depth: Zero-Leak server-rendered pixel stream (no raw CAD in browser), burned-in visible + camera-resilient invisible forensic watermarks, focus curtain, and Enterprise Managed Browser OS-level capture blocking. |
-| **Kubernetes Project Pod Cold-Start Latency** | Medium | Sluggish UX when opening large IC/PCB projects. | Pre-warmed standby pod pool + streaming chunked S3 decryption + regional NVMe/RAM cache warming + idle grace window before hibernation. |
-| **Split-Brain Multi-User Pod Assignment** | High | Two pods load the same project concurrently, corrupting state. | Singleflight session activation + etcd/Redis fenced distributed leases + S3 WAL fencing-token verification. |
-| **Local Mac LLM Quality vs. Cloud Frontier Models** | Medium | Smaller local models struggle with complex multi-step tool calls. | Strict compact JSON tool schemas, structured RAG injection, deterministic error feedback from Rust engine, and instant `.env.local` tier override when deeper cloud reasoning is needed. |
-| **Parallel AI IDE (Antigravity + Cursor) Merge Collisions or Deadlocks** | Medium | Wasted cycles, broken builds, circular dependencies. | Contract-first sequencing, isolated Git worktrees, disjoint module swimlanes, and append-only coordination logs (fully defined in [`12-multi-ide-collaboration.md`](./12-multi-ide-collaboration.md)). |
+| **SPICE Precision Collapse or Non-Convergence on Switching/IC Circuits** | High | Simulation stalls or drifts on stiff circuits. | Ruiz matrix equilibration, `f128` iterative refinement, exact charge/flux conservation, `C^2` smooth limiting, TR-BDF2, Vector-Fitted passive `.sNp` macromodels, and continuous NGSPICE/XYCE golden CI suite. |
+| **LLM Hallucinated Pinouts, Bad OCR, or Parameter Oscillation** | High | Dead prototype boards or runaway token loops. | Dual-VLM consensus + 3-way Symbol/Footprint/STEP pin check (`SILVER`/`GOLD` badges), Neuro-Symbolic delegation of numerical sizing to `signal-diff-sim` Adjoint Pareto solver, and mandatory Rust ERC/SOA/Aging verification. |
+| **Multi-Repo Cross-Domain Skew or Git Provider Outage** | High | Pinout mismatch between schematic & firmware, or blocked work during GitHub/GitLab downtime. | Two-Phase `Super-Commit` (`repos.lock.json`) across `<project>-*` repos + Ephemeral BYOK-Encrypted Continuity WAL (`< 500 ms` RPO) surviving external Git outages. |
+| **Zero-Leak Video Blur, UDP Firewall Blocks, or Collusion Leaks** | High | Blurry 1px CAD wires, blocked enterprise network, or unattributed photo leak. | `YUV 4:4:4` lossless dirty-tile (`AV1-SCC`/WebP) + `80 ms` crisp settle, `turns:443`/WebTransport/WSS fallback, Tardos collusion-resistant watermarks + sub-pixel micro-jitter, and Enterprise Secure Browser OS capture lock. |
+| **Project Pod Cold-Start, OOMKill, or Split-Brain Dual-Pod** | High | Sluggish UX, dropped 20-user session, or corrupted commits. | Predictive CPU warm pool + parallel shallow `gitoxide` fetch (`< 1.5 s`), In-Pod Memory Governor + live pod resize/migration, and linearizable Kubernetes `Lease` (etcd Raft) fencing tokens. |
+| **Quantum "Harvest Now, Decrypt Later" & Cloud Host Snooping** | High | Long-term compromise of 2nm GPU / defense IP. | Hybrid Post-Quantum Crypto (`ML-KEM-768` + `ML-DSA-65`), convergent `AES-256-GCM-SIV` vault chunks, and `CONFIDENTIAL_SILICON` (AMD SEV-SNP + Confidential GPUs). |
+| **Local Mac LLM Tool-Call Fragility or Parallel AI-IDE Drift** | Medium | Broken JSON tool calls on 7B models or unit mismatches between Antigravity & Cursor. | `GBNF` grammar-constrained decoding (5–8 tools/step), SI-unit-suffixed Protobuf fields (`_nm`, `_uv`), build-time codegen, golden `contracts/fixtures/`, and 24h stale-task lease expiry. |

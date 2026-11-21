@@ -17,125 +17,110 @@ Hardware schematics, custom IC layouts, PDKs, firmware, and product specs are am
 
 ---
 
-## 2. Cryptographic & Envelope Encryption Architecture
+## 2. Hybrid Post-Quantum & Convergent Envelope Encryption Architecture
 
 ```mermaid
 flowchart LR
     subgraph KMSLayer["Key Management (HSM / Cloud KMS / Enterprise BYOK)"]
-        RootKEK["Tenant Master Key (KEK)\nSignal KMS or Customer BYOK/HYOK"]
+        RootKEK["Tenant Master Key (KEK)\nHybrid PQC (X25519 + ML-KEM-768)\n+ Confidential VM Attestation"]
     end
 
-    subgraph ProjectCrypto["Per-Project Key Hierarchy"]
-        DEK["Project Data Encryption Key (DEK)\nAES-256-GCM (Auto-Rotated)"]
-        WrappedDEK["Wrapped DEK\n(Stored with Project Metadata)"]
+    subgraph ProjectCrypto["Versioned Per-Project Keyring"]
+        DEK["Project DEK (v1..vN)\nAES-256-GCM / AES-256-GCM-SIV"]
+        WrappedDEK["Wrapped DEK Header\n(kek_id, dek_version, AAD)"]
     end
 
-    subgraph PodMem["Active K8s Project Pod (Volatile RAM Only)"]
-        Plain["Decrypted Design Graph & PDK\n(mlock'd / ZeroizeOnDrop, No Swap)"]
+    subgraph PodMem["Active K8s MicroVM Pod (Volatile RAM Only)"]
+        Plain["Decrypted Design Graph & PDK\n(SecretBox / ZeroizeOnDrop, No Swap,\nOptional AMD SEV-SNP + Confidential GPU)"]
     end
 
-    subgraph Persist["Encrypted Object Storage (S3)"]
-        Snap["Encrypted Project Snapshots\n+ Authenticated AEAD Tags"]
-        WAL["Encrypted WAL Event Chunks"]
-        Waves["Encrypted Simulation Waveforms"]
+    subgraph Persist["Partitioned Encrypted Persistence"]
+        VaultGit["Customer BYO-Git ENCRYPTED_VAULT\n(Entity-Chunked AES-256-GCM-SIV:\n95%+ Git Dedup & 3-Way Merge!)"]
+        LFS["Customer Git LFS / BYO-S3\n(Encrypted Waveforms, STEP, PDKs)"]
+        WAL["Signal Ephemeral Crash WAL\n(TTL <= 24h, Auto-Shredded on Git Push)"]
     end
 
-    RootKEK -->|"Wraps / Unwraps\n(Scoped SPIFFE Identity)"| WrappedDEK
-    WrappedDEK -->|"Unwrapped into RAM Only"| DEK
-    DEK <-->|"AES-256-GCM"| Plain
-    Plain -->|"Encrypted Before Leaving Pod"| Snap
-    Plain -->|"Encrypted Before Leaving Pod"| WAL
-    Plain -->|"Encrypted Before Leaving Pod"| Waves
+    RootKEK -->|"Unwraps ONLY for\nspiffe://signal/org/proj"| WrappedDEK
+    WrappedDEK -->|"RAM-Only"| DEK
+    DEK <--> Plain
+    Plain -->|"Encrypted Before Push"| VaultGit
+    Plain -->|"Encrypted Before Upload"| LFS
+    Plain -->|"Encrypted Continuity Buffer"| WAL
 ```
 
-### Cryptographic Standards
-- **Data-at-Rest Cipher:** `AES-256-GCM` with unique 96-bit random nonces per chunk and Additional Authenticated Data (`AAD = org_id || project_id || artifact_id || revision`) to prevent ciphertext substitution attacks.
-- **Enterprise BYOK / HYOK:** Enterprise tenants can bind their own AWS KMS, Azure Key Vault, Google Cloud KMS, or on-prem HSM (Hold Your Own Key). If an Enterprise revokes their key, every Project Pod immediately loses decryption capability and terminates active sessions within seconds ("Cryptographic Kill Switch").
-- **Database Column Encryption:** Sensitive fields in PostgreSQL (SFTP credentials/host metadata, SSO secrets, 2FA TOTP seeds) are encrypted at the application layer with Vault Transit keys before database insertion.
-- **Transport Security:** TLS 1.3 (strict cipher suites, HSTS preload) at the edge; mutual TLS (mTLS) with automatic 1-hour certificate rotation via SPIFFE/SPIRE across every internal service and Kubernetes pod.
+### Cryptographic & Quantum-Safe Standards
+- **Hybrid Post-Quantum Protection ("Harvest Now, Decrypt Later" Defense):** All external TLS 1.3, internal SPIFFE mTLS, and KMS key-encapsulation handshakes use **NIST FIPS 203 `ML-KEM-768` + `X25519`**; all release manifests and WORM audit roots use **NIST FIPS 204 `ML-DSA-65` + `Ed25519`**—protecting 20-year chip/defense trade secrets against future fault-tolerant quantum adversaries.
+- **Convergent Chunked Vault Cipher (`AES-256-GCM-SIV`):** Inside `ENCRYPTED_VAULT` BYO-Git repositories, `signal-git-sync` encrypts canonical entities (`SignalEntityId` blocks) using `AES-256-GCM-SIV` derived from `(Project_DEK_vN, entity_id)` with `AAD = org_id || project_id || repo_id || dek_version`. Unchanged sheets/traces produce identical ciphertext chunks—**preserving 95%+ Git packfile deduplication and structural 3-way merges** while historical commits remain readable across DEK rotations via `(kek_id, dek_version)` headers!
+- **`MUST_ENCRYPT` Taint Enforcement:** Foundry PDKs, IC mask layouts, and NDA component models carry an immutable `MUST_ENCRYPT` taint tag in `signal-core` that refuses plaintext serialization even if an Admin switches a repo to `PLAIN_CANONICAL`.
+- **Enterprise BYOK/HYOK & Confidential Computing (`CONFIDENTIAL_SILICON`):** Supports customer-held HSM keys (< 10 s cryptographic kill switch) plus optional **AMD SEV-SNP / Intel TDX Confidential VMs + NVIDIA H100/B200 Confidential GPUs** where Vault/BYOK verifies hardware CPU/GPU memory-encryption attestation before releasing keys.
 
 ---
 
-## 3. Anti-Export, Anti-Print & Anti-Screenshot DLP Controls
+## 3. Anti-Export, Anti-Print & Collusion-Resistant Anti-Screenshot DLP
 
-Signal applies **defense-in-depth Data Loss Prevention (DLP)** across backend, transport, and browser layers—while remaining architecturally transparent about physical/OS boundaries.
-
-### 3.1 Zero Export / Zero Download Enforcement
-- **Structural Absence:** There are **zero** HTTP endpoints returning Gerber, GDSII, schematic JSON, SPICE netlists, firmware archives, or PDF exports to a user's browser.
-- **Provider Org/Repo User Gating + `ENCRYPTED_VAULT` Ciphertext Protection:** Signal does not permanently store customer design files—every Project creates `<project>-meta` plus neatly prefixed per-type repositories (`<project>-prd`, `<project>-schematic`, `<project>-pcb`, `<project>-ic-*`, `<project>-firmware`, `<project>-bios`, etc.) inside the customer's connected **GitHub Organization**, **GitLab Group**, or **Bitbucket Workspace/Project**. Only authenticated users present in that Org and listed on the specific repo(s) can view/edit them in Signal (reviewable live by both **Organization Admins** and **Project Admins**). Crucially, for Enterprise Zero-Leak tenants, **`ENCRYPTED_VAULT` mode** AES-256-GCM encrypts design files with KMS/BYOK *before* committing—so **even an authorized repo member running `git clone` locally receives unreadable ciphertext**, while **`services/vcs-auditor`** continuously detects public-repo drift, unreviewed access changes, disabled Org/Group 2FA, insecure personal tokens, and Secret/CVE alerts (see [`13-vcs-git-server-and-storage-analysis.md`](./13-vcs-git-server-and-storage-analysis.md)).
-- **API & Header Hardening:** Every API response carries `Cache-Control: no-store, no-cache, must-revalidate, private`, `Pragma: no-cache`, and strict Content-Security-Policy (`CSP`) disallowing data exfiltration to unauthorized origins.
-- **Clipboard & Drag-Drop Lockdown:** Copy/cut/drag-export of schematic blocks, netlists, code files, and spec text to the OS clipboard is disabled in Enterprise Strict Mode (internal in-app clipboard lives strictly inside the Rust Project Pod!).
+### 3.1 Zero Export / Zero Download & Encrypted Cloud Clipboard
+- **Structural Absence:** There are **zero** HTTP endpoints returning Gerber, GDSII, schematic JSON, SPICE netlists, firmware archives, or PDF exports to a browser.
+- **Provider Org/Repo User Gating + `ENCRYPTED_VAULT` Ciphertext Protection:** Only authenticated users present in the customer's GitHub Org, GitLab Group, or Bitbucket Workspace and listed on `<project>-meta` / `<project>-<type>` can view/edit them in Signal (reviewable live by Org & Project Admins). Under `ENCRYPTED_VAULT`, even an authorized repo member running `git clone` locally receives unreadable ciphertext, while `services/vcs-auditor` continuously scans for drift (see [`13-vcs-git-server-and-storage-analysis.md`](./13-vcs-git-server-and-storage-analysis.md)).
+- **Clipboard Lockdown + Authorized Cloud Clipboard:** OS clipboard copy/cut/drag of CAD data is blocked in Enterprise Strict Mode; legitimate cross-project subcircuit reuse uses Signal's **Pod-to-Pod Encrypted Cloud Clipboard** (verifying `source:read` + `dest:write` RBAC + audit log—zero bytes touch the OS clipboard!).
 
 ### 3.2 Anti-Print Enforcement
-- Global print suppression stylesheet (`@media print { html, body { display: none !important; visibility: hidden !important; } }`) paired with a watermarked blank notice (`"Printing is disabled by Signal Security Policy"`).
-- Keyboard shortcut interception (`Ctrl+P`, `Cmd+P`, `Ctrl+S`, `Cmd+S`), `window.print` override, and `beforeprint` event blanking.
+- Global `@media print` blanking stylesheet, `Ctrl/Cmd+P` & `Ctrl/Cmd+S` interception, `window.print` override, and `beforeprint` canvas purge.
 
-### 3.3 Multi-Layered Anti-Screenshot & Anti-Capture Architecture
-
-> **Architectural Honesty Note:** No standard consumer web browser alone can physically block an external smartphone camera or a privileged OS kernel screenshot tool. Signal therefore combines **four complementary layers** to eliminate silent IP theft and achieve Enterprise/ITAR-grade deterrence and enforcement:
+### 3.3 Multi-Layered Anti-Screenshot & Collusion-Resistant Watermarking
 
 | Layer | Control Mechanism | What It Stops |
 |---|---|---|
-| **Layer 1: Zero-Raw-IP Pixel Streaming** | In Enterprise Zero-Leak Mode, the browser NEVER receives vector geometry, component netlists, GDSII layers, or source text buffers—only an encrypted, resolution-capped WebRTC/WebTransport render stream from the Rust GPU Pod. | Stops DevTools inspection, HAR capture, DOM scraping, memory dumping, and browser extension theft of raw CAD files. |
-| **Layer 2: Server-Burned Visible & Invisible Forensic Watermarks** | `signal-render` burns two watermarks directly into GPU frames *before* transmission: (1) subtle translucent diagonal overlay (`user@company.com • IP • UTC timestamp • session_id`), and (2) **imperceptible steganographic watermark** resilient to cropping, compression, and even **smartphone photos of the monitor**, allowing leaked images to be traced cryptographically back to the exact user and second! | Strongly deters and forensically attributes OS screenshots, screen recordings, and phone-camera photos. |
-| **Layer 3: Browser Behavioral Deterrence** | Instant **Privacy Curtain** (blurs/blanks canvas immediately on `window.blur`, tab switch, DevTools open detection, or `PrintScreen` key), blocks `navigator.mediaDevices.getDisplayMedia` capture prompts inside the app, and enforces idle screen lock. | Blocks casual OS snipping tools (`Cmd+Shift+4`, Windows Snipping Tool focus-steal) and browser screen-recorders. |
-| **Layer 4: Enterprise Managed Endpoint / Secure Browser Enforcement** | Native integration hooks for **Enterprise Secure Browsers** (Chrome Enterprise Premium, Island, Talon) and Managed VDI/MDM policies that enforce **OS-level screenshot blocking** (`FLAG_SECURE` / macOS screen-capture denial / Windows `SetWindowDisplayAffinity`), plus optional hardware-DRM protected video frames (EME/Widevine L1). | Enforces hard OS-level screenshot & screen-recording prevention on managed corporate devices. |
+| **Layer 1: Zero-Raw-IP `YUV 4:4:4` Hybrid Stream** | Browser receives ONLY composited GPU `YUV 4:4:4` lossless dirty-tiles / motion frames from `signal-render`—never raw netlists, footprints, GDSII polygons, or source models. | Stops DevTools inspection, HAR capture, DOM scraping, memory dumping, and browser extension theft of raw CAD files. |
+| **Layer 2: Tardos Collusion-Resistant Steganography & Micro-Jitter** | `signal-render` burns: (1) translucent session overlay (`user • IP • UTC • session_id`), (2) **Tardos-code spread-spectrum frequency-domain watermark** resilient to cropping, rotation, phone-camera moiré, and **multi-insider pixel-averaging collusion**, plus (3) **sub-pixel electrically-invariant label/wire-jog micro-jitter** unique per session! | Forensically attributes OS screenshots, screen recordings, colluding insider leaks, and smartphone photos back to the exact user and second. |
+| **Layer 3: Browser Behavioral Deterrence** | Instant **Privacy Curtain** on `window.blur`, tab switch, DevTools detection, or `PrintScreen`; blocks `getDisplayMedia` capture; idle screen lock. | Blocks casual OS snipping tools and browser screen-recorders. |
+| **Layer 4: Enterprise Secure Browser / MDM Enforcement** | Native hooks for **Chrome Enterprise Premium, Island, Talon**, and VDI/MDM enforcing **OS-kernel screenshot blocking** (`SetWindowDisplayAffinity` / macOS screen-capture denial / `FLAG_SECURE`) + optional hardware DRM (EME/Widevine L1). | Enforces hard OS-level screenshot & recording prevention on managed corporate endpoints. |
 
 ---
 
-## 4. Authorized Secure SFTP-Only Sharing & Manufacturing Delivery
+## 4. Authorized Secure SFTP-Only Sharing & Atomic Delivery
 
-Because organizations *must* eventually send verified Gerbers to PCB fabs, GDSII files to silicon foundries, or firmware binaries to contract manufacturers, Signal provides **one rigorously controlled, audited egress channel: Authorized Secure SFTP**.
+### 4.1 Mandatory Phishing-Resistant Step-Up 2FA
+- **Enterprise & Individual Parity:** Registering, editing, rotating keys on, deleting, or pushing to ANY SFTP server requires **fresh Step-Up 2FA** (**WebAuthn/FIDO2 Passkey** strongly preferred; RFC 6238 TOTP supported with `±1` step skew tolerance + **Redis single-use TOTP nonce burn-list** preventing 90-second replay; SMS disallowed).
 
-### 4.1 Who Can Configure SFTP Servers (Mandatory 2FA!)
-- **Enterprise Accounts:** Only authorized **Enterprise Admins** (or delegated **Security Officers**) can add, modify, verify, or disable organization-wide or project-scoped SFTP destinations.
-- **Individual Accounts:** Individual users can add authorized SFTP servers to their personal profile.
-- **NON-NEGOTIABLE 2FA GATE:** Adding, editing, rotating keys on, or deleting ANY SFTP server—for **both Enterprise Admins and Individual users**—strictly requires **fresh Step-Up 2-Factor Authentication** (WebAuthn/FIDO2 hardware Passkey OR TOTP Authenticator app; SMS is disallowed as a primary SFTP 2FA factor due to SIM-swap risk).
-
-### 4.2 Authorized SFTP Onboarding & Release Flow
+### 4.2 Atomic & Sandboxed SFTP Onboarding & Release Flow
 
 ```mermaid
 sequenceDiagram
-    participant Admin as Enterprise Admin / Individual User
+    participant Admin as Enterprise Admin / Lead Engineer
     participant BFF as Node.js Control Plane + 2FA
-    participant SFTP as signal-sftp-egress Service
+    participant SFTP as Disposable russh Egress Worker
     participant HSM as Vault / HSM Key Custody
-    participant Pod as Rust Project Pod
-    participant Target as Enterprise Authorized SFTP Server
-    participant Audit as Immutable Audit Ledger
+    participant Pod as Rust MicroVM Project Pod
+    participant Target as Authorized SFTP Server
+    participant Audit as WORM Merkle Audit Ledger
 
     Note over Admin,Target: Phase A — Registering an Authorized SFTP Server
-    Admin->>BFF: Register SFTP Host (host, port, path, auth mode, SSH host fingerprint)
-    BFF->>Admin: Challenge: Mandatory Step-Up 2FA (WebAuthn / TOTP)
+    Admin->>BFF: Register SFTP Host (strict slug/path regex + SSH host fingerprint)
+    BFF->>Admin: Challenge: Fresh Step-Up 2FA (WebAuthn / Burn-Listed TOTP)
     Admin-->>BFF: Valid 2FA Assertion
-    BFF->>HSM: Generate Dedicated ED25519 SSH Keypair (Private Key Never Leaves HSM)
-    HSM-->>Admin: Display Public Key to Install on Enterprise SFTP Server
-    Admin->>BFF: Trigger Connection & Host-Key Pinning Verification
-    BFF->>SFTP: Probe Host & Verify Pinned SSH Host Fingerprint (Prevents MITM)
-    SFTP-->>Audit: Record Verified SFTP Target Creation
+    BFF->>HSM: Generate Per-Target ED25519 Keypair (Private Key Stays in HSM)
+    HSM-->>Admin: Public Key Installed on Remote SFTP Server
+    BFF->>SFTP: Socket-Pinned Anti-SSRF Probe & Verify Pinned Host Key
+    SFTP-->>Audit: Log Verified SFTP Target Creation
 
-    Note over Admin,Target: Phase B — Releasing a Verified Design Bundle
-    Admin->>BFF: Request Release Push (Project X Rev B -> Approved SFTP Target)
-    BFF->>Admin: Step-Up 2FA (+ Optional 2nd Approver 4-Eyes Sign-Off for Enterprise)
-    BFF->>Pod: Authorize Release Generation (Signed Short-Lived Release Token)
-    Pod->>Pod: Run Final DRC/ERC/Sign-Off -> Generate Gerber/GDSII/BOM in RAM
-    Pod->>SFTP: Stream Encrypted Archive + SHA-256 Manifest over mTLS gRPC
-    SFTP->>Target: Connect via Static NAT Egress IP + HSM SSH Key + Pinned Host Key
-    SFTP->>Target: Upload (Optional PGP-Encrypted) Bundle + Verify Remote Checksum
-    SFTP->>SFTP: Zeroize RAM Buffers
-    SFTP-->>Audit: Log Immutable Record (User, Approver, Project/Rev, SHA-256, Target, Timestamp)
+    Note over Admin,Target: Phase B — Atomic PQC-Signed Manufacturing Release
+    Admin->>BFF: Request Release Push (Step-Up 2FA + Optional 4-Eyes / 21 CFR Part 11 Sign-Off)
+    BFF->>Pod: Issue Short-Lived Release Token (After Pre-Release vcs-auditor Gate)
+    Pod->>Pod: Verify Super-Commit Lockstep + Final DRC/ERC/LVS/SOA -> Generate Bundle in RAM
+    Pod->>SFTP: Stream Encrypted Bundle + Hybrid ML-DSA-65/Ed25519 Signed Manifest over mTLS
+    SFTP->>Target: Outbound-Write-Only SSH2 (No PTY/Port-Fwd) -> Upload to .tmp.<release_id>.part
+    SFTP->>Target: Read-Back Remote SHA-256 Checksum -> Atomic SFTP rename to Final Filename
+    SFTP->>SFTP: Zeroize RAM & Destroy One-Shot Worker
+    SFTP-->>Audit: Append RFC-3161 Timestamped + ML-DSA Signed WORM Record
 ```
 
-### 4.3 SFTP Security Hardening Features
-- **Host-Key Pinning:** Strict verification of the remote server's SSH host fingerprint (`SHA256:...`); any unexpected fingerprint change immediately aborts transmission and alerts Security Officers.
-- **Static Outbound Egress IPs:** Signal's `signal-sftp-egress` cluster routes through dedicated, published static NAT IPs so enterprises can firewall their SFTP servers to accept connections *exclusively* from Signal.
-- **HSM-Backed SSH Keys:** Signal generates a unique `ED25519` keypair per SFTP target inside HSM/Vault—private keys are never exposed in plaintext. (Password-only SFTP is discouraged/blocked by default in Enterprise mode.)
-- **Optional Payload PGP Encryption:** Enterprises can upload their manufacturing partner's PGP public key so Signal automatically PGP-encrypts the Gerber/GDSII/BOM archive *before* writing bytes to the SFTP server.
-- **Dual-Control (4-Eyes) Release Policy:** Enterprise Admins can require a second authorized reviewer (e.g., Lead Engineer + Quality/Security Officer) to co-sign with 2FA before any design package leaves Signal.
-- **Target Scoping:** SFTP destinations can be scoped per-Project or per-Artifact Type (e.g., `"TSMC Foundry SFTP"` accepts ONLY `IC_GDSII` releases; `"PCB Fab SFTP"` accepts ONLY `PCB_GERBER/ODB++`).
+### 4.3 SFTP Hardening Against Partial Writes, Path Traversal & Hostile Servers
+- **Atomic `.tmp.part` → Verify → `rename`:** Eliminates half-written corrupted Gerbers/GDSII in foundry pickup folders; supports resumable chunk retries.
+- **Disposable Memory-Safe `russh` Workers:** Written in pure safe Rust (`russh`), executing each transfer inside a one-shot sandbox with **port forwarding, X11, agent forwarding, PTY, and arbitrary file-read disabled** (defeating hostile/compromised remote SFTP servers), plus **socket-level anti-SSRF IP pinning** on every `connect()`.
+- **Host-Key Pinning, Static NAT Egress IPs, HSM `ED25519` Keys, Optional Fab PGP Encryption, 4-Eyes Approval, and Artifact-Type Target Scoping** (`IC_GDSII` vs `PCB_ODBPP`).
 
 ---
 
-## 5. Immutable Audit & Compliance Readiness
+## 5. GDPR-Safe Pseudonymous WORM Merkle Audit Ledger
 
-Every security-critical event—login, SSO assertion, Enterprise approval, 2FA enrollment, SFTP server addition, project open, AI merge approval, DLP alert (e.g., repeated focus-loss/print attempt), and SFTP push—is written to an **append-only, cryptographically hash-chained audit ledger** backed by WORM (Write-Once-Read-Many) object storage, ready for **SOC 2 Type II, ISO 27001, TISAX (Automotive), and ITAR/EAR** enterprise deployments.
+Every security-critical event streams into an **RFC 3161 trusted-timestamped, `ML-DSA-65`-signed Merkle-Tree Transparency Log** stored in **S3 Object Lock (`COMPLIANCE` WORM mode)**. To reconcile immutable WORM storage with **GDPR Right-to-Erasure**, WORM records reference immutable `user_uuid` + `provider_user_id` pseudonyms while personal names/emails reside in a separately encrypted PII lookup table—enabling lawful per-user PII crypto-shredding without ever breaking cryptographic hash-chain integrity (`SOC 2 Type II`, `ISO 27001`, `TISAX`, `21 CFR Part 11`, `ITAR/EAR`).
