@@ -60,13 +60,13 @@ Managed by a custom pure-Rust Kubernetes Operator (`signal-operator` built with 
 stateDiagram-v2
     [*] --> WarmStandby: Pre-provisioned in Warm Pool
     WarmStandby --> Claiming: First user opens Project X (distributed lock acquired)
-    Claiming --> Hydrating: Scoped Vault Git + KMS token issued, clone project repo into RAM-only tmpfs
+    Claiming --> Hydrating: Scoped Vault Git + KMS token issued, mount <project>-meta & child <project>-<type> repos into RAM-only tmpfs
     Hydrating --> Active: Decrypted (if ENCRYPTED_VAULT) in RAM, registered in Redis directory
-    Active --> Active: Users 2..N & AI agents join same pod + batched commits to Customer Git Provider (GitHub/GitLab/Bitbucket)
+    Active --> Active: Authorized Org/Repo users & AI agents join same pod + batched commits to each <project>-<type> repo
     Active --> Draining: Last user disconnects (idle grace timer e.g. 15 min)
     Draining --> Active: User reconnects before timeout (zero cold start)
     Draining --> Checkpointing: Grace timer expires
-    Checkpointing --> Terminating: Final commit/encrypted checkpoint verified on Customer Git Repo, zeroize RAM & drop leases
+    Checkpointing --> Terminating: Final commits verified on Customer Git Repos, zeroize RAM & drop leases
     Terminating --> [*]: Pod destroyed (zero customer files retained on Signal!)
 ```
 
@@ -77,10 +77,10 @@ stateDiagram-v2
 2. **Never Reuse a Pod Across Different Tenants/Projects:**
    - Warm Standby pods are completely clean, uninitialized binaries waiting to be claimed. Once a pod finishes serving Project X and hibernates, **the pod is permanently destroyed** after zeroizing memory—eliminating any possibility of cross-tenant memory residue.
 3. **Sub-Second Startup via Warm Pools:**
-   - Maintaining a dynamically sized warm pool of pre-started `signal-pod` containers removes container image pull and Kubernetes scheduling latency (turning 15–30 s cold starts into **< 1.5 s** hydration times via shallow/sparse `gitoxide` fetch into RAM).
+   - Maintaining a dynamically sized warm pool of pre-started `signal-pod` containers removes container image pull and Kubernetes scheduling latency (turning 15–30 s cold starts into **< 1.5 s** hydration times via parallel shallow `gitoxide` fetches of `<project>-meta` and active `<project>-<type>` repos into RAM).
 4. **Crash Recovery & Durability (Zero Permanent Signal Storage):**
-   - Active editing transactions are pushed as clean commits to the customer's Git repository (GitHub, GitLab, or Bitbucket) and optionally mirrored to a short-lived encrypted checkpoint ref purged immediately once pushed.
-   - If a Kubernetes node unexpectedly dies, `signal-operator` detects lease expiry within 5 seconds, claims a fresh Warm Standby pod, re-hydrates from the customer's Git repo + latest checkpoint ref, and seamlessly reconnects all active clients via automatic WebSocket/WebTransport resume.
+   - Active editing transactions push clean commits to the corresponding `<project>-<type>` repository (GitHub, GitLab, or Bitbucket) and optionally mirror to a short-lived encrypted checkpoint ref purged immediately once pushed.
+   - If a Kubernetes node unexpectedly dies, `signal-operator` detects lease expiry within 5 seconds, claims a fresh Warm Standby pod, re-hydrates `<project>-meta` + active `<project>-<type>` repos, and seamlessly reconnects all active clients via automatic WebSocket/WebTransport resume.
 
 ---
 
@@ -88,14 +88,14 @@ stateDiagram-v2
 
 How does Signal ensure Engineer A in New York, Engineer B in Munich, and an AI Agent all hit the exact same Rust Engine Pod?
 
-1. **Authentication & Authorization:** Client authenticates via Node.js BFF (`JWT` + RBAC check confirming `project:read` or `project:write` on `project_id`).
+1. **Provider-Backed Authentication & Repo Authorization:** Client authenticates via Node.js BFF (`JWT` bound to immutable `provider_user_id` from GitHub / GitLab / Bitbucket) and passes live **Org + Repo membership verification** confirming exact `read`/`write`/`admin` rights on `<project>-meta` and each `<project>-<type>` repo.
 2. **Session Resolution:** Node.js `session-broker` queries Redis (`HGET session:active <project_id>`):
    - **Cache Hit (`Active` or `Draining`):** Immediately returns the internal mTLS endpoint (`pod_ip:port`, `fencing_token`, `pod_spiffe_id`).
    - **Cache Miss (`Cold`):** Calls `signal-operator` (`EnsureProjectSession(project_id, org_id, tier)`), which transitions a Warm Pod to `Active` and populates Redis. Concurrent requests for the same cold project coalesce onto the single in-flight activation promise (singleflight pattern) so only ONE pod is ever spawned!
 3. **Sticky Transport Attachment:**
    - **Control & Graph Sync:** Client maintains a persistent WebSocket / WebTransport stream through `session-broker` (or Envoy Gateway with custom dynamic upstream filter) pinned to that Pod's IP.
    - **Zero-Leak Media Stream:** For Enterprise pixel-streaming mode, WebRTC ICE/TURN signaling pairs the browser directly with the Pod's `signal-render` WebRTC engine (authenticated via short-lived session token bound to the user's JWT + watermark identity).
-4. **Role Enforcement Inside the Pod:** Every connection carries its signed RBAC claims (`viewer`, `editor`, `approver`, `ai_agent`), enforced inside the Rust engine itself (defense-in-depth).
+4. **Per-Sub-Project Role Enforcement & Instant Eviction Inside the Pod:** Every connection carries its signed per-repo RBAC map (`{ "ev-inverter-pcb": "write", "ev-inverter-schematic": "read" }`) enforced directly inside `signal-engine` (defense-in-depth—users never receive graph nodes, render layers, or AI context from unauthorized `<project>-<type>` repos!). If a user is removed from the GitHub Org / GitLab Group / Bitbucket Workspace or revoked in Signal's Access Review Console, `session-broker` immediately commands the Project Pod to evict their live stream.
 
 ---
 

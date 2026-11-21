@@ -58,13 +58,14 @@ Every passive, active, IC, RF, digital, and hierarchical subcircuit module in `s
 
 | Domain | Endpoints (Representative Contract) | Auth / Security Gate |
 |---|---|---|
-| **Identity & Auth** | `POST /v1/auth/register`, `POST /v1/auth/login`, `POST /v1/auth/sso/{org_slug}`, `POST /v1/auth/2fa/enroll`, `POST /v1/auth/2fa/verify-stepup` | Public / JWT / Step-Up 2FA |
+| **Identity & Provider Auth** | `POST /v1/auth/oauth/{github\|gitlab\|bitbucket}`, `POST /v1/auth/sso/{org_slug}`, `POST /v1/auth/2fa/enroll`, `POST /v1/auth/2fa/verify-stepup` | Public / Provider OAuth (immutable `provider_user_id`) / Step-Up 2FA |
 | **Enterprise Onboarding** | `POST /v1/enterprises/apply`, `POST /v1/enterprises/{id}/verify-domain`, `POST /v1/admin/enterprises/{id}/approve`, `PATCH /v1/enterprises/{id}/security-policy` | Corporate Email / Signal Platform Approver / Enterprise Super Admin |
-| **Projects & Sub-Projects** | `POST /v1/projects`, `GET /v1/projects`, `PATCH /v1/projects/{id}/metadata`, `POST /v1/projects/{id}/subprojects` (`PRD`, `HFS`, `SCHEMATIC`, `PCB`, `IC_*`, `FPGA`, `FIRMWARE`, `BIOS`), `GET /v1/projects/{id}/traceability` | JWT + Project RBAC |
+| **Projects & Prefixed Repos** | `POST /v1/projects` (provisions `<slug>-meta`), `GET /v1/projects` (filtered strictly to Org/Repo users!), `PATCH /v1/projects/{id}/metadata`, `POST /v1/projects/{id}/subprojects` (auto-creates `<slug>-<type>[-<instance>]` repo), `GET /v1/projects/{id}/traceability` | JWT + Live Git Org/Repo User RBAC |
 | **Project Templates** | `GET /v1/templates`, `POST /v1/templates` (`PERSONAL` / `ENTERPRISE`), `POST /v1/projects/from-template/{template_id}` | JWT + Template Scope RBAC |
 | **BYO-Git Provider Settings (2FA)** | `PUT /v1/vcs/connection` (`provider: GITHUB\|GITLAB\|BITBUCKET`, `api_base_url`, `namespace`, scoped token or App install, `ENCRYPTED_VAULT`/`PLAIN_CANONICAL`), `POST /v1/vcs/connection/verify`, `DELETE /v1/vcs/connection` | **Mandatory Fresh Step-Up 2FA** (Enterprise Admin / Individual Owner) |
+| **Access Review (Org & Project Admin)** | `GET /v1/orgs/{id}/access-review`, `GET /v1/projects/{id}/access-review`, `POST /v1/projects/{id}/access-review/attest`, `DELETE /v1/projects/{id}/repos/{repo_id}/members/{provider_user_id}` | **Org Admin** or **Project Admin** (**Step-Up 2FA** to revoke repo member) |
 | **Multi-Provider Security Auditor** | `GET /v1/vcs/security-audit/latest`, `POST /v1/vcs/security-audit/run`, `POST /v1/vcs/security-audit/findings/{id}/remediate` | Security Officer / Admin RBAC (**Step-Up 2FA** for remediation) |
-| **Active Sessions** | `POST /v1/projects/{id}/session/attach` → returns sticky WebSocket/WebTransport & WebRTC session token bound to the single active Project Pod | JWT + Project RBAC + Org DLP Policy |
+| **Active Sessions** | `POST /v1/projects/{id}/session/attach` → verifies live Org/Repo user list & returns sticky pod token scoped to authorized `<slug>-<type>` repos | JWT + Live Per-Repo RBAC + Org DLP Policy |
 | **Authorized SFTP (2FA)** | `POST /v1/sftp-targets`, `PUT /v1/sftp-targets/{id}`, `DELETE /v1/sftp-targets/{id}`, `POST /v1/sftp-targets/{id}/test-connection`, `POST /v1/projects/{id}/releases/push-sftp` | **Mandatory Fresh Step-Up 2FA** (+ Optional 4-Eyes Second Approver) |
 | **Audit & Compliance** | `GET /v1/orgs/{id}/audit-events`, `GET /v1/projects/{id}/compliance-report` | Security Officer / Auditor RBAC |
 
