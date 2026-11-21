@@ -1,0 +1,28 @@
+---
+description: Signal EDA Platform — Canonical Architecture, Security Invariants, and Deadlock-Free Parallel Collaboration Rules for Cursor (working alongside Antigravity)
+alwaysApply: true
+---
+
+# Signal — Cursor Workspace Rules
+
+You are **Cursor**, collaborating in parallel with **Antigravity** on **Signal** (by **Signal Design, Inc.**), a cloud-native, AI-Agent-First EDA platform (Pure Rust core engine in Kubernetes + Node.js BFF + Angular web UI).
+
+## Mandatory Context Reading
+1. Always treat `AGENTS.md` and `architecture/README.md` as the single source of truth.
+2. Never contradict architectural decisions documented in `architecture/01-*.md` through `architecture/12-*.md` without explicit user approval.
+3. Check `coordination/TASK_BOARD.md` and `coordination/agents/antigravity.md` (read-only!) after running `git fetch origin` before starting any new task.
+
+## Deadlock-Free Rules for Cursor (Parallel with Antigravity)
+1. **Branch Naming:** Always work on feature branches named `cursor/<task-id>-<slug>` (never push parallel feature work directly to `main`).
+2. **Contract-First:** If your task needs new Protobuf/OpenAPI/JSON schemas under `contracts/`, open a small `contract/<task-id>-<slug>` PR first, merge to `main`, and let both IDEs rebase. Never wait/poll for Antigravity — develop against frozen `contracts/` stubs.
+3. **Default Swimlane (Lane B):** Focus by default on `web/` (Angular), `services/` (Node.js BFF/control plane), and UI/AI bridge layers unless the user explicitly assigns a Lane A task with disjoint `touched_paths`. Never overlap `touched_paths` with an active Antigravity task.
+4. **Exclusive Status Journal:** Log your task claims, `touched_paths`, and status ONLY in `coordination/agents/cursor.md`. **NEVER edit `coordination/agents/antigravity.md`.** For cross-IDE handoffs, create a new immutable file `coordination/handoffs/YYYYMMDD-<id>.md`.
+5. **Migration Naming:** Always name DB migrations `YYYYMMDDHHMMSS_cursor_<slug>.sql` (never sequential numbers).
+6. **Clean Sync:** Run `git fetch origin && git rebase origin/main` before pushing/merging to keep history clean.
+
+## Hard Product & Security Invariants (Never Violate)
+- **Zero local design files:** Never write schematics, netlists, layouts, firmware, waveforms, or specs to `localStorage`, `sessionStorage`, `IndexedDB`, or browser downloads.
+- **No export / no print / anti-screenshot:** Never create HTTP file download/export endpoints for design files. Maintain print-blocking, watermark overlays, and Enterprise Zero-Leak mode compatibility.
+- **Authorized SFTP-only delivery with mandatory 2FA:** Every SFTP server add/edit/delete/push endpoint (Enterprise and Individual) must require fresh Step-Up 2FA (WebAuthn/TOTP), SSH host-key pinning, and audit logging.
+- **Rust owns physics & geometry:** Never implement SPICE, DRC, LVS, or Gerber/GDSII generation in Node.js or Angular.
+- **Local Mac Dev Mode:** Support local Mac LLM (Ollama/MLX) as default and `Guest` @ `Signal Design, Inc.` ONLY behind strict `SIGNAL_ENV=local` + compile-time `dev-guest-auth` guards that cannot compile into production.
