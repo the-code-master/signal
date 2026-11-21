@@ -33,7 +33,7 @@ flowchart TB
     end
 
     subgraph Tier2["Tier 2: Dedicated API & Engine Bridge Tier (pool-api — Separate Node/Pod)"]
-        ApiGw["signal-api-gateway + Control-Plane Node.js 22 Services\n(Auth/SSO/2FA, RBAC @Require*, Projects, Parts, PLM-Ops, Release API)"]
+        ApiGw["signal-api-gateway + Control-Plane Node.js 22 Services\n(Auth/SSO/2FA, RBAC @Require*, Projects, Parts, PLM-Ops, Collab-Hub, Release API)"]
         Bridge["signal-engine-bridge (Envoy HTTP/3 WebTransport + gRPC/Arrow Relay)\nEd25519 Ticket Check + Multi-Version Sticky Router + SPIFFE mTLS"]
     end
 

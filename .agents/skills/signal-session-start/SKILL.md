@@ -25,7 +25,7 @@ Execute this exact sequence before modifying any repository file. Never guess co
    - Default swimlanes: Lane A (Antigravity: `engine/**`, `benchmarks/**`, `infra/k8s/**`, `ai/datasheet-ingest/**`, `ai/rag-service/**`), Lane B (Cursor: `web/**`, `services/**`, `ai/orchestrator/**`), Shared Governed Zone (`contracts/**`, `architecture/**`, `AGENTS.md`, `.cursor/rules/**`, `infra/local/**`, `VERSION`, `justfile`, `releases/**` — serialized PRs only).
    - If overlap exists, invoke `signal-cross-ide-handoff` and pivot to the next unblocked disjoint task.
 5. **Read Governing Specs Narrowly:**
-   - Consult ONLY the matching `architecture/01..20-*.md` and `docs/engineering/*.md` sections needed for the task (avoid ingesting unrelated specs).
+   - Consult ONLY the matching `architecture/01..21-*.md` and `docs/engineering/*.md` sections needed for the task (avoid ingesting unrelated specs).
 6. **Branch From Latest `origin/main` (Implementation Work):**
    - Antigravity: `git checkout -b ag/<task-id>-<slug> origin/main`
    - Cursor: `git checkout -b cursor/<task-id>-<slug> origin/main`

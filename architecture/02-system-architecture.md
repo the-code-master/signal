@@ -180,11 +180,11 @@ signal/
 ├── justfile                   # Default monorepo entrypoint: dev, dev-k8s, build, test, release, deploy
 ├── .github/workflows/         # Automated PR gate, release notes/SemVer/SLSA L3/Cosign & GitOps deploy
 ├── releases/                  # compatibility.json (N-2 + physics_determinism_epoch), changesets/ & notes/vX.Y.Z.{md,json}
-├── architecture/              # Master design, security, 148-flaw, 120-feature, Parts, CAD/CAM/PLM & Ops (01..20)
+├── architecture/              # Master design, security, 148-flaw, 120-feature, Parts, CAD/CAM/PLM, Ops & Collab (01..21)
 ├── contracts/                 # Source of truth: Protobuf (.proto), OpenAPI, JSON Schemas, Golden Fixtures
 │   ├── proto/signal/v1/       # SI-unit-suffixed gRPC (int64 -> bigint) + Arrow binary framing contracts
-│   ├── openapi/               # Control-plane REST APIs (incl. Platform Version & In-App Release Notes)
-│   ├── schemas/               # Datasheet, Universal Parts, MCAD/CAM/3D-Print, BOM/ECO/MCN/PCN/Deviation, Release & SFTP
+│   ├── openapi/               # Control-plane REST APIs (incl. Platform Releases, PLM-Ops & Collab/Reviews)
+│   ├── schemas/               # Datasheet, Universal Parts, MCAD/CAM/3D-Print, BOM/ECO/MCN/PCN, Release, Collab & SFTP
 │   ├── fixtures/              # Cross-language golden conformance vectors (Antigravity <-> Cursor)
 │   └── transcripts/           # Stateful multi-step gRPC/WebTransport conformance transcripts (*.jsonl)
 ├── engine/                    # Pure Rust Workspace (Cargo workspace — shared build-time proto codegen)
@@ -228,6 +228,7 @@ signal/
 │   ├── project-catalog/       # Multi-repo Projects, metadata, SPDX license gate, Templates, Portfolio DAG
 │   ├── parts-registry/        # Universal Parts search, BLAKE3 CAS gateway, Org AVL overlays & Where-Used scans
 │   ├── plm-ops/               # Native ECN/ECO, MCN, PCN, Deviation/Waiver, NCR/CAPA, CTB supply-chain & ERP sync
+│   ├── collab-hub/            # Cross-Team Channels, Entity Threads, Huddles, Project Status & Auto Weekly/Monthly Reviews
 │   ├── vcs-connector/         # 2FA BYO-Git settings (GitHub/GitLab/Bitbucket), GraphQL/ETag sync
 │   ├── vcs-auditor/           # Periodic multi-provider security posture, drift, CVE & contractor-expiry auditor
 │   ├── session-broker/        # Sticky pod resolution, Ed25519 stream tickets, FinOps metering & cloud clipboard
@@ -240,10 +241,10 @@ signal/
 │   └── rag-service/           # 3-Tier Sharded Hybrid RAG + Bulk-Mirrored/Chaff-Padded supply-chain & carbon
 ├── web/                       # Angular 19+ Web Platform (Tier 1 Separate Web Pod: signal-web)
 │   ├── apps/signal-web/       # Main IDE shell, Omni-Palette, Radial Menu, Multi-Monitor, What's New & 120 FPS HUD
-│   └── libs/                  # Centralized UI Ecosystem (design-system, ui-kit, workspace-bus) + 22 Lazy Workbenches
+│   └── libs/                  # Centralized UI Ecosystem (design-system, ui-kit, workspace-bus) + 23 Lazy Workbenches
 │                              #   (schematic, pcb, ic, sim-viewer, code-ide, specs, visual-diff, review, admin,
 │                              #   magnetics, power-studio, emc-lab, safety-wcca, fpga-studio, harness-3d, dfm-panel,
-│                              #   library-studio, bringup-lab, academy, mcad-studio, cam-print, plm-ops)
+│                              #   library-studio, bringup-lab, academy, mcad-studio, cam-print, plm-ops, collab-hub)
 ├── benchmarks/                # Continuous NGSPICE parity, Sky130 DRC/LVS, IPC-2581 & SignalBench-AI suites
 ├── infra/                     # Default Monorepo Build/Deploy/Local Infra (20-*)
 │   ├── docker/                # Multi-arch (amd64/arm64) Dockerfiles (web, api, engine-bridge, rust-pod, operator, ai)

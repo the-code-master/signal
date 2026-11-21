@@ -1,6 +1,6 @@
 # Signal — Engineering Operating System (`docs/engineering/`)
 
-> **Purpose:** Bridges Signal's 20 architecture specifications ([`architecture/`](../../architecture/README.md)) into disciplined, high-velocity, **token-efficient Phase 0+ coding** shared seamlessly by **Antigravity**, **Cursor**, and human engineers.
+> **Purpose:** Bridges Signal's 21 architecture specifications ([`architecture/`](../../architecture/README.md)) into disciplined, high-velocity, **token-efficient Phase 0+ coding** shared seamlessly by **Antigravity**, **Cursor**, and human engineers.
 
 ---
 
@@ -12,8 +12,8 @@ To maximize both **human maintainability** and **AI token efficiency** across An
 flowchart TB
     L1["Layer 1 — Always-On Guardrails (Compact, Zero Truncation)\nAGENTS.md (< 12 KB) + .cursor/rules/signal-architecture.mdc (< 4 KB)"]
     L2["Layer 2 — Path-Scoped Rules (Loaded Only When Editing Matching Files)\n.cursor/rules/rust-engine.mdc | angular-frontend.mdc | nodejs-control-plane.mdc | contracts-and-schemas.mdc | ai-rag-and-security.mdc"]
-    L3["Layer 3 — On-Demand Portable Skills (Progressive Disclosure in Antigravity + Cursor)\n.agents/skills/*/SKILL.md (18 Procedural Workflows — Only Metadata Loaded at Idle)"]
-    Ref["Deep Reference Handbooks (Read When Designing New Modules)\ndocs/engineering/*.md + architecture/01..20-*.md"]
+    L3["Layer 3 — On-Demand Portable Skills (Progressive Disclosure in Antigravity + Cursor)\n.agents/skills/*/SKILL.md (19 Procedural Workflows — Only Metadata Loaded at Idle)"]
+    Ref["Deep Reference Handbooks (Read When Designing New Modules)\ndocs/engineering/*.md + architecture/01..21-*.md"]
 
     L1 --> L2
     L2 --> L3
@@ -24,7 +24,7 @@ flowchart TB
 |---|---|---|---|
 | **Always-On Core** | [`AGENTS.md`](../../AGENTS.md), [`.cursor/rules/signal-architecture.mdc`](../../.cursor/rules/signal-architecture.mdc) | Antigravity + Cursor (every turn) | Hard red lines & lookup pointers only; strictly `< 12 KB` / `< 4 KB` to prevent context truncation. |
 | **Path-Scoped Rules** | `.cursor/rules/*.mdc` (5 glob-scoped files) | Cursor (auto-attached by `globs`) & Antigravity (via `AGENTS.md` lookup) | Rust rules never pollute Angular turns; Angular rules never pollute Rust turns. |
-| **Portable Agent Skills** | [`.agents/skills/`](../../.agents/skills/README.md) (`18` `SKILL.md` folders) | **Both Antigravity AND Cursor** natively via the Open Agent Skills standard | Progressive disclosure: idle skills cost ~30 tokens of frontmatter; full instructions load strictly when matched. |
+| **Portable Agent Skills** | [`.agents/skills/`](../../.agents/skills/README.md) (`19` `SKILL.md` folders) | **Both Antigravity AND Cursor** natively via the Open Agent Skills standard | Progressive disclosure: idle skills cost ~30 tokens of frontmatter; full instructions load strictly when matched. |
 | **Deep Handbooks** | `docs/engineering/*.md` | Humans + Agents on demand | Complete style guides, module layouts, checklists, and Phase 0 launch playbooks. |
 
 ---
@@ -55,6 +55,7 @@ flowchart TB
 | `signal-rust-physics-and-geometry` | Lane A (Rust) | Implementing `ElectronicModule`, SPICE/Adjoint/EM/Power/EMC solvers, or `signal-geom` math |
 | `signal-universal-parts-registry` | Both | Building Universal Datasheet/Component repos, Master Pin Tables, IEEE/IEC Symbols, Parametric Padstacks & 3-Tier AVL |
 | `signal-cad-cam-plm-ops` | Both | Building Mechanical CAD, CNC CAM, 3D Printing, 3D Visualization, eBOM/mBOM/sBOM, ECN/ECO/MCN/PCN/Deviations & Ops |
+| `signal-collab-and-status-reviews` | Both | Building Zero-Leak 5-Team Collaboration channels/huddles, live Project Status Control Tower & Automated Weekly/Monthly/Status Reviews |
 | `signal-angular-workbench` | Lane B (UI) | Building Angular 19/20+ Zoneless Signals components, stores, or `web/libs/*` workbenches |
 | `signal-angular-ui-style-system` | Lane B (UI) | Enforcing `.component.ts`/`.html`/`.logic.ts`/`.model.ts` split, zero `@if`-soup, & centralized `@signal/design-system` + `@signal/ui-kit` styles |
 | `signal-zero-leak-canvas-and-dlp` | Both (UI + Render) | Implementing Dual-Plane `Zstd-QOI`/WebP streaming, `HudOverlayPrimitive`, watermarks, or DLP |

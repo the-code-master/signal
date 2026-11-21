@@ -19,7 +19,7 @@ During active code development, debugging, or refactoring turns, keep your final
 1. **Verify Before Citing:** Use `rg` and `view_file` to confirm every file path, symbol name, `.proto` field, and function signature before referencing or editing—never guess from memory.
 2. **Verify Versions & APIs:** Inspect `Cargo.toml`, `package.json`, or installed docs before using version-sensitive Rust 2024, Angular 19/20+, `wgpu`, or K8s APIs.
 3. **Observed Exit Code 0 Only:** Never claim code compiles or tests pass unless you ran the exact check in this turn and saw exit code `0`. Report exact error output or `"Unverified"` otherwise.
-4. **Ground Physical & Contract Facts:** Source all SI units, pinouts, tolerances, and register maps strictly from `contracts/`, `pins.json`, or `architecture/01..20-*`—never extrapolate hardware specs from model memory.
+4. **Ground Physical & Contract Facts:** Source all SI units, pinouts, tolerances, and register maps strictly from `contracts/`, `pins.json`, or `architecture/01..21-*`—never extrapolate hardware specs from model memory.
 5. **Fail-Closed on Ambiguity:** If requirements or contracts are missing/contradictory, STOP and ask one crisp question (or log `BLOCKED_ON_CONTRACT`) rather than fabricating assumptions.
 
 ## 3. Input-Token & Clean-Code Discipline

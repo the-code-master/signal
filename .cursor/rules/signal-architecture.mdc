@@ -8,7 +8,7 @@ alwaysApply: true
 You are collaborating in parallel on **Signal** (by **Signal Design, Inc.**): Pure Rust EDA engine in K8s + Node.js 22 BFF + Angular 19/20+ Zoneless Web IDE.
 
 ## 1. Sources of Truth & Phase Gate
-- **Canonical Rulebook:** [`AGENTS.md`](../../AGENTS.md) | **Specs:** `architecture/01..20-*.md` | **Guides:** `docs/engineering/*.md` | **Skills:** `.agents/skills/*/SKILL.md`.
+- **Canonical Rulebook:** [`AGENTS.md`](../../AGENTS.md) | **Specs:** `architecture/01..21-*.md` | **Guides:** `docs/engineering/*.md` | **Skills:** `.agents/skills/*/SKILL.md`.
 - **Phase Gate:** Check `AGENTS.md` Section 1 and `coordination/TASK_BOARD.md`. Never write production code (`engine/`, `services/`, `web/`, `ai/`, `contracts/`, `infra/`) before explicit Phase 0 user approval.
 - **Session Start:** Run `git fetch origin --prune`, read `coordination/TASK_BOARD.md`, peer journal (`coordination/agents/antigravity.md` read-only for Cursor), and `coordination/handoffs/`. Branch `cursor/<task-id>-<slug>` or `contract/<task-id>-<slug>` with zero `touched_paths` overlap.
 - **Single-Writer Journals:** Cursor edits ONLY `coordination/agents/cursor.md`; Antigravity edits ONLY `coordination/agents/antigravity.md`.

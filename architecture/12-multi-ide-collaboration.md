@@ -89,7 +89,7 @@ Because Signal's monorepo is cleanly layered, default swimlanes minimize overlap
 | Swimlane | Primary Directories | Default Primary Owner | Shared Interface Boundary |
 |---|---|---|---|
 | **Lane A — Core Engine, Physics, CAD/CAM/PLM Kernels & K8s Infra** | `engine/` (incl. `signal-parts`, `signal-mcad`, `signal-cam`, `signal-plm`), `benchmarks/`, `infra/k8s/` (3-Tier Helm/Karpenter/Cilium/GitOps), `infra/docker/Dockerfile.{rust-pod,operator,bridge}`, `ai/datasheet-ingest/`, `ai/rag-service/` | **Antigravity** (configurable per sprint) | Implements `contracts/proto/signal/v1/*` servers |
-| **Lane B — Web Platform, BFF, PLM-Ops/Parts Services & UX** | `web/` (incl. `libs/{library-studio,mcad-studio,cam-print,plm-ops}` + What's New UI), `services/` (incl. `parts-registry`, `plm-ops`, Release Notes API), `infra/docker/Dockerfile.{web,api}`, `ai/orchestrator/` (UI bridge) | **Cursor** (configurable per sprint) | Consumes `contracts/proto/*`, implements `contracts/openapi/*` |
+| **Lane B — Web Platform, BFF, PLM-Ops/Parts/Collab & UX** | `web/` (incl. `libs/{design-system,ui-kit,library-studio,mcad-studio,cam-print,plm-ops,collab-hub}` + What's New UI), `services/` (incl. `parts-registry`, `plm-ops`, `collab-hub`, Release Notes API), `infra/docker/Dockerfile.{web,api}`, `ai/orchestrator/` (UI bridge) | **Cursor** (configurable per sprint) | Consumes `contracts/proto/*`, implements `contracts/openapi/*` |
 | **Shared Governed Zone (Serialized Only)** | `contracts/`, `architecture/`, `docs/engineering/`, `.agents/skills/`, `.cursor/rules/`, `AGENTS.md`, `infra/local/`, `VERSION`, `CHANGELOG.md`, `justfile`, `releases/`, `.github/workflows/` | **Single-Writer PR Rule** (either agent may propose, merged sequentially to `main` before parallel consumers rebase) | Checked by CI breaking-change detector (`buf breaking`) |
 
 ---
@@ -146,10 +146,10 @@ Even with disjoint swimlanes, certain files traditionally attract conflicts in m
 
 To ensure both AI IDEs enforce the exact same Signal architecture, security invariants (Complete Project Isolation, 3-Tier K8s Pod/Node Separation, Hybrid PQC, Padmé-blinded Vault, Dual-Gate External Fencing, Fail-Closed Tier-0 Audit, zero local files, no export/print, mandatory 2FA for SFTP/BYO-Git, RAM-only decryption, local `Guest @ Signal Design, Inc.` compile-guards), 2–3 sentence coding replies, anti-hallucination discipline, and coding standards:
 
-1. **Single Source of Truth:** Canonical [`AGENTS.md`](../AGENTS.md) (`< 12 KB`) at the repository root points directly to `architecture/01..20`, `docs/engineering/*`, and `.agents/skills/*/SKILL.md` (`18` portable skills) and codifies all invariants, session-start rituals, engineering standards, and definition-of-done gates.
+1. **Single Source of Truth:** Canonical [`AGENTS.md`](../AGENTS.md) (`< 12 KB`) at the repository root points directly to `architecture/01..21`, `docs/engineering/*`, and `.agents/skills/*/SKILL.md` (`19` portable skills) and codifies all invariants, session-start rituals, engineering standards, and definition-of-done gates.
 2. **IDE Adapter Files & Portable Skills (Progressive Disclosure):**
-   - Cursor automatically loads [`.cursor/rules/signal-architecture.mdc`](../.cursor/rules/signal-architecture.mdc) (`alwaysApply: true`, `< 4 KB`) + 5 path-scoped `.cursor/rules/*.mdc` files → explicitly referencing `AGENTS.md`, `architecture/01..20`, and `.agents/skills/*/SKILL.md`.
-   - Both **Antigravity and Cursor** natively discover all **18 portable Open-Standard skills** under [`.agents/skills/`](../.agents/skills/README.md).
+   - Cursor automatically loads [`.cursor/rules/signal-architecture.mdc`](../.cursor/rules/signal-architecture.mdc) (`alwaysApply: true`, `< 4 KB`) + 5 path-scoped `.cursor/rules/*.mdc` files → explicitly referencing `AGENTS.md`, `architecture/01..21`, and `.agents/skills/*/SKILL.md`.
+   - Both **Antigravity and Cursor** natively discover all **19 portable Open-Standard skills** under [`.agents/skills/`](../.agents/skills/README.md).
 3. **Automated CI Guardrails (Enforced Equally on Both Agents via `just check` / `.github/workflows/pr-gate.yml`):**
    - `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace`, `cargo fmt --check`, `cargo vet`, `cargo deny check`, plus headless software-Vulkan (`lavapipe`) WGSL shader parity checks
    - `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm audit --ignore-scripts`, `helm lint` + `kubeconform`

@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Signal Angular Frontend Rules (`web/**`)
 
-Deep references: `docs/engineering/ANGULAR_ENGINEERING_GUIDE.md`, `docs/engineering/ANGULAR_UI_STYLE_GUIDE.md` | Skills: `signal-angular-workbench`, `signal-angular-ui-style-system`, `signal-zero-leak-canvas-and-dlp`, `signal-universal-parts-registry`, `signal-cad-cam-plm-ops`, `signal-release-deploy-topology`.
+Deep references: `docs/engineering/ANGULAR_ENGINEERING_GUIDE.md`, `docs/engineering/ANGULAR_UI_STYLE_GUIDE.md` | Skills: `signal-angular-workbench`, `signal-angular-ui-style-system`, `signal-zero-leak-canvas-and-dlp`, `signal-universal-parts-registry`, `signal-cad-cam-plm-ops`, `signal-collab-and-status-reviews`, `signal-release-deploy-topology`.
 
 ## 1. Modern Angular & Mandatory Multi-File Separation (Zero Inline Templates/Styles)
 - Standalone Components ONLY (`NgModule` forbidden), `ChangeDetectionStrategy.OnPush`, and **Zoneless** reactivity (`signal`, `computed`, `linkedSignal`, `effect`).

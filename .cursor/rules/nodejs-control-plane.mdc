@@ -6,10 +6,10 @@ alwaysApply: false
 
 # Signal Node.js Control Plane Rules (`services/**`)
 
-Skills: `signal-nodejs-bff-control-plane`, `signal-byo-git-and-vault`, `signal-universal-parts-registry`, `signal-cad-cam-plm-ops`, `signal-release-deploy-topology`, `signal-security-isolation-audit`.
+Skills: `signal-nodejs-bff-control-plane`, `signal-byo-git-and-vault`, `signal-universal-parts-registry`, `signal-cad-cam-plm-ops`, `signal-collab-and-status-reviews`, `signal-release-deploy-topology`, `signal-security-isolation-audit`.
 
 ## 1. Architecture & Clean Structure
-- Node.js 22 LTS + strict TypeScript (`strict: true`, `noUncheckedIndexedAccess: true`, `exactOptionalPropertyTypes: true`). Keep services (`api-gateway`, `identity-org`, `project-catalog`, `parts-registry`, `plm-ops`, `vcs-connector`, `vcs-auditor`, `session-broker`, `sftp-egress`, `audit-service`) 100% horizontally stateless in `pool-api` alongside native Envoy `signal-engine-bridge` zero-copy relay.
+- Node.js 22 LTS + strict TypeScript (`strict: true`, `noUncheckedIndexedAccess: true`, `exactOptionalPropertyTypes: true`). Keep services (`api-gateway`, `identity-org`, `project-catalog`, `parts-registry`, `plm-ops`, `collab-hub`, `vcs-connector`, `vcs-auditor`, `session-broker`, `sftp-egress`, `audit-service`) 100% horizontally stateless in `pool-api` alongside native Envoy `signal-engine-bridge` zero-copy relay.
 - Keep files `<= 300 LOC` with 3-line `/** Module / Invariants / Spec */` headers. Strictly separate `routes/`, `handlers/`, `policies/` (`@Require*` guards), `repos/` (RLS SQL), and `types/` (build-time generated contract DTOs).
 - Generate ALL API & gRPC types at build time from `contracts/` (`longAsBigint: true`) — NEVER hand-edit or commit generated stubs, and NEVER cast 64-bit `bigint` IDs/epochs to JS `number`.
 - Never execute EDA physics, SPICE, B-Rep CAD, CNC/3D slicing, DRC/LVS, routing, or Gerber/GDSII/STEP/G-code/3MF generation in Node.js.

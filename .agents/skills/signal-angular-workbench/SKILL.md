@@ -5,7 +5,7 @@ description: Scaffolds and builds clean, Zoneless, Signals-first Angular 19/20+ 
 
 # Signal Angular 19/20+ Workbench Builder (`web/**`)
 
-References: `docs/engineering/ANGULAR_ENGINEERING_GUIDE.md`, `docs/engineering/ANGULAR_UI_STYLE_GUIDE.md` | Specs: `architecture/06-*`, `17-*`, `18-*`, `19-*`, `20-*`.
+References: `docs/engineering/ANGULAR_ENGINEERING_GUIDE.md`, `docs/engineering/ANGULAR_UI_STYLE_GUIDE.md` | Specs: `architecture/06-*`, `17-*`, `18-*`, `19-*`, `20-*`, `21-*`.
 
 ## Workbench & Component File Structure (`web/libs/<domain>/`)
 ```text

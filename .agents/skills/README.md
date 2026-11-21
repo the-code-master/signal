@@ -4,7 +4,7 @@
 
 ---
 
-## Available Skills (18)
+## Available Skills (19)
 
 | Skill Name | Scope / Lane | Purpose |
 |---|---|---|
@@ -15,6 +15,7 @@
 | [`signal-rust-physics-and-geometry`](./signal-rust-physics-and-geometry/SKILL.md) | Lane A (`engine/`) | Implementing `ElectronicModule`, Saltation/`Revolve` SPICE, `i128`/Shewchuk & `0.5-ULP` determinism |
 | [`signal-universal-parts-registry`](./signal-universal-parts-registry/SKILL.md) | Both | Universal Datasheet/Component repo, Master Pin Table, IEEE/IEC Symbols, Parametric Padstacks & 3-Tier AVL |
 | [`signal-cad-cam-plm-ops`](./signal-cad-cam-plm-ops/SKILL.md) | Both | Integrated Mechanical CAD, CNC CAM, 3D Printing, 3D Visualization, eBOM/mBOM, ECN/ECO/MCN/PCN/Deviations & Ops |
+| [`signal-collab-and-status-reviews`](./signal-collab-and-status-reviews/SKILL.md) | Both | Zero-Leak 5-Team Collaboration Space, Huddles, Project Status Control Tower & Automated Weekly/Monthly/Status Reviews |
 | [`signal-angular-workbench`](./signal-angular-workbench/SKILL.md) | Lane B (`web/`) | Building Angular 19/20+ Zoneless Signals standalone workbenches (`web/libs/*`), `bigint`, WCAG |
 | [`signal-angular-ui-style-system`](./signal-angular-ui-style-system/SKILL.md) | Lane B (`web/`) | Enforcing `.component.ts`/`.html`/`.logic.ts`/`.model.ts` split, zero `@if`-soup & centralized `@signal/design-system` + `@signal/ui-kit` styles |
 | [`signal-zero-leak-canvas-and-dlp`](./signal-zero-leak-canvas-and-dlp/SKILL.md) | Both (`web/` + `engine/`) | Dual-Plane `Zstd-QOI`/WebP streaming, `HudOverlayPrimitive`, Multi-Monitor & Constellation DLP |

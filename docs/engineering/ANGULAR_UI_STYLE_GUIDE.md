@@ -145,7 +145,7 @@ web/libs/
 │           ├── dark-workbench.css # Default precision dark CAD workbench theme
 │           ├── light-studio.css   # High-legibility daylight engineering theme
 │           └── high-contrast.css  # WCAG 2.2 AAA + Okabe-Ito stipple/hatch accessibility theme
-└── ui-kit/                        # Complete reusable HTML Component Ecosystem consumed by ALL 22 workbenches
+└── ui-kit/                        # Complete reusable HTML Component Ecosystem consumed by ALL 23 workbenches
     └── src/components/            # Each component uses separate .ts + .html + .logic.ts + .model.ts + platform CSS!
 ```
 
@@ -154,7 +154,7 @@ web/libs/
 | Category | Canonical Classes (Use Across Entire Platform) | Design Guarantee |
 |---|---|---|
 | **Layout & Spacing** | `.sig-shell`, `.sig-dock`, `.sig-pane`, `.sig-split-h`, `.sig-split-v`, `.sig-row`, `.sig-row--between`, `.sig-stack`, `.sig-grid-2`, `.sig-grid-3`, `.sig-gap-{1..6}`, `.sig-pad-{1..6}`, `.sig-scroll-y` | Strict `4px` spatial rhythm; zero magic margins or rogue flex wrappers. |
-| **Surfaces & Chrome** | `.sig-panel`, `.sig-panel__header`, `.sig-panel__body`, `.sig-card`, `.sig-card--interactive`, `.sig-toolbar`, `.sig-statusbar`, `.sig-drawer`, `.sig-modal` | Identical elevation, border contrast, and header alignment across all 22 workbenches. |
+| **Surfaces & Chrome** | `.sig-panel`, `.sig-panel__header`, `.sig-panel__body`, `.sig-card`, `.sig-card--interactive`, `.sig-toolbar`, `.sig-statusbar`, `.sig-drawer`, `.sig-modal` | Identical elevation, border contrast, and header alignment across all 23 workbenches. |
 | **Typography & Engineering Data** | `.sig-heading-{1..4}`, `.sig-label`, `.sig-muted`, `.sig-mono` (`tabular-nums`), `.sig-si-pill`, `.sig-truncate` | Decimal points, nanometer coordinates, BOM costs, and voltages align vertically in every grid/HUD! |
 | **Semantic Status & Trust Badges** | `.sig-badge--{neutral,info,ok,warn,danger}`, `.sig-trust--{bronze,silver,gold}`, `.sig-diff--{added,removed,modified}` | WCAG 2.2 AA contrast + icon/text pairing (never color-only signaling!). |
 | **Controls & Navigation** | `.sig-btn`, `.sig-btn--{primary,secondary,ghost,danger}`, `.sig-btn--{sm,md}`, `.sig-input`, `.sig-select`, `.sig-field`, `.sig-field--error`, `.sig-tabs`, `.sig-tab--active` | Consistent focus rings (`:focus-visible`), keyboard navigation, and hover/active states. |
@@ -162,7 +162,7 @@ web/libs/
 
 ### 3.2 Complete Reusable HTML Component Ecosystem (`@signal/ui-kit`)
 
-Before writing ANY new UI markup in a workbench (`schematic`, `pcb`, `ic`, `mcad-studio`, `cam-print`, `plm-ops`, `library-studio`, `admin`, etc.), developers and AI agents MUST compose from `@signal/ui-kit`:
+Before writing ANY new UI markup in a workbench (`schematic`, `pcb`, `ic`, `mcad-studio`, `cam-print`, `plm-ops`, `collab-hub`, `library-studio`, `admin`, etc.), developers and AI agents MUST compose from `@signal/ui-kit`:
 
 | Family | Standardized Components (`@signal/ui-kit`) | Purpose Across Signal |
 |---|---|---|
