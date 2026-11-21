@@ -9,8 +9,8 @@
 
 | Status | Milestone | Notes |
 |---|---|---|
-| `DONE` | **Architecture, 112-Flaw Adversarial Hardening & Planning** | All 16 specification docs (`01`–`16` + `README.md`) published and 2-pass scrubbed across `architecture/`, `AGENTS.md`, and `.cursor/rules/signal-architecture.mdc`. |
-| `READY` | **Phase 0 — Foundation, SI-Unit Contracts & Local Mac Harness** | Ready to start once the user approves kicking off Phase 0 coding. |
+| `DONE` | **Architecture, 148-Flaw First-Principles Vetting & Planning** | All 16 specification docs (`01`–`16` + `README.md`) thoroughly vetted across math, GPU silicon, crypto, consensus, codecs & EDA sign-off (`F-001`–`F-148`) and 2-pass scrubbed across `architecture/`, `AGENTS.md`, and `.cursor/rules/signal-architecture.mdc`. |
+| `READY` | **Phase 0 — Foundation, `bigint` SI-Unit Contracts & Local Mac Harness** | Ready to start once the user approves kicking off Phase 0 coding. |
 
 ---
 
@@ -19,14 +19,14 @@
 ### Step 0A — Serialized Contract Freeze (Merge to `main` FIRST)
 | Task ID | Branch | Owner | Touched Paths | Deliverable | Status |
 |---|---|---|---|---|---|
-| `P0-01` | `contract/P0-01-core-contracts` | Antigravity or Cursor | `contracts/**` | Initialize Buf Protobuf (`signal/v1/*` with explicit SI-unit suffixes `_nm`, `_uv`, `_ps` + `vcs_sync`, `formal_verify`, `em_thermal`, `digital_twin`, `import_sandbox`), OpenAPI `control-plane.v1.yaml`, JSON schemas (`datasheet`, `template`, `sftp-manifest`, `super-commit-manifest`, `upf-power-intent`), and `contracts/fixtures/` golden round-trip payloads | `QUEUED` |
+| `P0-01` | `contract/P0-01-core-contracts` | Antigravity or Cursor | `contracts/**` | Initialize Buf Protobuf (`signal/v1/*` with explicit SI-unit suffixes `_nm`, `_uv`, `_ps` + mandatory `[jstype = JS_STRING]` / ES2020 `bigint` on all 64-bit fields + `vcs_sync`, `formal_verify`, `em_thermal`, `digital_twin`, `import_sandbox`), OpenAPI `control-plane.v1.yaml`, JSON schemas (`datasheet` w/ condition-parameterized curves, `template`, `sftp-manifest`, `super-commit-manifest`, `upf-power-intent`, `fab-capability-profile`, `ecn-change-order`), `contracts/fixtures/` golden round-trip payloads, and `contracts/transcripts/*.jsonl` stateful multi-step replays | `QUEUED` |
 
 ### Step 0B — Parallel Disjoint Execution (Run Simultaneously After `P0-01` Merges)
 | Task ID | Lane & Owner | Branch | Disjoint Touched Paths | Deliverable | Status |
 |---|---|---|---|---|---|
-| `P0-02` | **Lane A (Antigravity)** | `ag/P0-02-rust-workspace-skeleton` | `engine/**`, `benchmarks/**` | Cargo workspace (`signal-core` with `SecretBox<T>`, `signal-geom` with `i128`/Shewchuk + curves, `signal-graph`, `signal-component`, `signal-sim`, `signal-diff-sim`, `signal-git-sync` with 2PC `Super-Commit` & convergent `AES-256-GCM-SIV` + Hybrid PQC, `signal-pod`), `cargo vet`/`deny` config, `dev-guest-auth` guard, build-time `tonic` codegen | `BLOCKED_ON_P0-01` |
-| `P0-03` | **Lane B (Cursor)** | `cursor/P0-03-angular-node-skeleton` | `web/**`, `services/**` | Angular 19+ Signals IDE shell (`/org/:org_slug/project/:proj_slug`, Progressive Profiles, Okabe-Ito palettes, DLP print/storage guardrails), Node.js 22 stateless services (`api-gateway`, `identity-org`, `project-catalog`, `vcs-connector`, `vcs-auditor`, `session-broker`, `sftp-egress`, `audit-service`), `@Require*` uniform-`404` decorators, build-time TS contract codegen | `BLOCKED_ON_P0-01` |
-| `P0-04` | **Lane A (Antigravity)** | `ag/P0-04-local-mac-infra` | `infra/local/**` | Native `linux/arm64` Docker Compose (`dev:full`) + `< 1.5 GB RAM` SQLite/in-proc harness (`dev:lite`), `local-git-mock` (with `local-guest-0001` seeded in `REPO_ACCESS_ENTRY`), Envoy edge relay, `signal-egress-proxy`, DevKMS (Hybrid PQC), Mock SFTP, and `GBNF` local Ollama/MLX probe | `QUEUED` |
+| `P0-02` | **Lane A (Antigravity)** | `ag/P0-02-rust-workspace-skeleton` | `engine/**`, `benchmarks/**` | Cargo workspace (`signal-proto` shared build-time codegen + `cargo-hakari`, `signal-core` with `SecretBox<T>` + Hybrid PQC + 2-level `HKDF`, `signal-geom` with `i128`/Shewchuk + curves, `signal-graph`, `signal-component`, `signal-sim`, `signal-diff-sim` with Saltation/`Revolve` stubs, `signal-git-sync` with Dual-Fenced 2PC `Super-Commit` & Padmé-blinded `AES-256-GCM-SIV`, `signal-cell-wasm`, `signal-pod`), `cargo vet`/`deny` config, `dev-guest-auth` guard | `BLOCKED_ON_P0-01` |
+| `P0-03` | **Lane B (Cursor)** | `cursor/P0-03-angular-node-skeleton` | `web/**`, `services/**` | Angular 19+ Signals IDE shell (`/org/:org_slug/project/:proj_slug`, Route-Partitioned `COOP`/`COEP`, Dual-Plane `Zstd-QOI`/WebP + video viewport adapter, Progressive Profiles, Okabe-Ito palettes, DLP print/storage guardrails), Node.js 22 stateless services (`api-gateway`, `identity-org` w/ PKCE `SameSite=Lax -> __Host- Strict` upgrade, `project-catalog`, `vcs-connector` w/ lazy repo pacer, `vcs-auditor`, `session-broker`, `sftp-egress`, `audit-service` w/ Fail-Closed 3x Quorum Tier-0 Outbox), `@Require*` uniform-`404` decorators, build-time `bigint` TS contract codegen | `BLOCKED_ON_P0-01` |
+| `P0-04` | **Lane A (Antigravity)** | `ag/P0-04-local-mac-infra` | `infra/local/**` | Native `linux/arm64` Docker Compose (`dev:full`) + `< 1.5 GB RAM` SQLite/in-proc harness (`dev:lite`, `< 2 s` incr Rust builds via `sccache`/`lld`), `local-git-mock` (with `local-guest-0001` seeded in `REPO_ACCESS_ENTRY`), Envoy edge relay, epoch-enforcing `signal-egress-proxy`, DevKMS (Hybrid PQC), Mock SFTP, headless `lavapipe` software-Vulkan WGSL check, and `GBNF` local Ollama/MLX + `deterministic_mock` offline fallback | `QUEUED` |
 
 ---
 

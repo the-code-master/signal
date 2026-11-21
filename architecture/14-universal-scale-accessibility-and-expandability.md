@@ -30,10 +30,10 @@ Rather than building separate dumbed-down apps, Signal exposes **Workspace Exper
 
 | Experience Profile | Target User | UI & Canvas Experience | AI Agent Role | Default Compute Pod |
 |---|---|---|---|---|
-| **`EXPLORER` (Kids / K-12 / First-Time Learners)** | Students, STEM classrooms, hobbyists | Clean distraction-free toolbar; visual animated electron/current-flow & glowing LED/motor indicators on schematic; simple friendly parameters (`Resistance`, `Battery Voltage`, `Tolerance`); instant "What happens if I double R1?" live sliders; zero intimidating SPICE syntax! | **Patient Socratic AI Tutor** (multilingual!): explains *why* an LED needs a current-limiting resistor, catches short circuits with visual explanations, guides step-by-step breadboard-to-PCB transition. | Dedicated lightweight Micro Project Pod (0.5 vCPU / 512 MB RAM — pennies per hour, still isolated per project!). |
-| **`MAKER` (University / Open Hardware)** | Undergrads, robotics clubs, indie inventors | Full schematic + 2–8 layer PCB layout + 3D preview + embedded C/Rust/Arduino/MicroPython + entry FPGA + **Open-Source Silicon PDKs** (`SkyWater 130nm`, `GF180MCU`, `IHP SG13G2` for affordable multi-project wafer shuttles!). | **Co-Designer & Datasheet Mentor:** helps select real low-cost locally available parts via Universal Datasheet RAG, verifies thermal/power margins, auto-checks fab DFM & SPDX open-hardware license rules. | Small Project Pod (2 vCPU / 4 GB RAM). |
-| **`PRO` (Startup / Commercial Hardware)** | Hardware teams, OEMs | Full multi-type Projects (`PRD + HFS + Schematic + High-Speed PCB + FPGA + Firmware + BIOS`), Differentiable SPICE, Formal Verification, 3D EM/Thermal/Aging, Post-Silicon Digital Twin, 2FA SFTP fab delivery. | **Autonomous Neuro-Symbolic Specialist Agents:** adjoint Pareto sizing, diff-pair routing guidance, firmware SVD/pinmux sync, k-anonymous BOM & carbon/PFAS defense. | Medium/Large Project Pod (8–16 vCPU / 16–32 GB RAM + Burst Workers). |
-| **`SILICON_SCALE` (GPU / AI Accelerator / Advanced ASIC)** | Semiconductor leaders, hyperscalers, defense | Hierarchical multi-team SoC floorplanning, IEEE 1801 UPF, RTL-to-GDSII, FinFET/GAAFET/Backside-Power layouts, 2.5D/3D-IC UCIe & Co-Packaged Optics (CPO), multi-corner PVT/STA/EM-IR sign-off, Zero-Leak `YUV 4:4:4` + Lossless Tile Streaming, `CONFIDENTIAL_SILICON` + Hybrid PQC. | **Full Multi-Agent Silicon Team:** differentiable `gm/Id` analog sizing, PINN surrogates, RTL + formal SVA/LEC proof synthesis, automated LVS/DRC/timing debug across thousands of parallel GPU/CPU burst jobs. | High-Memory Project Pod (32–64 vCPU / 128–512 GB RAM + **Hardware-Isolated NVIDIA MIG** or Confidential H100/B200 GPU) + Elastic K8s HPC/GPU Burst Clusters. |
+| **`EXPLORER` (Kids / K-12 / First-Time Learners)** | Students, STEM classrooms, hobbyists | Clean distraction-free toolbar; visual animated electron/current-flow & glowing LED/motor indicators on schematic; simple friendly parameters (`Resistance`, `Battery Voltage`, `Tolerance`); instant "What happens if I double R1?" live sliders; zero intimidating SPICE syntax! | **Patient Socratic AI Tutor** (multilingual!): explains *why* an LED needs a current-limiting resistor, catches short circuits with visual explanations, guides step-by-step breadboard-to-PCB transition. | **Dedicated Wasmtime Isolate Security Cell (`signal-cell-wasm`: `< 8 MB` linear memory, `< 5 ms` boot, hardware MPK + per-project DEK/RLS — fractions of a cent/hr, auto-promoting seamlessly to a full Kata MicroVM Pod as designs grow!)** |
+| **`MAKER` (University / Open Hardware)** | Undergrads, robotics clubs, indie inventors | Full schematic + 2–8 layer PCB layout + 3D preview + embedded C/Rust/Arduino/MicroPython + entry FPGA + **Open-Source Silicon PDKs** (`SkyWater 130nm`, `GF180MCU`, `IHP SG13G2` for affordable multi-project wafer shuttles!). | **Co-Designer & Datasheet Mentor:** helps select real low-cost locally available parts via Universal Datasheet RAG, verifies thermal/power margins, auto-checks fab DFM & SPDX open-hardware license rules. | Dedicated Small MicroVM Project Pod (2 vCPU / 4 GB RAM). |
+| **`PRO` (Startup / Commercial Hardware)** | Hardware teams, OEMs | Full multi-type Projects (`PRD + HFS + Schematic + High-Speed PCB + FPGA + Firmware + BIOS`), Differentiable SPICE, Formal Verification, 3D EM/Thermal/Aging, Post-Silicon Digital Twin, 2FA SFTP fab delivery. | **Autonomous Neuro-Symbolic Specialist Agents:** Saltation/PSS adjoint Pareto sizing, diff-pair routing guidance, firmware SVD/pinmux sync, BOM & carbon/PFAS defense. | Medium/Large MicroVM Project Pod (8–16 vCPU / 16–32 GB RAM + Burst Workers). |
+| **`SILICON_SCALE` (GPU / AI Accelerator / Advanced ASIC)** | Semiconductor leaders, hyperscalers, defense | Hierarchical multi-team SoC floorplanning, IEEE 1801 UPF, RTL-to-GDSII, FinFET/GAAFET/Backside-Power layouts, Metal-Only ECO, 2.5D/3D-IC UCIe & Co-Packaged Optics (CPO), Dual-Plane `Zstd-QOI`/WebP + HW Video Streaming, `CONFIDENTIAL_SILICON` + Hybrid PQC. | **Full Multi-Agent Silicon Team:** Pelgrom/aging-aware adjoint `(W/L)` sizing, PINN surrogates, RTL + formal SVA/LEC proof synthesis, automated LVS/DRC/timing debug across thousands of parallel GPU/CPU burst jobs. | High-Memory Project Pod (32–64 vCPU / 128–512 GB RAM + **Hardware-Isolated NVIDIA MIG**, Exclusive **Hopper H100 CC**, or **Blackwell B200 `TEE-I/O` Confidential MIG**) + Elastic HPC/GPU Burst Clusters. |
 
 ---
 
@@ -41,24 +41,23 @@ Rather than building separate dumbed-down apps, Signal exposes **Workspace Exper
 
 Designing an extremely complex chip (e.g., a multi-reticle AI GPU with 100B+ transistors, HBM4 memory stacks, Co-Packaged Optics, 100+ UPF power domains, thousands of engineers across continents) requires **five explicit scale-out architectural mechanisms** built into Signal from Day 1—without EVER violating [`15-application-security-and-project-isolation.md`](./15-application-security-and-project-isolation.md)'s zero-lateral-movement pod invariant:
 
-### 3.1 Zero-Lateral-Movement Hierarchical Multi-Pod Federation (Signed Abstract Views)
-A single Kubernetes pod cannot—and should not—hold a 100B-transistor flattened GPU in one monolithic RAM heap, yet Cilium eBPF strictly prohibits direct Pod-to-Pod lateral network sockets (`Cell A <-> Cell B 100% DROPPED`). Signal resolves both requirements cleanly:
+### 3.1 Zero-Lateral-Movement Hierarchical Federation + `20 µm` Signed Boundary-Halo Views
+A single Kubernetes pod cannot—and should not—hold a 100B-transistor flattened GPU in one monolithic RAM heap, yet Cilium eBPF strictly prohibits direct Pod-to-Pod lateral sockets (`Cell A <-> Cell B 100% DROPPED`), AND pure black-box LEF outlines alone miss sub-micron boundary DRC/antenna interactions at 2nm/3nm block edges! Signal solves all three simultaneously:
 - **Hierarchical Project Federation:** A top-level **Super-Project** (`GPU-X1-SoC`) composes hundreds of independently versioned **Subsystem / IP Block Repositories** (`sm_shader_core`, `tensor_alu`, `l2_cache_slice`, `hbm4_phy`, `pcie6_serdes`, `cpo_optical_engine`, `power_mgmt_unit`, `interposer_pkg`, `reference_board_pcb`).
-- Each active subsystem runs in its own dedicated, microVM-isolated **Rust Project Pod** (with linearizable sticky Lease routing for that IP team) and publishes **Cryptographically Signed Immutable Abstract Views** (`ML-DSA-65 + Ed25519`-signed LEF/DEF pin-rings `*.lef.sig`, Liberty timing/power models `*.lib.sig`, UPF supply port contracts, neural/behavioral `ElectronicModule` surrogates `*.mod.sig`, and thermal power maps) to its `<project>-ic-<block>` repo pinned in `.signal/repos.lock.json`!
-- Whenever live cross-hierarchy constraint negotiation is needed, read-only boundary deltas route strictly through the stateless control-plane **`signal-federation-broker`** (enforcing per-user, per-repo RBAC and schema validation)—**zero direct Pod-to-Pod sockets ever open!**
-- **Result:** 500+ engineers work concurrently across the same GPU with zero single-pod RAM bottleneck and **100% Project Cell isolation**.
+- Each subsystem runs in its own dedicated **Rust Project Pod** and publishes **`ML-DSA-65 + Ed25519`-Signed Immutable Abstract + `20 µm` Boundary-Halo Views** (`*.lef.sig`, clipped `20 µm` perimeter polygon shell `*.halo.gds.sig` for exact abutment DRC/antenna/CMP density checks while keeping 99% of internal core IP opaque, LVF Liberty `*.lib.sig`, UPF supply contracts, and PINN/behavioral `*.mod.sig`) to its `<project>-ic-<block>` repo pinned in `.signal/repos.lock.json`!
+- Live cross-hierarchy constraint negotiation routes strictly through the stateless **`signal-federation-broker`**, while final full-chip tape-out DRC/LVS/PEX fans out across **Spatially-Tiled Overlapping MapReduce Burst Workers**—**zero direct Pod-to-Pod sockets ever open!**
 
 ### 3.2 Level-of-Detail (LOD), Overflow-Proof Geometry & Curved Waveguides (`signal-geom` + `signal-render`)
-- IC layouts are stored as **instanced Directed Acyclic Graphs (DAGs)** (a single 6T SRAM cell instanced 500 million times takes bytes, not terabytes!) using `i64` nanometer coordinates paired with **exact `i128` intermediate cross-products and adaptive Shewchuk predicates** (zero overflow from 2nm GAAFET gates up to 2-meter wafer/backplane assemblies) plus native **exact Circular Arc, Cubic Bézier, and Adiabatic Euler-Bend primitives** for curved RF traces and Silicon Photonics waveguides.
-- `signal-render` performs GPU frustum culling + hierarchical LOD bounding-box rendering so zooming from an 800 mm² multi-reticle GPU die down to a single transistor gate maintains **60 FPS** smoothly.
+- IC layouts are stored as **instanced Directed Acyclic Graphs (DAGs)** using `i64` nanometer coordinates paired with **exact `i128` cross-products and adaptive Shewchuk predicates** (zero overflow from 2nm GAAFET gates up to 2-meter wafer/backplane assemblies) plus native **Circular Arc, Cubic Bézier, and Adiabatic Euler-Bend primitives** for curved RF traces and Silicon Photonics waveguides.
+- `signal-render` performs GPU frustum culling + hierarchical LOD bounding-box rendering so zooming from an 800 mm² multi-reticle GPU die down to a single transistor gate maintains **60–120 FPS** smoothly.
 
 ### 3.3 Distributed HPC / Hardware-Isolated GPU Solver Fabric
 For workloads that exceed a single pod, `signal-sim`, `signal-em3d`, `signal-formal`, and `signal-ic` partition work across single-job, zero-egress Kubernetes HPC/GPU worker pools:
-- **Domain-Decomposed Sparse Linear Solvers & Multi-GPU Differentiable SPICE:** Partitioning huge post-layout PDN/clock/analog networks using hierarchical Schur-complement domain decomposition across **Hardware-Isolated NVIDIA MIG slices** or dedicated Confidential Computing GPUs (never time-sliced across tenants!).
-- **Embarrassingly Parallel Sweeps:** 10,000-corner PVT/Monte-Carlo runs, multi-mode multi-corner (MMMC) STA, 15-year NBTI/HCI/TDDB aging sign-off, tiled spatial DRC/PEX, and parallel RTL/UVM regressions fan out elastically via per-project NATS JetStream subjects + Karpenter.
+- **Domain-Decomposed Multi-GPU Solvers:** Hierarchical Schur-complement / `cuDSS` + mixed-precision iterative refinement across **Hardware-Isolated NVIDIA MIG slices**, Exclusive Hopper `H100` CC, or Blackwell `B200` `TEE-I/O` Confidential MIG GPUs.
+- **Embarrassingly Parallel Sweeps:** 10,000-corner PVT/LVF/Monte-Carlo runs, MMMC STA, 15-year NBTI/HCI/TDDB aging sign-off, spatially-tiled MapReduce DRC/PEX, and parallel RTL/UVM regressions fan out elastically via per-project NATS JetStream subjects + Karpenter.
 
-### 3.4 Plug-In External Foundry & Toolchain Bridge (Enterprise Pragmatism)
-Semiconductor foundries sometimes mandate certified sign-off decks for tape-out warranty. Signal's **`signal-toolchain-bridge`** allows Enterprise tenants to run Signal's native Rust engines *and* invoke containerized, air-gapped foundry-certified sign-off runners (or open-source OpenROAD / Yosys / Verilator / Magic / Netgen / KLayout runners in Maker/Edu tiers) inside ephemeral zero-egress Kubernetes microVM worker pods—streaming normalized DRC/LVS/STA markers directly back into Signal's unified Design Graph and AI Agents.
+### 3.4 Foundry Sign-Off Bridge, HSM IEEE 1735 & Isolated `OSDI`/`IBIS-AMI` Interop
+Semiconductor foundries and SerDes vendors distribute encrypted IP and certified sign-off decks. Signal combines **(1) HSM-backed IEEE 1735 v2/v3 `Signal Design` key-block decryption**, **(2) child-MicroVM IPC sandboxes for binary `IBIS-AMI`/`OSDI` models**, and **(3) `signal-toolchain-bridge`** invoking containerized, air-gapped foundry sign-off runners (or open-source OpenROAD / Yosys / Verilator / Magic / Netgen / KLayout runners in Maker/Edu tiers) inside ephemeral zero-egress worker pods.
 
 ---
 
@@ -68,18 +67,18 @@ To truly empower engineers and students across Africa, South Asia, Southeast Asi
 
 1. **Zero High-End Hardware Requirement:** Runs smoothly in any standard browser on a **\$150 Chromebook, low-RAM laptop, or tablet**—all heavy Rust physics, SPICE simulation, rendering, and AI reasoning execute in the cloud (or on a university's local mini-server!).
 2. **Low-Bandwidth Adaptive Transport + Volatile RAM Reconnect Resilience:**
-   - Automatic connection-quality detection (`3G / 4G / high-latency satellite` vs. fiber) over **HTTP/3 WebTransport** / TCP `turns:443` fallback.
-   - In non-restricted `EXPLORER` / `MAKER` modes, automatically drops to **ultra-compact binary delta vectors** (kilobytes per minute instead of megabits/sec video streaming!) so editing and live circuit simulation stay snappy even at **500 Kbps / 250 ms RTT**.
-   - **Volatile JS Heap Reconnect Ring-Buffer (`<= 60 s`):** When rural 3G/power flickers drop connectivity briefly, the Angular shell holds unsent CRDT cursor/edit ops strictly in a **volatile JS RAM closure** (zero `localStorage` / `IndexedDB` persistence—preserving 100% Zero-Local-Files security!) and seamlessly replays them on reconnect with zero lost student work.
-   - **Quota-Friendly Declarative Sim Recipes:** Verification testbenches store `< 10 KB` deterministic simulation recipes rather than multi-GB raw waveform dumps, keeping student repositories `< 5 MB` so free-tier GitHub/GitLab/Bitbucket accounts never hit LFS billing walls.
-   - In Enterprise Zero-Leak mode, hybrid `YUV 4:4:4` + lossless dirty-tile quantization prioritizes crisp active-cursor schematic/layout tiles first.
+   - Automatic connection-quality detection (`3G / 4G / high-latency satellite` vs. fiber) over **HTTP/3 WebTransport** / TCP `turns:443` / WSS fallback.
+   - In non-restricted `EXPLORER` / `MAKER` modes, drops to **ultra-compact binary delta vectors** (kilobytes/min) so editing and live simulation stay snappy at **500 Kbps / 250 ms RTT**.
+   - **Volatile JS Heap Reconnect Ring-Buffer (`<= 60 s`):** Holds unsent CRDT ops strictly in a **volatile JS RAM closure** (zero `localStorage`/`IndexedDB`) and replays idempotently on reconnect.
+   - **Lazy Sub-Repo Materialization & `< 10 KB` Declarative Sim Recipes:** Classroom template launches create `<project>-meta` first (avoiding GitHub `80/min` secondary rate limits!) and store `< 10 KB` deterministic sim recipes so free-tier student Git accounts never hit LFS paywalls.
+   - In Enterprise Zero-Leak mode, `Zstd-QOI` / Lossless `WebP` dirty-tile prioritization keeps active-cursor schematic/layout regions razor-sharp on modest links.
 3. **Regional Edge Kubernetes Deployment & Sovereign Campus Edition (`Signal Campus`):**
-   - Stateless Envoy edge relays + regional K8s clusters (e.g., Mumbai, Singapore, São Paulo, Johannesburg, Nairobi, Frankfurt, US) keep interactive latency low globally while honoring Sovereign Jurisdiction pinning.
-   - **Self-Hostable University / National Lab Appliance (`Signal Campus`):** Runs cleanly in Kubernetes (or `pnpm dev:lite` on 8 GB campus Macs) with open-weights LLMs (vLLM/Ollama), giving universities in developing nations a complete modern PCB-to-ASIC lab with **zero per-seat foreign currency lock-in**!
+   - Stateless Envoy edge relays + paired regional K8s clusters (Mumbai/Hyderabad, Singapore, São Paulo, Johannesburg, Nairobi, Frankfurt/Paris, US) keep latency low globally.
+   - **Self-Hostable University / National Lab Appliance (`Signal Campus`):** Runs cleanly in Kubernetes (or `pnpm dev:lite` on 8 GB campus Macs with offline `deterministic_mock` / Ollama LLM) with **zero per-seat foreign currency lock-in**!
 4. **Multilingual AI Engineering Tutor & Clean-Room Sketch Import:**
-   - Signal's AI Agents natively teach and converse in **English, Hindi, Tamil, Spanish, Portuguese, French, Swahili, Bahasa, Arabic, Vietnamese, Mandarin**, and more—and students can even photograph a hand-drawn classroom notebook circuit (`signal-import`) to turn it into an interactive simulated schematic in seconds!
+   - Converses natively in **English, Hindi, Tamil, Spanish, Portuguese, French, Swahili, Bahasa, Arabic, Vietnamese, Mandarin**, and more—and converts photographed classroom notebook sketches (`signal-import`) into live simulated schematics.
 5. **Open-Hardware, Open-Silicon & SPDX License Safety:**
-   - Built-in templates and pre-indexed Universal Datasheet/PDK packs for **open-source RISC-V cores**, **SkyWater 130nm / GF180 / IHP SG13G2 PDKs**, **TinyTapeout** shuttles, and low-cost locally available components (ESP32, STM32, RP2040, jellybean BJTs/op-amps), protected by an automated **SPDX Hardware/IP License Compatibility Gate** (`Apache-2.0`, `CERN-OHL-P/W/S`, `MIT`, `Solderpad`) so startups and universities never accidentally mix incompatible copyleft IP into commercial tape-outs.
+   - Pre-indexed packs for **RISC-V cores**, **SkyWater 130nm / GF180 / IHP SG13G2 PDKs**, **TinyTapeout**, and low-cost regional parts (ESP32, STM32, RP2040), guarded by an automated **SPDX Hardware/IP License Compatibility Gate** (`Apache-2.0`, `CERN-OHL-P/W/S`, `MIT`, `Solderpad`).
 
 ---
 
@@ -89,18 +88,18 @@ Electronics in the 2030s and 2040s will extend far beyond classical silicon CMOS
 
 ```mermaid
 flowchart TB
-    Kernel["Signal Core Kernel: signal-graph (Unified DAG) + signal-git-sync (2PC BYO-Git/jj) + signal-geom (i64 nm + i128/Curved) + AI Agent Bus"]
+    Kernel["Signal Core Kernel: signal-graph (Unified DAG) + signal-git-sync (Dual-Fenced 2PC) + signal-geom (i64 nm + i128/Euler) + AI Agent Bus"]
 
     subgraph Today["Built-In Domains (Phase 1-5)"]
-        D1["Differentiable Analog/RF/Power SPICE + Formal + 3D EM/Aging"]
-        D2["High-Speed 224G PCB, 3D Packaging & Post-Silicon Digital Twin"]
-        D3["CMOS / FinFET / GAAFET / UPF IC & RTL-to-GDSII"]
+        D1["Saltation-Differentiable SPICE + Formal + 3D EM/Aging"]
+        D2["High-Speed 224G PCB, Fab Profiles, 3D Packaging & Digital Twin"]
+        D3["CMOS / FinFET / GAAFET / UPF / Metal-ECO IC & RTL-to-GDSII"]
         D4["FPGA, 100+ MIPS FW Co-Sim, BIOS & Host Software"]
     end
 
     subgraph Future["First-Class & Expandable Multi-Physics Domains (WASM / Rust Trait SDK)"]
-        F1["Silicon Photonics & CPO (Curved Euler Waveguides, Mach-Zehnder, S-Matrix Optical/Electrical Co-Sim)"]
-        F2["Quantum & Cryo-CMOS (Superconducting Qubits, Josephson Flux Conservation, 4K/10mK Control)"]
+        F1["Silicon Photonics & CPO (Complex Baseband Optical Envelope, Euler Waveguides, Electro-Optic S-Matrix)"]
+        F2["Quantum & Cryo-CMOS (Superconducting Josephson Flux Conservation, 4K-10mK Band-Tail Regularized CMOS)"]
         F3["MEMS & Acoustic Resonators (Electro-Mechanical Coupled Micro-Actuators, BAW/SAW)"]
         F4["High-Power Wide-Bandgap & Microgrids (SiC/GaN Modules, Battery Electro-Thermal BMS)"]
         F5["Bio-Electronics & Neural Interfaces (Electrochemical Electrode-Tissue Impedance Models)"]
@@ -111,6 +110,6 @@ flowchart TB
 ```
 
 ### How Future Expandability Is Engineered Technically
-1. **Generalized Multi-Physics Port Abstraction & Exact Flux/Charge Conservation:** In `signal-component`, `PinPort` is parameterized by `PhysicalDomain` (`Electrical(V, I, q)`, `Thermal(T, P)`, `DigitalLogic`, `RFWave(a, b)`, `OpticalMode(E_complex, wavelength, phase)`, `MagneticFlux(MMF, Phi)`, `Mechanical(F, v)`, `QuantumFlux(Phi_q, I_s)`). Because `signal-sim` enforces **exact state-function `q(v)` / `Φ(i)` conservation**, superconducting Josephson junctions and non-linear optical phase modulators simulate natively without drift!
-2. **Versioned, Signed & Sandboxed Extension SDK (`signal-module-sdk` — Rust + Fuel-Metered WASM):** Universities, foundries, startups, and enterprises can author new component models, custom DRC/DFM rules, physics surrogates, or domain importers as `ML-DSA`-signed, SPDX-tagged, `wasmtime`-sandboxed plugins—distributed through a curated **Signal Marketplace** (Global Open-Source + Private Enterprise Registry).
-3. **Declarative Schema Evolution (`contracts/` + `signal-graph`):** Project metadata, Sub-Project types, SI-unit-suffixed Protobuf fields, and Datasheet records use forward-compatible versioned schemas (`N-1` wire compatibility) so adding a `PHOTONICS_PIC` or `QUANTUM_CHIP` Sub-Project type requires zero breaking database migrations or repository format rewrites!
+1. **Generalized Multi-Physics Ports, Baseband Envelopes & Cryo Regularization:** `PinPort` supports `Electrical(V, I, q)`, `Thermal(T, P)`, `DigitalLogic`, `RFWave(a, b)`, `OpticalEnvelope(E_complex_env, lambda_0_nm)` (solving `GHz` modulation envelopes rather than intractable `193 THz` optical carriers!), `MagneticFlux(MMF, Phi)`, `Mechanical(F, v)`, and `QuantumFlux(Phi_q, I_s)` with `4 K–10 mK` regularized cryo-subthreshold physics and exact `q(v)`/`Φ(i)` state conservation.
+2. **Versioned, Signed & Sandboxed Extension SDK (`signal-module-sdk` — Rust + Fuel-Metered `WASM-SIMD`):** Universities, foundries, startups, and enterprises author new component models, DRC/DFM rules, physics surrogates, or importers as AOT-compiled, `ML-DSA`-signed, SPDX-tagged, `wasmtime`-sandboxed plugins distributed via the **Signal Marketplace**.
+3. **Declarative Schema Evolution (`contracts/` + `signal-graph`):** SI-unit-suffixed `bigint`-safe Protobuf schemas (`N-1` wire compatibility) allow adding `PHOTONICS_PIC` or `QUANTUM_CHIP` Sub-Project types with zero breaking DB migrations or repo rewrites!

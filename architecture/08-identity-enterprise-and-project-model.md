@@ -204,14 +204,14 @@ Creating Signal Project **`"ev-inverter-400v"`** inside organization **`acme-hw`
 - `acme-hw/ev-inverter-400v-bios` — Secure Bootloader & Hardware Bring-Up POST
 - `acme-hw/ev-inverter-400v-verification` — Rust SPICE, Aging, Formal/LEC, FMEDA, and 3-Speed Co-Sim Suites
 
-All child repositories bind by immutable `provider_repo_id`, mount into **one active Kubernetes Rust Project Pod**, version atomically via Two-Phase `Super-Commit`s, and enforce **per-repository user permissions + compute quotas**!
+All child repositories bind by immutable `provider_repo_id` (**with `<project>-meta` created synchronously in `< 800 ms` and child `<project>-<type>` repos materialized lazily on first write or via a `<= 40/min` paced queue so 60-student classroom or large enterprise Template launches never trip GitHub `80/min` secondary rate limits!**), mount into **one active Kubernetes Rust Project Pod**, version atomically via Dual-Fenced Two-Phase `Super-Commit`s, and enforce **per-repository user permissions + compute quotas**!
 
-### 3.2 Rich Extensible Metadata & SPDX License Policy Gate
-Every Project enforces an **SPDX License Compatibility Policy** (`PROPRIETARY_STRICT` blocks copyleft `GPL`/`CERN-OHL-S` templates/IPs from contaminating commercial silicon) alongside core and custom Enterprise metadata fields.
+### 3.2 Rich Extensible Metadata, Sovereign Paired-Region DR & SPDX License Policy Gate
+Every Project enforces an **SPDX License Compatibility Policy** (`PROPRIETARY_STRICT` blocks copyleft `GPL`/`CERN-OHL-S` templates/IPs from contaminating commercial silicon), **Strictly In-Jurisdiction Paired-Region Failover** (`EU_SOVEREIGN`: Frankfurt ↔ Paris/Zurich; `US_ITAR`: GovCloud-West ↔ East; `INDIA`: Mumbai ↔ Hyderabad—zero cross-border DR spillover!), and **Top-Level Redirect PKCE/SAML Cookie Upgrade** (`5 min` `SameSite=Lax` `/auth/*` transaction cookies upgraded on callback to `__Host-signal_session` `SameSite=Strict`).
 
 ---
 
-## 4. Project Templates System
+## 4. Project Templates, Fab Capability Profiles & ECN Governance
 
 1. **Signal Official Templates**, **Enterprise Approved Templates**, and **Personal User Templates** (each tagged with explicit SPDX license & `VerificationBadge` minimum tier).
-2. **What a Project Template Bundles:** Sub-Project `<project>-<type>` repo blueprints, default Git team permission mappings (immediately visible in Access Review), PRD/HFS compliance scaffolds, stackup/DRC/ERC/UPF rule decks, **AI Agent Guardrails** (derating margins, minimum `SILVER`/`GOLD` datasheet badge, budget caps), and **21 CFR Part 11 / ISO 26262 Release Sign-Off Gates**.
+2. **What a Project Template Bundles:** Sub-Project `<project>-<type>` lazy repo blueprints, default Git team permission mappings, PRD/HFS compliance scaffolds, **Signed Fab Capability Profiles (`*.fabprofile.toml` — exact fab drill aspect ratios, dielectric stackups, impedance coupons, copper balance)**, stackup/DRC/ERC/UPF rule decks, **AI Agent Guardrails** (derating margins, minimum `SILVER`/`GOLD` datasheet badge, budget caps), and **Engineering Change Order (`ECN`/`ECO`) + 21 CFR Part 11 / ISO 26262 Release Sign-Off Gates**.

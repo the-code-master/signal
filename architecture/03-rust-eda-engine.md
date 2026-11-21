@@ -71,9 +71,9 @@ How this works inside `signal-engine`:
 | `signal-lib-semiconductor` | PN Diode, Schottky, Zener, TVS, LED/Photodiode, BJT (Gummel-Poon, VBIC), JFET, Power MOSFET (VDMOS, SiC, GaN HEMT with nonlinear charge-based `Ciss/Coss/Crss`), IGBT, IC CMOS/FinFET/GAAFET Compact Models (**BSIM4, BSIM-CMG, PSP, EKV**). |
 | `signal-lib-analog-ic` | Op-Amp (macro & transistor-level), Comparator, Instrumentation Amp, Voltage Reference, LDO, Buck/Boost/Buck-Boost/Flyback Controllers, Gate Drivers, Current-Sense Amps, PLLs, Oscillators, Analog Switches/Muxes. |
 | `signal-lib-digital` | IEEE 1164 Logic Gates (9-value logic with propagation delay, rise/fall, setup/hold), Flip-Flops, Counters, Shift Registers, Buffers/Level Shifters, UPF Power Switches/Isolation/Retention cells, Memory Arrays (SRAM/Flash/DDR behavioral), ADC/DAC Mixed-Signal Bridges. |
-| `signal-lib-rf` | Multi-port Touchstone `.sNp` Vector-Fitted causal/passive blocks, Mixers, LNAs, PAs, Attenuators, Couplers, Baluns, Phased-Array Antennas, Co-Packaged Optics (CPO) electro-optical modulators/photodetectors. |
+| `signal-lib-rf` | Multi-port Touchstone `.sNp` Vector-Fitted causal/passive blocks, **Isolated Child-MicroVM `IBIS-AMI` SerDes Executables**, Mixers, LNAs, PAs, Baluns, Phased-Array Antennas, **Complex Baseband Envelope (`100,000×` faster than carrier-stepped) Co-Packaged Optics (CPO)** modulators/photodetectors. |
 | `signal-lib-firmware-bridge` | **3-Speed Variable-Fidelity Co-Sim Bridge:** (1) `100+ MIPS` pure-Rust Instruction-Set Simulator (ARM/RISC-V/AVR) for sub-second RTOS/UEFI boot, seamlessly switching to (2) Cycle-Accurate RTL, and (3) Analog SPICE Lock-Step on GPIO/PWM/ADC/SPI/I2C/CAN peripheral windows. |
-| `signal-module-sdk` | **Extensibility & Compatibility Layer:** (1) **Multi-Dialect SPICE Parser** (LTspice/PSPICE/Spectre/HSPICE) + **OpenVAF-inspired Rust Verilog-A Compiler** emitting analytical-Jacobian native Rust / fuel-metered `wasmtime` `ElectronicModule`s; (2) Strongly-typed SI unit parser (`m` vs `Meg` disambiguation); (3) Custom Multi-Physics Domain Plugin SDK. |
+| `signal-module-sdk` | **Extensibility, IEEE 1735 & AOT Verilog-A Layer:** (1) **Multi-Dialect SPICE Parser** + **HSM-Backed IEEE 1735 v2/v3 Encrypted IP Unwrapper**; (2) **Ahead-of-Time (AOT) OpenVAF/Cranelift Verilog-A → `WASM-SIMD` / Isolated-IPC `OSDI` Compiler** running in `signal-verify-worker` (keeping `signal-pod` 100% LLVM-free and `#![forbid(unsafe_code)]`!); (3) Strongly-typed SI unit parser (`m` vs `Meg` safe); (4) Custom Multi-Physics Domain Plugin SDK. |
 
 ---
 
@@ -83,28 +83,28 @@ How this works inside `signal-engine`:
 flowchart TB
     subgraph PodDaemon["signal-pod (Stateful MicroVM Project Daemon)"]
         GRPC["Chunked gRPC + Arrow Binary Server"]
-        Stream["WebTransport / WebRTC YUV 4:4:4 Tile-Video Server"]
+        Stream["Dual-Plane Zstd-QOI/WebP Lossless Tile + HW Video Server"]
         Vault["RAM-Only Hybrid PQC Crypto, Ephemeral Crash WAL & signal-git-sync"]
     end
 
     subgraph Core["Unified Design Kernel"]
-        Graph["signal-graph (ECS Arena, UPF Power Intent, Topological CRDT & Selective Undo)"]
-        Comp["signal-component (ElectronicModule Trait, Charge/Flux Ports, SOA, Aging)"]
-        Libs["signal-lib-* + Verilog-A/SPICE Compiler + signal-import (Clean-Room CAD Migration)"]
+        Graph["signal-graph (ECS Arena, UPF Power Intent, Causal CRDT & Dependency Undo)"]
+        Comp["signal-component (ElectronicModule Trait, Charge/Flux/Optical/Cryo Ports)"]
+        Libs["signal-lib-* + AOT Verilog-A/IEEE-1735 + signal-import (Clean-Room CAD)"]
     end
 
-    subgraph Solvers["Simulation, Differentiable AI & Formal Kernels"]
-        Sim["signal-sim (Ruiz/f128 MNA SPICE, Multi-Rate Electro-Thermal, RF Macromodel)"]
-        Diff["signal-diff-sim (Adjoint Differentiable Optimizer) & signal-surrogate (PINNs)"]
+    subgraph Solvers["Simulation, Saltation-Adjoint AI & Formal Kernels"]
+        Sim["signal-sim (CPU KLU/CKTSO <-> GPU cuDSS/Mixed-FP, Electro-Thermal, RF)"]
+        Diff["signal-diff-sim (Saltation + Revolve Adjoint Optimizer) & signal-surrogate"]
         Formal["signal-formal (SAT/SMT/IC3, LEC, CDC/UPF) & signal-aging (BTI/HCI/TDDB/EM)"]
         EM3D["signal-em3d (GPU 3D Full-Wave EM) & signal-twin (Post-Silicon Lab Calibration)"]
-        Geom["signal-geom (i64 nm Storage + Exact i128/Shewchuk Predicates, Arcs/Beziers, DRC)"]
-        PCB["signal-pcb (2D BEM, Push-Shove Router, Harness, JTAG/ICT, Gerber/IPC-2581)"]
-        IC["signal-ic (PDK/PCELL, LVS, PEX, STA, DFT/ATPG, 3D-IC UCIe, GDSII/OASIS)"]
+        Geom["signal-geom (i64 nm Storage + Exact i128/Shewchuk Predicates, Arcs/Euler, DRC)"]
+        PCB["signal-pcb (Fab Profiles, 2D BEM, Incremental ECO, Harness, JTAG/ICT, IPC-2581)"]
+        IC["signal-ic (Pelgrom/LVF, LVS, PEX, STA, Metal-Only ECO, 20um Halo, GDSII/OASIS)"]
     end
 
     subgraph Visual["GPU Rendering Pipeline"]
-        Render["signal-render (wgpu Lossless Dirty-Tile + Motion Stream & Tardos Watermarks)"]
+        Render["signal-render (wgpu Zstd-QOI/WebP Dirty Tiles + HW Video & Constellation Watermarks)"]
     end
 
     PodDaemon <--> Graph
@@ -123,48 +123,44 @@ flowchart TB
     IC -->|"Hierarchical Instanced Masks"| Render
 ```
 
-### 3.1 `signal-graph`: Unified Multi-Domain Design Graph, UPF & Topological CRDT
+### 3.1 `signal-graph`: Unified Multi-Domain Design Graph, UPF & Dependency-Aware Causal CRDT
 - **Data-Oriented Storage:** Generational slot-maps and ECS Struct-of-Arrays keep 100,000+ nets and instanced multi-million-polygon hierarchies cache-resident with zero GC stalls.
 - **Cross-Domain Semantic & UPF Power Links:** Stable `SignalEntityId` (UUIDv7) links `RequirementNode (PRD)` ↔ `SpecConstraint (HFS)` ↔ `UPFPowerDomain` ↔ `ComponentInstance (Schematic)` ↔ `Footprint/Traces (PCB)` ↔ `CellInstance/Polygons (IC)` ↔ `PinConstraint (FPGA)` ↔ `Register/GPIO (Firmware/BIOS)` ↔ `SimAssertion / FormalProof (Verification)`.
-- **Topological-Invariant CRDT & Per-Actor Selective Undo:**
-  - Every human or AI mutation is an idempotent `DesignTransaction`. If Engineer A deletes `U1` concurrently while Engineer B wires `U1.pin4`, the authoritative sequencer deterministically converts the wire end into a **Floating Junction Marker** (zero dangling pointers, instant visual ERC badge).
-  - Pressing `Cmd+Z` executes **Per-Actor Selective Causal Undo** (reversing only *that engineer's* last non-conflicting transaction rather than clobbering a teammate's edit!).
-  - Supports zero-copy **Copy-on-Write (CoW) speculative branches** with live port-boundary rebasing, synced via `signal-git-sync` Two-Phase `Super-Commit`s to `<project>-<type>` repos + `< 500 ms` RPO ephemeral encrypted crash WAL.
+- **Dependency-Aware Topological CRDT & Safe Selective Undo:**
+  - **Delete-vs-Wire & Power-Short Guards:** Concurrent `Delete(U1)` + `Wire(U1.pin4)` deterministically converts the wire end to a **Floating Junction Marker**; concurrent merges of distinct power/ground-tagged nets (`VCC` + `GND`) insert a **Contention Bridge Marker** rather than silently shorting rails! Overlapping component drags resolve deterministically by `actor_id` with instant spatial DRC collision halos.
+  - **Read-After-Write Safe Selective Undo (`Cmd+Z`):** Reverses *only* that engineer's last transaction after checking the **Causal Dependency DAG**—if a teammate's subsequent edit wired onto `R1`, `Cmd+Z` safely prompts to detach dependent wires into Floating Markers instead of corrupting downstream state.
+  - Supports zero-copy **Copy-on-Write (CoW) speculative branches** with live port-boundary rebasing, synced via `signal-git-sync` Dual-Fenced Two-Phase `Super-Commit`s + `< 500 ms` RPO BYOK-encrypted Continuity WAL.
 
 ### 3.2 `signal-sim`, `signal-diff-sim`, `signal-surrogate`, `signal-formal` & `signal-aging`
-1. **Numerically Hardened MNA SPICE (`signal-sim`):**
-   - **Ill-Conditioned Matrix Immunity:** Combines **Ruiz row/column equilibration**, **Neumaier compensated KCL summation**, rook threshold pivoting, and automatic **Extended-Precision `f128` / quad-double iterative residual refinement** when condition numbers exceed `10^12` (eliminating precision collapse when `1e-15 F` IC parasitics meet `1e12 Ω` leakage and `1e-4 Ω` busbars).
-   - **Exact Charge & Flux Conservation:** Nonlinear capacitors and inductors stamp exact `q(v)` charge and `Φ(i)` flux state variables (`dq/dt`, `dΦ/dt`) with analytical chain-rule Jacobians, eliminating artificial DC/energy drift.
-   - **Discontinuity & Switching Stability:** `C^2`-continuous smooth device limiting (`pnjlim`/`fetlim`), automatic **TR-BDF2 / Gear-2** damping on trapezoidal ringing detection, and **Zero-Crossing Root-Finding Breakpoints** for multi-MHz SiC/GaN PWM switching.
-   - **Passive/Causal RF Macromodeling (`signal-rf-macromodel`):** Converts Touchstone `.sNp` tables via **Vector-Fitting + Hamiltonian Passivity Enforcement** into guaranteed-stable linear state-space MNA stamps (preventing time-domain IFFT blow-up).
-   - **Multi-Rate Electro-Thermal Leapfrog:** Bridges `10^-9 s` electrical switching and `10^+2 s` board/package heating via periodic steady-state / envelope power extraction coupled to 3D thermal RC/FEM macro-steps.
-2. **End-to-End Differentiable Physics (`signal-diff-sim`) & Neural Surrogates (`signal-surrogate`):**
-   - `signal-diff-sim` solves the discrete/continuous **Adjoint Sensitivity Equations** alongside DC, AC, Transient, and Elmore/STA timing—returning exact gradients $\partial \text{Metric} / \partial p_i$ across 1,000+ parameters in one transpose solve so AI Agents optimize circuits mathematically in milliseconds.
-   - `signal-surrogate` runs GPU **Physics-Informed Neural Operators (PINNs)** for `< 50 ms` interactive thermal, IR-drop, and 3D EM previews on canvas, while enforcing **exact Rust solver verification** prior to any merge or SFTP release.
-3. **Formal Verification (`signal-formal`), Aging (`signal-aging`), 3D EM (`signal-em3d`) & Digital Twin (`signal-twin`):**
+1. **Numerically Hardened & Workload-Dispatched MNA SPICE (`signal-sim`):**
+   - **Ill-Conditioned Matrix Immunity:** Combines **Ruiz row/column equilibration**, **Neumaier compensated KCL summation**, rook threshold pivoting, and automatic **Extended-Precision `f128` / quad-double iterative residual refinement** when condition numbers exceed `10^12`.
+   - **CPU `KLU`/`CKTSO` ↔ GPU `cuDSS` / Mixed-Precision Crossover Dispatcher:** Hyper-sparse circuits `< 25k` nodes solve in Pod RAM via pure-Rust **Left-Looking Block-BTF Sparse LU (`KLU`/`CKTSO`-style symbolic-once + SIMD refactor)** (`< 0.5 ms`/step, avoiding GPU warp-divergence overhead!); `25k–5M+` post-layout networks dispatch **batched GPU BSIM-CMG evaluation + `cuDSS` (`FP64` on H100/B200, or `FP32` preconditioner + `f64`/`f128` iterative refinement on lower-cost GPUs)**.
+   - **Exact Charge/Flux Conservation, Switching Stability & Cryo/Optical Multi-Physics:** Stamps exact `q(v)` and `Φ(i)` states (`dq/dt`, `dΦ/dt`), `C^2`-smooth limiting (`pnjlim`/`fetlim`) + **TR-BDF2** + **Zero-Crossing Root-Finding Breakpoints**, **Vector-Fitted + Hamiltonian-passive `.sNp` macromodels (`signal-rf-macromodel`)**, **Multi-Rate Electro-Thermal Leapfrog** (coupled to actual routed PCB copper area!), **Complex Baseband Optical Envelope (`E_env(t)`)** for CPO photonics (`GHz` envelope steps instead of `193 THz` optical carrier!), and **`4 K–10 mK` Cryo-CMOS band-tail thermal-voltage regularization**.
+2. **Hybrid Saltation-Matrix & `Revolve`-Checkpointed Differentiable Physics (`signal-diff-sim`) + PINNs (`signal-surrogate`):**
+   - **Mathematically Exact Hybrid Switching Gradients:** Across PWM MOSFET/comparator switching surfaces $\sigma(x, t, p) = 0$, `signal-diff-sim` multiplies backward sensitivities by exact **Filippov Saltation (Event-Jump) Matrices** and supports **Two-Stage Periodic Steady-State (PSS / Harmonic-Balance `TFHA`) Adjoint Warm-Start → Cycle-Accurate Saltation Refinement**, paired with **Binomial / `Revolve` Multistage Trajectory Checkpointing** capping reverse-mode transient RAM from $O(N_t)$ (`~800 GB`) down to $O(\log N_t)$ (`< 64 MB`)!
+   - `signal-surrogate` runs GPU **Physics-Informed Neural Operators (PINNs)** for `< 50 ms` interactive thermal, IR-drop, and 3D EM previews on canvas, backed by mandatory exact Rust solver sign-off before commit or release.
+3. **Formal (`signal-formal`), Aging (`signal-aging`), 3D EM (`signal-em3d`) & Digital Twin (`signal-twin`):**
    - `signal-formal`: SAT/SMT/IC3 formal property proving, RTL-to-Gate LEC, CDC/RDC, and IEEE 1801 UPF power-state verification.
-   - `signal-aging`: Evaluates 10–15 year mission-profile degradation (NBTI/PBTI, HCI, TDDB, Black's law Electromigration) directly inside `ElectronicModule` parameters.
-   - `signal-em3d` & `signal-twin`: GPU 3D PEEC/FDTD/FEM extraction for vias/BGAs/224G SerDes/CPO, plus sandboxed ingestion of lab oscilloscope/VNA/ATE captures to overlay & calibrate simulated Digital Twins against real silicon.
+   - `signal-aging`: Evaluates 10–15 year mission-profile degradation (NBTI/PBTI, HCI, TDDB, Black's law Electromigration) directly inside `ElectronicModule`.
+   - `signal-em3d` & `signal-twin`: GPU 3D PEEC/FDTD/FEM extraction for vias/BGAs/224G SerDes/CPO, plus sandboxed lab oscilloscope/VNA/ATE Digital Twin calibration.
 
 ### 3.3 `signal-geom`, `signal-pcb`, `signal-ic`, and `signal-import`
-- **`signal-geom` (Overflow-Proof Exact Geometry + Curves):**
-  - Stores compact `i64` nanometer coordinates (`±9.2e9 m`) while mandating **exact `i128` arithmetic + Shewchuk adaptive geometric predicates** for all cross-products, squared distances, and boolean intersections (completely eliminating `i64` overflow on `> 3 m` backplanes/harnesses!), plus native **Exact Circular Arc + Cubic Bézier / Euler-Bend primitives** for RF, flex, and silicon photonics.
-  - Enforces lazy instanced DAG hierarchy depth caps (`<= 64`) to defeat GDSII/ODB++ amplification bombs.
-- **`signal-pcb` & `signal-ic`:**
-  - Automated **3-Way Symbol ↔ IPC-7351 Footprint ↔ Datasheet Pin-Table + 3D STEP Pin Intersection Verifier** eliminating pin-pad swap respins.
-  - Built-in 2D BEM stackup solver + 3D EM breakout hooks, push-and-shove/any-angle router, multi-board harness engine, **IEEE 1149.1/1687 JTAG & ICT nail synthesis**, hierarchical IC DRC/LVS/PEX, MMMC STA, DFT/ATPG, UCIe 3D-IC, and RAM-only Gerber/ODB++/IPC-2581/GDSII SFTP streaming.
-- **`signal-import` (Zero-Network Clean-Room Legacy CAD Importer):**
-  - Sandboxed WASM/MicroVM parsers converting legacy KiCad, Altium, OrCAD, Eagle, LTspice, GDSII/OASIS, LEF/DEF, and Liberty files into native Signal graphs (inbound-only!).
+- **`signal-geom` (Overflow-Proof Exact Geometry + Curves):** Compact `i64` nm storage with **exact `i128` + Shewchuk adaptive geometric predicates** (zero overflow on `> 3 m` backplanes/harnesses!), native **Circular Arc + Cubic Bézier + Adiabatic Euler-Bend** primitives, and lazy instanced DAG depth caps (`<= 64`).
+- **`signal-pcb` & `signal-ic` (Fab-Aware DFM, Pelgrom/LVF Variation & Metal-Only/Incremental ECO):**
+  - Automated **3-Way Symbol ↔ IPC-7351 Footprint ↔ Datasheet Pin-Table + 3D STEP Pin Intersection Verifier** + **Signed Fab Capability Profiles (`*.fabprofile.toml`)** & **Minimal-Perturbation Incremental PCB ECO**.
+  - **Layout-Extracted Pelgrom Spatial Mismatch (`A_VT / √(W·L)` + centroid distance)**, **3-Sigma LVF/POCV Statistical STA**, **Post-Mask Spare-Cell Metal-Only IC ECO**, **`20 µm` Signed Boundary-Halo Shell Views (`*.halo.gds.sig`)** for 100B-transistor hierarchical block stitching, IEEE 1149.1/1687 JTAG/ICT synthesis, and RAM-only Gerber/ODB++/IPC-2581/GDSII/STEP/Compliance SFTP streaming.
+- **`signal-import` (Zero-Network Clean-Room Legacy CAD Importer):** Sandboxed WASM/MicroVM parsers converting legacy KiCad, Altium, OrCAD, Eagle, LTspice, GDSII/OASIS, LEF/DEF, and Liberty files into native Signal graphs (inbound-only!).
 
-### 3.4 `signal-render`: Crisp Lossless-Tile + Motion GPU Streamer & Tardos Watermarks
-- Built on Rust **`wgpu`** (Vulkan on Linux K8s hardware-isolated MIG / Confidential GPUs; Metal natively on macOS).
-- **Zero-Blur CAD Clarity (`YUV 4:4:4` Hybrid):** Static/precision CAD frames transmit **lossless `AV1-SCC` / Lossless WebP dirty-rect tiles at native HiDPI (`YUV 4:4:4`)** so 1px wires and tiny pin labels stay razor-sharp; continuous 3D orbit/pan switches smoothly to 60–120 FPS low-latency video and snaps to a **crisp lossless settling frame within `80 ms`** of motion stop.
-- **Collusion-Resistant Forensic Watermarks:** Burns both translucent session overlays and **Tardos-code spread-spectrum steganography + sub-pixel electrically-invariant layout/label micro-jitter** into every GPU frame before encoding.
+### 3.4 `signal-render`: Capability-Probed Dual-Plane Compositor & Geometric Constellation Watermarks
+- **Universal Zero-Blur CAD Clarity (No Unaccelerated `AV1 4:4:4` Trap!):** Because most client GPUs & M1/M2 Safari lack hardware `AV1 YUV 4:4:4` video decode, `signal-render` uses a **Two-Plane Compositor**:
+  - **Plane 1 (Precision Static & `80 ms` Settling Tiles):** Lossless **`Zstd + QOI` (`> 400 MB/s` GPU shader decode on 100% of browsers!) / Lossless `WebP` `RGBA8` dirty-rect tiles** at native HiDPI—keeping 1px schematic wires and pin text 100% razor-sharp with near-zero battery/CPU cost.
+  - **Plane 2 (60–120 FPS Continuous 3D Orbit/Pan):** Probes `WebCodecs` hardware support (`HEVC 4:4:4` on Apple Silicon → **Dual-Luma Hardware `AV1/H.264 4:2:0` Plane Split** reconstructing exact `4:4:4` on standard NVDEC/Intel GPUs!), snapping back to Plane 1 within `80 ms` of motion stop.
+- **AI-Stripper-Resistant Geometric Constellation + Tardos Watermarks:** Combines translucent overlays and frequency-domain **Tardos codes** with **per-session Topological/Geometric Constellation Micro-Perturbations** (`±1–2 px` wire-jog knee positions, resistor zig-zag phase, label kerning, via-stitch phase)—**surviving even AI diffusion denoising, B&W thresholding, or vector re-tracing of smartphone photos!**
 
 ---
 
-## 4. Performance, Cross-Platform Bitwise Determinism & Safety Guarantees
+## 4. Performance, Cross-Platform Bitwise Determinism & Foreign-Binary Sandboxing
 
-1. **True Cross-Architecture Bitwise Determinism (ARM64 Mac == x86_64 Linux):** Sign-off and golden simulation modes use pure-Rust **`0.5-ULP` correctly-rounded transcendental math (`core_math`)**, explicit FMA contraction disabled (`fp-contract=off`), deterministic parallel tree-reductions in `rayon`, and per-`SignalEntityId` seeded `ChaCha20Rng`—guaranteeing identical bit-for-bit results across Apple Silicon laptops and Linux x86/ARM K8s pods.
-2. **Memory Safety & Zeroization:** `#![forbid(unsafe_code)]` across core crates; all DEKs, Git tokens, PDKs, and decrypted graph arenas implement `zeroize::ZeroizeOnDrop` (`SecretBox<T>`).
-3. **Sandboxed Custom Modules & Parsers:** Custom behavioral modules, PCELLs, and legacy CAD importers run inside **zero-WASI, fuel-metered, memory-capped `wasmtime` sandboxes**.
+1. **True Cross-Architecture Bitwise Determinism (`ARM64 Mac == x86_64 Linux`):** Pure-Rust **`0.5-ULP` rounded transcendental math (`core_math`)**, `fp-contract=off`, canonical CSR ordering, deterministic `rayon` tree-reductions, and per-`SignalEntityId` `ChaCha20Rng`.
+2. **Memory Safety & Zeroization:** `#![forbid(unsafe_code)]` across core crates; all DEKs, tokens, PDKs, and sensitive arenas wrap `SecretBox<T>` + `zeroize::ZeroizeOnDrop`.
+3. **Two-Tier Sandbox for Custom Modules & Vendor Binaries:** User/OpenVAF `.wasm` modules run inside zero-WASI, fuel-metered **`wasmtime`**; untrusted vendor binary `IBIS-AMI` `.so` / legacy `OSDI` shared objects execute strictly out-of-process inside a **zero-network, seccomp-locked child `Firecracker`/`gVisor` IPC micro-sandbox** over zeroized shared-memory rings—never entering `signal-pod`'s address space!

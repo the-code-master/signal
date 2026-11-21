@@ -175,34 +175,37 @@ sequenceDiagram
 
 ```text
 signal/
-├── architecture/              # Master design, security & 112-flaw audit specs (01..16)
+├── architecture/              # Master design, security & 148-flaw audit specs (01..16)
 ├── contracts/                 # Source of truth: Protobuf (.proto), OpenAPI, JSON Schemas, Golden Fixtures
-│   ├── proto/signal/v1/       # SI-unit-suffixed gRPC + Arrow binary framing contracts
+│   ├── proto/signal/v1/       # SI-unit-suffixed gRPC (int64 -> bigint) + Arrow binary framing contracts
 │   ├── openapi/               # Control-plane REST APIs
-│   ├── schemas/               # Datasheet, Template, UPF, Super-Commit & SFTP schemas
-│   └── fixtures/              # Cross-language golden conformance vectors (Antigravity <-> Cursor)
-├── engine/                    # Pure Rust Workspace (Cargo workspace — build-time proto codegen)
+│   ├── schemas/               # Datasheet, Template, UPF, FabProfile, ECN, Super-Commit & SFTP schemas
+│   ├── fixtures/              # Cross-language golden conformance vectors (Antigravity <-> Cursor)
+│   └── transcripts/           # Stateful multi-step gRPC/WebTransport conformance transcripts (*.jsonl)
+├── engine/                    # Pure Rust Workspace (Cargo workspace — shared build-time proto codegen)
 │   ├── crates/
-│   │   ├── signal-core/       # IDs, strongly-typed SI units, SecretBox, Hybrid PQC crypto, zeroize
-│   │   ├── signal-graph/      # Multi-domain ECS graph, UPF power intent, topological CRDT & selective undo
-│   │   ├── signal-component/  # ElectronicModule trait, charge/flux ports, tolerance, SOA, faults
+│   │   ├── signal-proto/      # Single shared build-time Protobuf/gRPC codegen crate (< 2s incr builds)
+│   │   ├── signal-core/       # IDs, strongly-typed SI units, SecretBox, Hybrid PQC + 2-level HKDF, zeroize
+│   │   ├── signal-graph/      # Multi-domain ECS graph, UPF power intent, dependency-aware CRDT & undo
+│   │   ├── signal-component/  # ElectronicModule trait, charge/flux ports, Pelgrom mismatch, SOA, faults
 │   │   ├── signal-lib-*/      # Modular component crates (passive, semi, analog-ic, rf, digital, fw-bridge)
-│   │   ├── signal-module-sdk/ # Multi-dialect SPICE + OpenVAF Verilog-A -> WASM/Rust compiler & plugin SDK
-│   │   ├── signal-sim/        # Equilibrated f64/f128 MNA SPICE, multi-rate electro-thermal, RF macromodel
-│   │   ├── signal-diff-sim/   # End-to-end Adjoint Differentiable circuit/thermal/timing optimizer
+│   │   ├── signal-module-sdk/ # Multi-dialect SPICE + AOT OpenVAF/Cranelift WASM-SIMD compiler & SDK
+│   │   ├── signal-sim/        # Equilibrated f64/f128 MNA SPICE (CPU KLU/CKTSO + GPU cuDSS), PSS/HB, Cryo
+│   │   ├── signal-diff-sim/   # Saltation-exact + Revolve Adjoint Differentiable SPICE/thermal/STA optimizer
 │   │   ├── signal-surrogate/  # Physics-Informed Neural Operators (PINN) fast preview engine
 │   │   ├── signal-formal/     # SAT/SMT/IC3 formal property prover, LEC & CDC/RDC/UPF verifier
-│   │   ├── signal-em3d/       # GPU 3D Full-Wave PEEC/FDTD/FEM & 224G SerDes / CPO channel solver
+│   │   ├── signal-em3d/       # GPU 3D Full-Wave PEEC/FDTD/FEM, 224G SerDes & Baseband Envelope CPO solver
 │   │   ├── signal-aging/      # 10-15 yr NBTI/PBTI, HCI, TDDB & Electromigration reliability engine
 │   │   ├── signal-twin/       # Post-silicon & lab oscilloscope/VNA/ATE Digital Twin calibration bridge
 │   │   ├── signal-import/     # Zero-network clean-room legacy CAD (KiCad/Altium/OrCAD/GDSII) & sketch importer
 │   │   ├── signal-geom/       # i64 nm storage + exact i128/Shewchuk predicates, arcs/Beziers, R-tree DRC
-│   │   ├── signal-pcb/        # Stackup, 2D BEM solver, push-shove router, harness, JTAG/ICT, Gerber/IPC-2581
-│   │   ├── signal-ic/         # PDK, WASM PCELLs, LVS, PEX, STA, DFT/ATPG, 3D-IC UCIe, GDSII/OASIS
-│   │   ├── signal-render/     # wgpu YUV 4:4:4 lossless tile + motion streamer & Tardos forensic watermarks
-│   │   ├── signal-git-sync/   # Multi-repo gitoxide + jj-lib, Two-Phase Super-Commit & convergent vault cipher
-│   │   ├── signal-pod/        # MicroVM project pod daemon, memory governor & ephemeral crash WAL
-│   │   └── signal-operator/   # Kubernetes ProjectSession Operator (linearizable Leases, live resize/migration)
+│   │   ├── signal-pcb/        # Stackup, 2D BEM, push-shove + Minimal-Perturbation ECO, FabProfiles, IPC-2581
+│   │   ├── signal-ic/         # PDK, IEEE 1735, WASM PCELLs, Halo LVS/PEX, LVF/POCV STA, Spare-Cell Metal ECO
+│   │   ├── signal-render/     # wgpu Zstd-QOI/WebP dirty-tile + HEVC/Dual-Luma video & Constellation watermarks
+│   │   ├── signal-git-sync/   # Multi-repo gitoxide + jj-lib, Dual-Fenced 2PC Super-Commit & Padme GCM-SIV
+│   │   ├── signal-cell-wasm/  # < 8 MB Wasmtime EXPLORER isolate cell runtime (auto-promotes to Kata MicroVM)
+│   │   ├── signal-pod/        # MicroVM project pod daemon, child OSDI/AMI sandbox, BYOK continuity WAL
+│   │   └── signal-operator/   # K8s Operator (Host-Aggregated Node Leases, Pre-Copy < 150ms Live Migration)
 ├── services/                  # Node.js 22 / TypeScript Control Plane & BFF
 │   ├── api-gateway/           # Auth, CSRF/CSP nonces, rate limiting, fail-closed policy enforcement
 │   ├── identity-org/          # Provider OAuth + SAML dual-binding, 2FA, Enterprise onboarding, Access Review
@@ -231,12 +234,12 @@ signal/
 
 | Metric | Target SLA | Architectural Mechanism |
 |---|---|---|
-| **Interactive Viewport Frame Time** | ≤ 16.6 ms (60–120 FPS) + crisp lossless settle ≤ 80 ms | Rust `wgpu` composited viewport atlas (`YUV 4:4:4` lossless dirty tiles + motion video) + 120 FPS client crosshair prediction via Envoy WebTransport / `turns:443`. |
-| **Warm Project Open Latency** | < 1.5 s (PCB), < 4 s (federated SoC) | Pre-warmed CPU standby pods + parallel shallow/sparse `gitoxide` fetch of `<project>-meta` & `<project>-<type>` repos into RAM. |
-| **Second User Join Latency** | < 100 ms | Redis read-through cache backed by linearizable K8s Lease directly attaching to the active Project Pod. |
-| **Multi-User Edit Propagation** | < 50 ms p95 (regional), zero head-of-line stall on 3G | Authoritative topological CRDT sequencer + per-subscriber conflating ring buffers. |
-| **Design Scale — PCB & Harness** | 100,000+ nets, 64+ layers, multi-board + harness | Arena ECS graph + `i64` nm storage (`i128` exact predicates) + R*-tree spatial index + GPU instanced rendering. |
-| **Design Scale — IC / GPU** | 100B+ transistor hierarchical SoC / 3D-IC | Instanced cell DAGs, signed immutable abstract views across federated IP pods (zero lateral pod sockets), distributed multi-GPU solvers. |
-| **Security & Complete Isolation** | 0 permanent customer IP bytes on Signal; 0 lateral paths | Kata/gVisor MicroVM + Confidential GPU option, Cilium eBPF default-deny, Postgres RLS, Hybrid PQC (`ML-KEM`/`ML-DSA`), 2FA atomic SFTP-only egress. |
-| **Continuity & Durability** | 99.99% Control Plane; < 500 ms RPO during Git outages | Multi-AZ control plane + Two-Phase BYO-Git `Super-Commit` + ephemeral BYOK-encrypted continuity WAL. |
-| **Local Dev Startup (Mac)** | < 30 s (`dev:lite` < 1.5 GB RAM) / < 60 s (`dev:full`) | Native ARM64 Metal Rust engine + grammar-constrained Local Mac Ollama/MLX LLM + offline MockGit/MockSFTP. |
+| **Interactive Viewport Frame Time** | ≤ 16.6 ms (60–120 FPS) + crisp lossless settle ≤ 80 ms | Dual-Plane `wgpu` Compositor (**`Zstd-QOI` / Lossless `WebP` `RGBA8` dirty tiles** + hardware `HEVC 4:4:4` / Dual-Luma `AV1/H.264` motion stream) + 120 FPS client crosshair prediction via Envoy WebTransport / `turns:443`. |
+| **Warm Project Open Latency** | `< 5 ms` (`EXPLORER` WASM Isolate), `< 1.5 s` (PCB Pod), `< 4 s` (federated SoC) | Dedicated `< 8 MB` `signal-cell-wasm` isolates (auto-promoting to Kata MicroVMs) + pre-warmed CPU standby pods + parallel **blobless partial clone (`--filter=blob:none`)** `gitoxide` fetch into RAM. |
+| **Second User Join Latency** | < 100 ms | Redis read-through cache backed by host-aggregated K8s Node Leases + sharded linearizable project epochs directly attaching to the active Project Cell. |
+| **Multi-User Edit Propagation** | < 50 ms p95 (regional), zero head-of-line stall on 3G | Dependency-aware topological CRDT sequencer + per-subscriber conflating ring buffers. |
+| **Design Scale — PCB & Harness** | 100,000+ nets, 64+ layers, multi-board + harness | Arena ECS graph + `i64` nm storage (`i128` exact predicates) + R*-tree spatial index + Signed Fab Capability Profiles. |
+| **Design Scale — IC / GPU** | 100B+ transistor hierarchical SoC / 3D-IC | Instanced cell DAGs, signed `20 µm` boundary-halo views (`*.halo.gds.sig`) across federated IP pods (zero lateral pod sockets), spatially-tiled MapReduce DRC/LVS & `cuDSS` multi-GPU solvers. |
+| **Security & Complete Isolation** | 0 permanent customer IP bytes on Signal; 0 lateral paths | Kata MicroVM / Exclusive `H100 CC` / Blackwell `B200 TEE-I/O` Confidential MIG, Cilium eBPF default-deny, Postgres RLS, Padmé-blinded Hybrid PQC (`ML-KEM`/`ML-DSA`), 2FA fail-closed SFTP egress. |
+| **Continuity & Sovereign DR** | 99.99% Control Plane; `< 500 ms` RPO; 0 cross-border DR spill | **Strictly In-Jurisdiction Paired-Region DR** (`Frankfurt<->Paris`, `GovCloud-W<->E`, `Mumbai<->Hyderabad`) + Dual-Fenced Two-Phase BYO-Git `Super-Commit` + BYOK-wrapped Continuity WAL. |
+| **Local Dev Startup (Mac)** | `< 30 s` (`dev:lite` `< 1.5 GB` RAM, `< 2 s` incr Rust build) | Shared `signal-proto` crate + `sccache`/`lld` + ARM64 Metal `wgpu` + `GBNF` Local Ollama/MLX (with `deterministic_mock` offline fallback) + MockGit/MockSFTP. |

@@ -91,47 +91,48 @@ sequenceDiagram
     RAG-->>Agent: Top 3 Orderable MPNs (with exact Package Pinout + Errata + Digitized Curves)
     Agent->>Pod: Spawn Port-Encapsulated CoW Branch "ai/buck-3v3" (Live-Rebasing)
     Agent->>Pod: Wire Buck IC + Saturating Inductor + DC-Bias MLCCs + Type-III Comp Network
-    Agent->>Pod: Invoke signal-diff-sim Adjoint Pareto Optimizer (200 gradient steps in 40ms!)
-    Pod-->>Agent: Optimal L/C/R_comp Values Found -> Run Full SPICE + 100-Run Monte Carlo + 10yr Aging
+    Agent->>Pod: Invoke signal-diff-sim 2-Stage PSS/Saltation Adjoint Optimizer (<120ms, Revolve O(log N) RAM!)
+    Pod-->>Agent: Optimal L/C/R_comp Found -> Run Full Cycle-by-Cycle SPICE + 100-Run Monte Carlo + 10yr Aging
     Pod-->>Agent: Worst-Case Ripple = 10.8mV (PASS), PM = 63 deg (PASS), Eff = 93.1% (PASS), 0 SOA/DRC Errors
-    Agent-->>Eng: Present Visual Semantic Diff + Immutable Proof Bundle (Equations, Plots, Page/BBox Citations)
-    Eng->>Pod: Click "Approve & Merge" -> Committed Atomically to Shared Project Graph
+    Agent-->>Eng: Present Visual Semantic Diff + Parent-Hash-Bound Proof Bundle (Equations, Plots, Citations)
+    Eng->>Pod: Click "Approve & Merge" -> Incremental Post-Rebase Delta Re-Check (<1s) -> Atomic Commit
 ```
 
 ---
 
-## 4. Universal Datasheet Database & Partitioned Hybrid RAG Architecture
+## 4. Universal Datasheet Database & Tiered Multi-Tenant Hybrid RAG
 
-### 4.1 High-Assurance Multi-Modal Ingestion & Trust Tiers (`ai/datasheet-ingest`)
-Single-pass PDF OCR can misread `1.8 V` as `18 V` or swap QFN pad numbers—destroying hardware. Signal enforces a **Zero-Hallucination High-Assurance Ingestion Pipeline** inside zero-network parser sandboxes:
+### 4.1 High-Assurance Condition-Parameterized Ingestion & Trust Tiers (`ai/datasheet-ingest`)
+Single-pass PDF OCR can misread `1.8 V` as `18 V`, swap QFN pad numbers, or quote misleading headline ratings (`I_D = 100 A` at infinite-heatsink `25°C`, or MLCC `10 µF` at `0 V` when it derates `82%` at `12 V DC`!). Signal enforces a **Zero-Hallucination, Operating-Condition-Aware Ingestion Pipeline** inside zero-network parser sandboxes:
 
-1. **Orderable MPN + Package + Die-Revision Normalization:** Every record is keyed by exact **Orderable MPN + Package Code (`LQFP48` vs `TFBGA100`) + Silicon Revision**, automatically co-linking **Manufacturer Silicon Errata PDFs, PCNs, and App Notes**.
-2. **Dual-VLM Consensus + Physics Sanity Verification:**
-   - Two independent layout/Vision-Language extractors parse **AbsMax Ratings**, **Electrical/Thermal Tables**, **Pinout Maps**, **SystemRDL Register Bitfields**, and **Digitized Curves** (`MLCC DC-bias`, `Rds_on vs Tj`, `SOA`). Any disagreement quarantines the field for steward review!
-   - Automated **3-Way Symbol ↔ IPC-7351 Footprint ↔ 3D STEP Pin Intersection Check** + SPICE sanity testbench verifies that simulated module curves match extracted datasheet tables within tolerance.
+1. **Orderable MPN + Package + Die-Revision Normalization:** Keyed by exact **Orderable MPN + Package Code (`LQFP48` vs `TFBGA100`) + Silicon Revision**, automatically co-linking **Silicon Errata PDFs, PCNs, and App Notes**.
+2. **Dual-VLM Quarantine + Mandatory Operating-Condition Curves & Copper-Coupled $R_{\theta JA}$:**
+   - Two independent Vision-Language extractors (**running strictly in the Zero-Tool Quarantine Tier to defeat visual/typographic prompt injections embedded in PDFs or whiteboard photos!**) parse AbsMax Ratings, Pinouts, SystemRDL CSRs, and **Multi-Dimensional Condition-Parameterized Curves** (`C(V_bias, T, freq)`, `Rds_on(V_gs, T_j)`, `R_thetaJC / R_thetaJB` thermal networks rather than misleading JEDEC coupon `R_thetaJA`, feeding actual `signal-pcb` copper-pour area into thermal checks!).
+   - Automated **3-Way Symbol ↔ IPC-7351 Footprint ↔ 3D STEP Pin Intersection Check** + SPICE curve-fit verification.
 3. **Cryptographic Datasheet Trust Badges (`VerificationBadge`):**
-   - `BRONZE_PARSED`: Automated dual-extractor consensus passed; unverified SPICE curve.
-   - `SILVER_SIM_MATCHED`: Automated physics, pin-pad 3D check, and SPICE curve-fit verified (`< 2%` RMS error).
-   - `GOLD_ATTESTED`: Manufacturer-signed feed or human librarian sign-off (Enterprise templates can mandate `SILVER`/`GOLD` parts only!).
+   - `BRONZE_PARSED`: Dual-VLM consensus passed; unverified SPICE curve.
+   - `SILVER_SIM_MATCHED`: Automated physics, 3D pin-pad intersection, and SPICE curve-fit verified (`< 2%` RMS error across operating conditions).
+   - `GOLD_ATTESTED`: Manufacturer-signed feed or librarian sign-off (Enterprise templates can mandate `SILVER`/`GOLD` only!).
+4. **Parent-Hash-Bound AI Proof Bundles & Merge-Time Delta Re-Verification:** Every AI speculative branch binds its `DesignProofBundle` to `base_graph_merkle_root`; if humans modified upstream rails/nets on `main` while the AI worked, clicking **Approve & Merge** automatically runs an **incremental cone-of-influence ERC/DRC/SOA re-verification (`< 1 s`)** on the post-rebase state before committing!
 
-### 4.2 Partitioned Three-Tier Hybrid RAG + Live Supply-Chain (`ai/rag-service`)
+### 4.2 Tiered Multi-Tenant Hybrid RAG (Zero Postgres Catalog Bloat & Zero BOM Leakage)
 
-| Tier | Store & Isolation | Role in Retrieval |
+| Tier | Store & Isolation Architecture | Role in Retrieval |
 |---|---|---|
-| **1. Structured Parametric & Supply-Chain Index** | PostgreSQL (`NOBYPASSRLS`) + **k-Anonymous Hashed Prefix Supply-Chain Cache** | Deterministic SI-normalized filtering on `V/I/R/Package/Temp/AEC-Q/TrustTier/AVL` + live stock, lead-time, pricing, and embodied-carbon/PFAS metrics without leaking customer BOMs to distributors! |
-| **2. Partitioned Dense + Sparse Semantic Index** | **Physically Partitioned `pgvector` HNSW Indexes** (`GLOBAL_VERIFIED` partition vs. per-org `ORG_PRIVATE_NDA` partitions + `hnsw.iterative_scan`) + BM25 | Eliminates RLS ANN post-filter recall collapse and cross-tenant timing side channels while retrieving application notes, layout rules, and **Silicon Errata**. |
+| **1. Parametric & Bulk-Mirrored Supply-Chain Index** | PostgreSQL (`NOBYPASSRLS`) + **Signal-Mirrored Bulk Distributor Catalog** (with `4×` **chaff-padded k-anonymous proxy batches** for any live delta lookup—defeating 40-part BOM set-intersection fingerprinting!) | Deterministic SI-normalized + test-condition filtering + live stock, lead-time, pricing, and embodied-carbon/PFAS metrics with **zero outbound BOM leakage**. |
+| **2. Tiered `pgvector` HNSW Architecture (`<= 500` Partitions/Cluster)** | (a) `datasheet_chunks_global` shared read-only HNSW; (b) **Sharded Dedicated Physical Partitions (`<= 500` orgs per Postgres cluster)** for `ENTERPRISE_ISOLATED` / `CONFIDENTIAL_SILICON` NDA libraries; (c) **64 Fixed Hash-Bucket Partitions (`NOBYPASSRLS` + `hnsw.iterative_scan = strict_order` + constant-time padding)** for standard `MAKER`/`PRO` uploads | Eliminates both shared-HNSW side channels AND the `50,000`-table PostgreSQL `relcache`/planner memory explosion at planetary SaaS scale! |
 | **3. Component & Equivalence Knowledge Graph** | Relational/Graph adjacency tables | Pin-compatible drop-in alternates (**Zero-Spin BOM Rescue**), complementary gate-driver/FET pairs, and verified reference subcircuits. |
 
 ---
 
-## 5. Grammar-Constrained & Quarantine-Hardened LLM Gateway (`ai/llm-gateway`)
+## 5. Grammar-Constrained & Multimodal-Quarantine LLM Gateway (`ai/llm-gateway`)
 
 | Capability Tier | Purpose | Production Cloud / Enterprise VPC | Local Mac Dev Default |
 |---|---|---|---|
-| **Tier 1: Fast / Quarantine Reader** | Autocomplete, ERC explanation, **Zero-Tool Untrusted Text/PDF Quarantine Summarizer** (defeats Indirect Prompt Injection!) | Quantized fast model on VPC vLLM | Local Apple Silicon Ollama / MLX (`qwen2.5-coder:7b` / `llama3.2`) |
-| **Tier 2: Deep Neuro-Symbolic Reasoning** | Circuit topology synthesis, multi-domain debug, RTL/SVA/firmware generation | VPC Frontier Open-Weights on **Confidential H100/B200 GPUs** or Zero-Retention API | Local Mac Ollama / MLX (`qwen2.5-coder:32b` or best model fitting Unified Memory) |
-| **Tier 3: Vision / Spatial Multimodal** | Dual-VLM datasheet extraction, whiteboard/sketch import, PCB Vision-Canvas critique | Vision-Language cluster on VPC GPUs | Local Mac Vision model (`qwen2.5-vl` / `llama3.2-vision`) |
-| **Tier 4: Embeddings & Reranking** | Partitioned Datasheet & Errata RAG | GPU embedding + cross-encoder reranker (`bge-m3`) | Local Ollama / MLX (`nomic-embed-text` / `bge-m3`) |
+| **Tier 1: Fast / Zero-Tool Text & Vision Quarantine** | Autocomplete, ERC explanation, **Zero-Tool Untrusted PDF/Errata/Whiteboard-Image Quarantine Extractor** (`GBNF` JSON primitives only—defeats both text & visual prompt injections!) | Quantized fast + VLM models on VPC vLLM | Local Apple Silicon Ollama / MLX (`qwen2.5-coder:7b` / `qwen2.5-vl:7b`) + `deterministic_mock` offline fallback |
+| **Tier 2: Deep Neuro-Symbolic Reasoning** | Circuit topology synthesis, multi-domain debug, RTL/SVA/firmware generation (delegating numerical sizing to `signal-diff-sim`) | VPC Frontier Open-Weights on **Confidential H100 (Exclusive CC) / B200 (`TEE-I/O` MIG)** or Zero-Retention API | Local Mac Ollama / MLX (`qwen2.5-coder:32b` or best model fitting Unified Memory) |
+| **Tier 3: Spatial Canvas Critique** | Trusted internal `signal-render` PCB/IC Vision-Canvas floorplan & thermal heatmap critique | Vision-Language cluster on VPC GPUs | Local Mac Vision model (`qwen2.5-vl` / `llama3.2-vision`) |
+| **Tier 4: Embeddings & Reranking** | Tiered Datasheet & Errata RAG | GPU embedding + cross-encoder reranker (`bge-m3`) | Local Ollama / MLX (`nomic-embed-text` / `bge-m3`) |
 
 ### Reliability & Enterprise AI Privacy Guarantees
 - **100% Valid Tool Calls via Grammar-Constrained Decoding (`GBNF`):** `ai/llm-gateway` enforces JSON-Schema / Protobuf state-machine decoding (`Outlines` / `llama.cpp GBNF`) + **Dynamic Tool Subset Routing (5–8 tools per specialist step)** so even 7B Local Mac models emit zero syntax errors.

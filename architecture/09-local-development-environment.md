@@ -121,8 +121,10 @@ SIGNAL_LLM_EMBEDDING_MODEL=nomic-embed-text
 
 ---
 
-## 5. Local Security & DLP Developer Ergonomics
+## 5. Local Build Speed, Shader Parity & DLP Developer Ergonomics
 
 In `SIGNAL_ENV=local`:
-- **DLP Toggle:** Engineers can switch live between **Standard WebGPU Mode** (for convenient DevTools debugging) and **Enterprise Zero-Leak Hybrid Stream Mode** (testing server-side Metal `wgpu` `YUV 4:4:4` lossless tiles + Tardos watermarks, print blocking, and privacy curtains locally).
-- **Real Hybrid PQC & Convergent Vault Encryption Always Active:** Local `MockGit` `ENCRYPTED_VAULT` repos and `MinIO` ephemeral WAL chunks are STILL encrypted with `AES-256-GCM-SIV` / `ML-KEM` via `DevKMS` so cryptographic code paths are exercised on every single developer run—never stubbed out!
+- **`< 2 s` Incremental Rust Builds (`signal-proto` + `sccache` + `lld`):** Protobuf codegen compiles **once** inside a single shared `engine/crates/signal-proto` crate (never duplicated across 20 crate `build.rs` scripts!), paired with `cargo-hakari` (`workspace-hack`), `sccache`, and `lld` fast linking so `cargo watch` inner-loop rebuilds complete in `< 2 s` on Apple Silicon.
+- **Metal ↔ Vulkan WGSL Shader Parity:** Because macOS runs `wgpu` on **Metal** while Linux K8s runs **Vulkan**, CI automatically runs headless **`lavapipe` / `SwiftShader` software-Vulkan** golden-pixel tests on every shader change so WGSL alignment/precision differences never break production pods.
+- **Zero-Download Offline `deterministic_mock` LLM Mode:** If a developer or university lab boots `pnpm dev:lite` before downloading multi-GB Ollama/MLX model weights (`SIGNAL_LLM_PROVIDER=deterministic_mock`), `ai/llm-gateway` serves deterministic, schema-valid golden tool responses for offline UI/engine testing and fast CI.
+- **DLP Toggle & Active PQC/Padmé Encryption:** Engineers can switch live between **Standard WebGPU Mode** and **Enterprise Zero-Leak Dual-Plane Stream Mode** (`Zstd-QOI`/WebP + Metal `wgpu` + Geometric Constellation watermarks), while `MockGit` `ENCRYPTED_VAULT` repos ALWAYS run real Padmé-padded `AES-256-GCM-SIV` + Hybrid PQC via `DevKMS`!

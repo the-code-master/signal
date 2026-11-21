@@ -72,17 +72,16 @@ stateDiagram-v2
 ```
 
 ### Key Lifecycle & Resilience Invariants
-1. **Linearizable Single-Pod Guarantee (Zero Split-Brain):**
-   - Before claiming a pod for `project_id`, `signal-operator` acquires a **Kubernetes `Lease` backed by linearizable etcd Raft `resourceVersion`** (cross-checked in PostgreSQL—never relying on async-replicated Redis Redlock for safety!). Redis serves strictly as a `< 1 ms` read-through routing cache invalidated immediately on lease transitions.
-   - All BYO-Git `Super-Commit` pushes and ephemeral crash-recovery WAL writes verify the monotonic `fencing_token`.
-2. **Never Reuse a Pod Across Projects + Graceful Per-Repo Mount States:**
-   - Warm Standby pods are clean, uninitialized binaries; once a Project Pod hibernates, **the pod is permanently destroyed** after RAM `zeroize`.
-   - Each `<project>-<type>` repo mounts independently (`MOUNTED` | `SYNCING` | `UNAUTHORIZED` | `DEGRADED`)—so a transient Git outage on one sub-repo never blocks authorized engineers from working in healthy sub-projects!
-3. **Sub-Second Startup, Predictive Warm Pools & Live Vertical Migration:**
-   - **Predictive `KEDA` + `Karpenter` Warm Pool Autoscaler** maintains lightweight CPU warm pods (attaching GPU/render slices dynamically + P2P OCI image streaming) to absorb morning login spikes without overnight GPU waste.
-   - **Zero-Downtime Live Pod Resize & Handoff:** When a project outgrows its RAM/CPU tier (or a node receives `SIGTERM` drain notice under `PodDisruptionBudget`), `signal-operator` uses **K8s In-Place Vertical Resize** or pre-hydrates a larger successor pod in the background, tails the CRDT op-log, pauses mutations for `< 150 ms`, and atomically flips `session-broker` upstream without dropping collaborators!
-4. **Crash & Git-Outage Continuity (Zero Permanent Signal File Custody):**
-   - Active transactions push batched commits to customer `<project>-<type>` repos AND stream `< 500 ms` RPO deltas to Signal's **Ephemeral BYOK-Encrypted Continuity Journal** (TTL `<= 72h`, default `24h`, immediately crypto-shredded once verified in customer Git—allowing uninterrupted editing even during multi-hour external GitHub/GitLab/Bitbucket outages!).
+1. **Scalable Linearizable Fencing & Dual-Gate External Git Protection (Zero Split-Brain at `1M+` Projects):**
+   - **Zero `etcd` Heartbeat Storms:** Rather than renewing `50,000` individual K8s `Lease` objects every `2 s` (`25,000` Raft writes/s!), each K8s worker node renews **one Host-Aggregated Node Lease** (`100×` fewer `etcd` writes!) paired with a sharded linearizable **`project_lease` epoch record** (`fencing_epoch`) on claim/handoff; Redis serves strictly as a `< 1 ms` read-through cache.
+   - **Dual-Gate External BYO-Git Fencing:** Because external GitHub/GitLab/Bitbucket servers do not natively understand Kubernetes Lease tokens, Signal enforces two independent gates: (a) **`signal-egress-proxy` Active Epoch Gate** inspects `X-Signal-Fencing-Token: (project_id, fencing_epoch)` on every outbound Git/LFS packet and **hard-drops (`412`)** any zombie pod whose `fencing_epoch < live_epoch` before a single byte leaves Signal; and (b) `signal-git-sync` updates `.signal/repos.lock.json` on `<project>-meta` **first via strict Git `old_oid -> new_oid` CAS** embedding `fencing_epoch`!
+2. **Never Reuse a Cell Across Projects + Graceful Per-Repo Mount & External-Push Rebase:**
+   - Small educational `EXPLORER` circuits (`<= 200` components, zero NDA IP) boot in `< 5 ms` inside dedicated **`< 8 MB` Wasmtime Isolate Security Cells (`signal-cell-wasm` with hardware MPK + per-project DEK/RLS)** and auto-promote live into dedicated **Kata MicroVM Pods** as soon as complexity or tier increases; terminated pods/isolates `zeroize` RAM and are permanently destroyed.
+   - Each `<project>-<type>` repo mounts independently (`MOUNTED` | `SYNCING` | `UNAUTHORIZED` | `DEGRADED`); external developer/CI `git push` events detected via dirty-hint webhooks fetch into a shadow ref and run **`jj-lib` 3-way structural auto-rebase** without interrupting live IDE users!
+3. **3-Phase Pre-Copy Live Pod Resize & Migration (`< 150 ms` Actual Cutover Pause):**
+   - Because copying `128 GB` of raw IC pod RAM over a network would take `~42 s`, `signal-operator` executes **3-Phase Pre-Copy Migration** whenever vertical pod resize or `SIGTERM` node-drain occurs: **(Phase 1)** `P_new` hydrates base blobless `<project>-*` repos & PDKs in the background while `P_old` stays 100% live (`0 ms` pause); **(Phase 2)** `P_new` tails compact `DesignTransaction` WAL ops (`kilobytes`) over NATS until lag `< 50` ops; **(Phase 3)** `P_old` freezes mutations for **`< 150 ms`**, flushes the final `< 50 KB` WAL tail + MNA state vector + `fencing_epoch` bump to `P_new`, and Envoy atomically switches upstream streams!
+4. **Crash & Git-Outage Continuity + Verifiable Crypto-Shredding:**
+   - Active transactions stream `< 500 ms` RPO deltas to Signal's **Ephemeral Continuity Journal** (`TTL <= 72h`, default `24h`), encrypted under a **per-session sub-DEK wrapped EXCLUSIVELY by Customer BYOK/KMS** (instantly bricked on BYOK revocation) and emitting an **`ML-DSA`-signed Crypto-Shred Receipt** to the WORM ledger immediately upon `Super-Commit` Git CAS!
 
 ---
 
@@ -91,9 +90,9 @@ stateDiagram-v2
 How does Signal ensure Engineer A in New York, Engineer B in Munich, Engineer C in Bangalore, and an AI Agent all hit the exact same Rust Engine Pod smoothly?
 
 1. **Provider-Backed Authentication & Repo Authorization:** Client authenticates via Node.js BFF (`JWT` bound to immutable `provider_user_id` from GitHub / GitLab / Bitbucket) and passes live **Org + Repo membership verification** confirming exact `read`/`write`/`admin` rights on `<project>-meta` and each `<project>-<type>` repo.
-2. **Singleflight Session Resolution:** Node.js `session-broker` checks the Redis routing cache (backed by linearizable K8s `Lease`), coalescing concurrent cold-open requests via singleflight so **at most one pod** ever hydrates Project X. Pods boot in the project's **Jurisdiction-Pinned / Home Region**.
+2. **Singleflight Session Resolution:** Node.js `session-broker` checks the Redis routing cache (backed by sharded linearizable project epochs + Host Leases), coalescing concurrent cold-open requests via singleflight so **at most one cell/pod** ever hydrates Project X in its **Jurisdiction-Pinned Region**.
 3. **Zero-Copy Sticky Transport & Global Edge Prediction:**
-   - `session-broker` issues short-lived **Ed25519 stream tickets** so high-frequency pointer/viewport traffic flows zero-copy through **Envoy HTTP/3 WebTransport / TURN-over-TLS 443 (`turns:`)** directly to the Pod without Node.js JSON/GC jitter.
+   - `session-broker` issues short-lived **Ed25519 stream tickets** so high-frequency pointer/viewport traffic flows zero-copy through **Envoy HTTP/3 WebTransport / TURN-over-TLS 443 (`turns:`) / WSS** directly to the Pod without Node.js JSON/GC jitter.
    - Regional edge relays + **120 FPS client-side predictive crosshair/pan/ghost-wire overlays** keep distant collaborators feeling instantaneous even at `180 ms` transoceanic RTT.
    - **Per-Subscriber Conflating Ring Buffers:** Each connected user gets an isolated bounded ring buffer—a collaborator on a slow 3G link receives coalesced latest state and adaptive FPS without ever causing head-of-line stalls for fiber teammates!
 4. **Per-Sub-Project Role Enforcement & Instant Eviction Inside the Pod:** Every connection carries its signed per-repo RBAC map enforced directly inside `signal-engine` (users never receive graph nodes, render layers, or AI context from unauthorized `<project>-<type>` repos). Revocation in GitHub/GitLab/Bitbucket or Signal Access Review evicts live pod streams within `< 2 s`.
@@ -105,12 +104,12 @@ How does Signal ensure Engineer A in New York, Engineer B in Munich, Engineer C 
 Inside the Project Pod, `signal-graph` coordinates all concurrent participants safely:
 
 - **Presence & Live Review Huddles:** Colored cursors, active sheet/layer badges, selection highlights, spatial review threads, and **"Follow Engineer"** synchronized viewport huddles.
-- **Topological-Invariant CRDT + Per-Actor Selective Undo:**
-  - Concurrent non-overlapping edits execute lock-free. Overlapping topological races (e.g., User A deletes `U1` while User B wires `U1.pin4`) resolve deterministically without dangling pointers by converting the wire end to a flagged **Floating Junction Marker**.
-  - **Per-Actor Selective Causal Undo (`Cmd+Z`):** Reverses *only the invoking engineer's* own last non-conflicting `DesignTransaction` (never accidentally undoing a teammate's edit!).
+- **Dependency-Aware Topological CRDT + Safe Causal Undo:**
+  - Concurrent non-overlapping edits execute lock-free. `Delete(U1)` vs. `Wire(U1.pin4)` resolves to a **Floating Junction Marker**; concurrent merges of distinct power/ground rails (`VCC` + `GND`) insert a **Contention Bridge Marker** preventing silent power shorts!
+  - **Dependency-Checked Selective Undo (`Cmd+Z`):** Checks the **Read-After-Write Causal DAG** before reversing *only* the invoking engineer's last transaction—safely detaching dependent teammate wires into Floating Markers if needed rather than corrupting state.
   - **Heartbeat Soft Reservations:** Dragging/routing acquires a soft intent lease requiring 2 s pointer heartbeats (hard 15 s max TTL); tabs idle `> 5 min` automatically downgrade to low-FPS observer mode.
 - **AI Agent Collaboration Modes:**
-  - **Co-Pilot Branch Mode (Default):** AI Agent forks an instant Copy-on-Write (CoW) branch with live port-boundary rebasing and surfaces a visual semantic diff + proof bundle.
+  - **Co-Pilot Branch Mode (Default):** AI Agent forks an instant Copy-on-Write (CoW) branch with live port-boundary rebasing and surfaces a visual semantic diff + parent-hash-bound proof bundle (re-verified incrementally on merge).
   - **Live Pair Mode (Opt-In):** Scoped live co-editing on an explicitly locked subcircuit region.
 
 ---
@@ -119,10 +118,10 @@ Inside the Project Pod, `signal-graph` coordinates all concurrent participants s
 
 | Workload Class | Execution Target | Isolation, Cancellation & Scaling Mechanism |
 |---|---|---|
-| **Interactive Editing & Quick SPICE (< 1 s)** | Active `signal-project-pod` | **In-Pod Memory Admission Governor** reserves 60% RAM for graph/viewport and caps local quick-sim arena at 25% (eliminating `OOMKill` crashes); anything larger auto-spills to burst workers! |
-| **Heavy Batch Sim, Differentiable Sizing & 3D EM** | Ephemeral `signal-sim-worker` pods (Spot-eligible CPU & GPU pools) | Dispatched over NATS JetStream (`signal.{org}.{proj}.>`) with **Hierarchical Distributed Cancellation Tokens** (`< 200 ms` abort when a branch/sweep is canceled) + per-org/project **Compute Quota Circuit Breakers**. |
-| **Physical/Formal Verification & Builds (DRC/LVS/PEX, `signal-formal` LEC, STA, FW Build)** | Ephemeral `signal-verify-worker` pods | Single-job, single-project, zero-egress sandboxes destroyed immediately after returning signed result payloads. |
-| **Server-Side Zero-Leak Rendering & Confidential Silicon** | **Hardware-Isolated NVIDIA MIG** slice or **`CONFIDENTIAL_SILICON` (AMD SEV-SNP + NVIDIA H100/B200 Confidential GPU)** | Hardware-partitioned VRAM/compute/cache mandatory for Enterprise/PRO (software GPU time-slicing restricted strictly to non-sensitive `EXPLORER` education sandboxes with Vulkan memory zeroing). |
+| **Interactive Editing & Quick SPICE (`< 25k` nodes)** | Active `signal-project-pod` (CPU `KLU`/`CKTSO` SIMD LU) or `signal-cell-wasm` (`EXPLORER`) | **In-Pod Memory Admission Governor** reserves 60% RAM for graph/viewport and caps local quick-sim arena at 25% (eliminating `OOMKill` crashes); anything larger auto-spills to burst workers! |
+| **Heavy Batch Sim (`> 25k` nodes), Saltation-Adjoint & 3D EM** | Ephemeral `signal-sim-worker` pods (`cuDSS` `FP64` on H100/B200 or `FP32->f64` mixed-precision on L4/A10G) | Dispatched over NATS JetStream (`signal.{org}.{proj}.>`) with **Hierarchical Distributed Cancellation Tokens** (`< 200 ms` abort when a branch/sweep is canceled) + per-org/project **Compute Quota Circuit Breakers**. |
+| **AOT Verilog-A Build, MapReduce DRC/LVS/PEX, `signal-formal` & FW** | Ephemeral `signal-verify-worker` pods | Single-job, single-project, zero-egress sandboxes destroyed immediately after returning `ML-DSA`-signed result payloads. |
+| **Server-Side Zero-Leak Rendering & `CONFIDENTIAL_SILICON` GPUs** | Standard `PRO`/`ENTERPRISE`: **Hardware-Isolated NVIDIA MIG** (`A100`/`H100`/`L40S`/`B200` + VRAM zeroing). `CONFIDENTIAL_SILICON`: **Exclusive Whole-GPU Hopper `H100 CC`** (with FLR/CC reset) OR **Blackwell `B200`/`GB200` `TEE-I/O` Confidential MIG** (`NRAS` SPDM attested) | Reflects real GPU silicon capabilities (Hopper `H100` prohibits simultaneous `MIG + CC`, whereas Blackwell `B200` supports hardware `TEE-I/O` Confidential MIG!); software GPU time-slicing is strictly forbidden for commercial/Enterprise tenants. |
 
 ---
 

@@ -133,10 +133,10 @@ Even with disjoint swimlanes, certain files traditionally attract conflicts in m
 | Contention / Drift Hotspot | Deterministic Anti-Conflict & Anti-Drift Rule |
 |---|---|
 | **Database Migrations** | NEVER use sequential integers (`001_`, `002_`). ALWAYS use UTC microsecond timestamp + agent tag: `YYYYMMDDHHMMSS_<ag\|cursor>_<slug>.sql` (e.g., `20261201143022_cursor_add_sftp_targets.sql`). |
-| **Generated Contract Stubs** | **NEVER commit generated Protobuf/OpenAPI code to Git!** Generate deterministically at build time (`build.rs` in Rust; `pnpm codegen` prebuild in TS) with pinned `buf` / OpenAPI versions. |
-| **Cross-Lane Semantic / Unit Drift** | Every physical field in `contracts/` MUST carry an explicit SI unit suffix (`_nm`, `_ps`, `_uv`, `_na`, `_mkelvin`, `_hz`), and both IDEs test against shared golden fixtures in `contracts/fixtures/`. |
+| **Generated Contract Stubs** | **NEVER commit generated Protobuf/OpenAPI code to Git!** Generate deterministically at build time (`engine/crates/signal-proto` once for the Rust workspace; `pnpm codegen` prebuild in TS) with pinned `buf` / OpenAPI versions. |
+| **Cross-Lane Unit & `int64` `bigint` Safety** | Every physical field in `contracts/` MUST carry an explicit SI unit suffix (`_nm`, `_ps`, `_uv`, `_na`, `_mkelvin`, `_hz`), **100% of 64-bit integer fields MUST map to ES2020 `bigint` (`jstype = JS_STRING` / `longAsBigint: true` — preventing JS `2^53` silent rounding!)**, and both IDEs verify against `contracts/fixtures/` + **stateful multi-step `contracts/transcripts/*.jsonl`**! |
 | **Stale / Interrupted Task Claims** | An `IN_PROGRESS` task with **zero new commits on its branch for > 24 hours** has an expired claim lease—the peer IDE or human lead may cleanly take over by logging an immutable handoff file in `coordination/handoffs/`. |
-| **`Cargo.toml` & `package.json` + Supply Chain** | Scope dependencies to individual crates/packages; **any newly added external crate/npm dependency MUST pass `cargo vet` / `cargo deny` / `pnpm audit` + explicit human review** (prevents AI-hallucinated typosquats!). |
+| **`Cargo.toml` & `package.json` + Supply Chain** | Scope dependencies to individual crates/packages (using `cargo-hakari` `workspace-hack` to keep Mac incremental builds `< 2 s`); **any newly added external crate/npm dependency MUST pass `cargo vet` / `cargo deny` / `pnpm audit --ignore-scripts` + explicit human review**! |
 | **Protobuf / OpenAPI Schemas (`contracts/`)** | Additive-only evolution inside `v1`; reserve deleted field tags; enforce `buf breaking` and `openapi-diff` in CI so neither agent can silently break the peer's build. |
 | **Barrel Files & `.env.example`** | Enforce alphabetical formatter sorting; prefer direct module imports; split env templates under `infra/local/env/<subsystem>.env.example`. |
 
@@ -144,17 +144,17 @@ Even with disjoint swimlanes, certain files traditionally attract conflicts in m
 
 ## 7. Unified AI Rulebook (Keeping Antigravity & Cursor 100% Aligned)
 
-To ensure both AI IDEs enforce the exact same Signal architecture, security invariants (Complete Project Isolation, Hybrid PQC, zero local files, no export/print, mandatory 2FA for SFTP/BYO-Git, RAM-only decryption, local `Guest @ Signal Design, Inc.` compile-guards), and coding standards:
+To ensure both AI IDEs enforce the exact same Signal architecture, security invariants (Complete Project Isolation, Hybrid PQC, Padmé-blinded Vault, Dual-Gate External Fencing, Fail-Closed Tier-0 Audit, zero local files, no export/print, mandatory 2FA for SFTP/BYO-Git, RAM-only decryption, local `Guest @ Signal Design, Inc.` compile-guards), and coding standards:
 
 1. **Single Source of Truth:** Canonical [`AGENTS.md`](../AGENTS.md) at the repository root points directly to `architecture/01..16` and codifies all invariants, session-start rituals, engineering standards, and definition-of-done gates.
 2. **IDE Adapter Files (Thin Pointers Only):**
    - Cursor automatically loads [`.cursor/rules/signal-architecture.mdc`](../.cursor/rules/signal-architecture.mdc) (`alwaysApply: true`) → explicitly references `AGENTS.md` and `architecture/` (never duplicates diverging rules).
    - Antigravity reads `AGENTS.md` and `architecture/` directly.
 3. **Automated CI Guardrails (Enforced Equally on Both Agents):**
-   - `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace`, `cargo fmt --check`, `cargo deny check`
-   - `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm audit`
-   - `buf lint`, `buf breaking`, and `contracts/fixtures/` conformance tests
-   - **Security & Isolation Policy CI Check:** Fails any PR that omits a fail-closed route auth decorator, bypasses PostgreSQL RLS, adds HTTP file-download/export headers, writes design entities to `localStorage`/`IndexedDB`, enables `dev-guest-auth` in release profiles, or creates SFTP/BYO-Git endpoints without the Step-Up 2FA decorator!
+   - `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace`, `cargo fmt --check`, `cargo vet`, `cargo deny check`, plus headless software-Vulkan (`lavapipe`) WGSL shader parity checks
+   - `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm audit --ignore-scripts`
+   - `buf lint`, `buf breaking`, `contracts/fixtures/`, and **`contracts/transcripts/*.jsonl` stateful protocol replay**
+   - **Security & Isolation Policy CI Check:** Fails any PR that omits a fail-closed `@Require*` route auth decorator, leaks `403` vs `404` resource existence, bypasses PostgreSQL RLS, uses JS `number` on `int64` contract fields, adds HTTP file-download/export headers, writes design entities to `localStorage`/`IndexedDB`, enables `dev-guest-auth` in release profiles, or creates Tier-0 SFTP/BYO-Git endpoints without Step-Up 2FA + synchronous audit pre-commit!
 
 ---
 

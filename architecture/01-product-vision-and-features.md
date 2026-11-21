@@ -113,20 +113,20 @@ Every component is a composable **Rust Module** (detailed in [`03-rust-eda-engin
   - Dynamic copper pours, split planes, thermal reliefs, creepage & clearance enforcement (IPC-2221 / IEC 62368 high-voltage rules).
 - **Multi-Board, Backplane & Cable/Harness Co-Design:** Stackable mezzanines, backplanes, connector mate pin-swap verification, wire harness topology, 3D bundle routing, and harness voltage-drop/weight calculation.
 - **3D ECAD/MCAD Visualization:** Real-time GPU-rendered 3D PCB with realistic copper, solder mask, silkscreen, component STEP geometry (with automated 3-way Symbol ↔ IPC-7351 Footprint ↔ 3D STEP pin-pad intersection check), and thermal heatmaps.
-- **DRC, DFM, DFA, DFT & JTAG Sign-Off:** Real-time + batch geometric/electrical DRC, acid traps, slivers, annular rings, solder mask bridges, tombstone risk, pick-and-place nozzle clearance, **IEEE 1149.1 / 1687 IJTAG boundary-scan chain synthesis**, and automated ICT/flying-probe nail-bed coverage.
-- **Manufacturing Package Generation (SFTP-Only Delivery):** Gerber X2/X3, Excellon/NC Drill, ODB++, IPC-2581, IPC-D-356 netlist, Pick-and-Place (CPL), Structured BOM, Fabrication & Assembly drawings—generated inside the encrypted Rust pod and transmitted exclusively to an **Authorized SFTP Server**.
+- **DRC, DFM, Fab Capability Profiles, DFT & JTAG Sign-Off:** Real-time + batch geometric/electrical DRC, **Signed Fab Capability Profiles (`*.fabprofile.toml` — exact drill aspect ratios, annular rings, vendor dielectric catalogs such as Megtron/Tachyon, panelization/impedance coupons, and copper-thieving balance)**, acid traps, tombstone risk, **Minimal-Perturbation Incremental PCB ECO** (swapping pins/footprints without ripping up unaffected high-speed buses), **IEEE 1149.1 / 1687 IJTAG boundary-scan chain synthesis**, and automated ICT/flying-probe nail-bed coverage.
+- **Manufacturing, MCAD & Regulatory Package Generation (SFTP-Only Delivery):** Gerber X2/X3, Excellon/NC Drill, ODB++, IPC-2581, IPC-D-356 netlist, Pick-and-Place (CPL), Structured BOM, Fabrication & Assembly drawings, **IDF/IDX/STEP ECAD-MCAD Co-Design Baselines**, and **Watermarked/PQC-Signed Regulatory Lab Evidence Packages**—generated strictly in volatile Pod RAM and transmitted *exclusively* to **2FA-gated Authorized SFTP Servers** (zero browser downloads!).
 
 ### 3.4 Integrated Circuit (IC), Chip & Chiplet Design Suite
 Signal supports both **Custom Analog/Mixed-Signal IC** and **Digital RTL-to-GDSII** flows:
-- **PDK & Foundry Management:** Encrypted tenant-scoped Process Design Kits (PDKs) plus built-in Open-Silicon PDKs (`Sky130`, `GF180`, `IHP SG13G2`), BSIM4/BSIM-CMG/PSP/EKV compact transistor models, standard cell libraries (Liberty `.lib`/`.db`, LEF/DEF), and DRM/DRC/LVS rule decks.
+- **PDK, IEEE 1735 Commercial IP & Foundry Management:** Encrypted tenant-scoped Process Design Kits (PDKs) plus built-in Open-Silicon PDKs (`Sky130`, `GF180`, `IHP SG13G2`), **HSM-backed IEEE 1735 v2/v3 commercial encrypted IP support + isolated `OSDI`/`IBIS-AMI` binary sandboxes**, BSIM4/BSIM-CMG/PSP/EKV compact transistor models, standard cell libraries (Liberty `.lib`/`.db` with **LVF/POCV statistical variation**, LEF/DEF), and DRM/DRC/LVS rule decks.
 - **Analog & Custom IC Design:**
   - Transistor-level schematic capture with parameterized MOSFET/FinFET/GAAFET/BJT/MOM-cap/spiral-inductor Rust modules.
-  - Automated analog sizing & multi-corner optimization (`gm/Id` + **Adjoint Differentiable Sizing** across PVT & 15-year BTI/HCI aging corners).
+  - Automated analog sizing & multi-corner optimization (`gm/Id` + **Adjoint Differentiable Sizing** across PVT, **layout-extracted Pelgrom spatial mismatch**, & 15-year BTI/HCI aging corners).
   - Parameterized Layout Generators (**PCELLs**), common-centroid / interdigitated matching, guard rings, dummy fills, electromigration (EM) wire sizing.
-- **Digital IC / SoC RTL-to-GDSII & Low-Power (UPF) Flow:**
+- **Digital IC / SoC RTL-to-GDSII, Low-Power (UPF) & Metal-Only ECO Flow:**
   - RTL authoring (SystemVerilog/Verilog/Chisel/VHDL), linting, formal CDC/RDC checks, **IEEE 1801 UPF multi-voltage power-island/retention/isolation intent**, and formal Logic Equivalence Checking (LEC).
-  - Logic synthesis, **Design-for-Test (DFT: scan chain insertion, MBIST/LBIST, JTAG/IJTAG, compression & ATPG vector generation)**.
-  - Physical implementation: Hierarchical floorplanning, macro placement, power grid synthesis, standard-cell placement, Clock Tree Synthesis (CTS), global & detailed routing, MMMC Static Timing Analysis (OCV/POCV), dynamic EM/IR drop, and lithography/CMP hotspot awareness.
+  - Logic synthesis, **Design-for-Test (DFT: scan chain insertion, MBIST/LBIST, JTAG/IJTAG, compression & ATPG vector generation)**, and **Post-Mask Spare-Cell / Metal-Only Functional & Timing ECO synthesis** (avoiding multi-million-dollar base-layer mask respins!).
+  - Physical implementation: Hierarchical floorplanning, macro placement, power grid synthesis, standard-cell placement, Clock Tree Synthesis (CTS), global & detailed routing, MMMC Static Timing Analysis (LVF/POCV), dynamic EM/IR drop, and lithography/CMP hotspot awareness.
 - **Physical Verification & Sign-Off:**
   - **DRC**, **LVS**, **ERC**, **Antenna checks**, **PEX** (parasitic R/L/C/CC extraction back-annotated directly into `signal-sim`), and CMP dummy metal fill.
 - **Packaging & Chiplet (2.5D/3D-IC) Co-Design:**
@@ -138,11 +138,11 @@ Signal supports both **Custom Analog/Mixed-Signal IC** and **Digital RTL-to-GDSI
 - **Register Map & Hardware-Software Interface (HSI) Generator:** Single canonical SystemRDL / JSON register map auto-generating glitch-free RTL CSRs, CMSIS-SVD, C/C++/Rust safe register crates, Linux Device Tree (`.dts`), UEFI/ACPI tables, and HFS documentation tables.
 - **Firmware, BIOS & Factory Bring-Up IDE:** Embedded C/C++/Rust & UEFI/EDK2 editor with schematic-aware LSP (hovering a GPIO macro highlights the exact schematic net and PCB trace!), cloud cross-compilation in zero-egress build pods, automated **Factory Bring-Up POST / Boundary-Scan Diagnostic Generator**, and 3-speed virtual HIL testing.
 
-### 3.6 BOM, Live Supply-Chain Intelligence, Sustainability & Legacy Migration
-- **Live Parametric & Privacy-Preserving Supply-Chain BOM:** Real-time roll-up across multi-board hierarchies, variant diffing, lifecycle (`Active`, `NRND`, `EOL`, `Obsolete`), PCN alerts, **k-anonymous live distributor stock/lead-time/pricing**, geographic fab-concentration risk, and instant **AI "Zero-Spin BOM Rescue"** drop-in alternates via Datasheet RAG.
+### 3.6 BOM, ECN Governance, Supply-Chain Intelligence, Sustainability & Legacy Migration
+- **Live Parametric & Privacy-Preserving Supply-Chain BOM:** Real-time roll-up across multi-board hierarchies, variant diffing, lifecycle (`Active`, `NRND`, `EOL`, `Obsolete`), PCN alerts, **Signal-mirrored bulk distributor stock/lead-time/pricing + chaff-padded k-anonymous live checks**, geographic fab-concentration risk, and instant **AI "Zero-Spin BOM Rescue"** drop-in alternates via Datasheet RAG.
 - **Sustainability & Digital Product Passport:** Real-time calculation of embodied carbon ($\text{kgCO}_2\text{e}$), 5-year active energy footprint, RoHS/REACH/PFAS-free/Conflict-Minerals compliance, and EU Digital Product Passport readiness.
 - **Sandboxed Clean-Room Legacy CAD & Sketch Migration (`signal-import`):** Inbound-only zero-network sandboxed importers converting legacy Altium, KiCad, OrCAD, Eagle, LTspice, GDSII/OASIS, LEF/DEF, and whiteboard block-diagram photos into native Signal `ElectronicModule` projects (outbound sharing remains strictly 2FA SFTP!).
-- **Regulated Compliance & Electronic Signatures:** Automated Requirements Verification Matrix (RVM) and **FDA 21 CFR Part 11 / ISO 26262 / DO-254 cryptographic sign-off gates** (`ML-DSA/Ed25519` + Step-Up 2FA).
+- **Engineering Change Orders (`ECN`/`ECO`) & Regulated Electronic Signatures:** Formal **ECN Impact-Analysis & BOM-Freeze Workflow** plus automated Requirements Verification Matrix (RVM) and **FDA 21 CFR Part 11 / ISO 26262 / DO-254 cryptographic sign-off gates** (`ML-DSA/Ed25519` + Step-Up 2FA).
 
 ---
 
