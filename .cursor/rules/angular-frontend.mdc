@@ -1,0 +1,34 @@
+---
+description: Signal Angular 19/20+ Frontend — Zoneless Signals, Clean Library Boundaries, bigint Safety & Zero-Leak DLP
+globs: ["web/**"]
+alwaysApply: false
+---
+
+# Signal Angular Frontend Rules (`web/**`)
+
+Deep reference: `docs/engineering/ANGULAR_ENGINEERING_GUIDE.md` | Skills: `signal-angular-workbench`, `signal-zero-leak-canvas-and-dlp`.
+
+## 1. Modern Angular Only (Zero Legacy Boilerplate)
+- Standalone Components ONLY (`NgModule` forbidden), `ChangeDetectionStrategy.OnPush`, and **Zoneless** reactivity (`signal`, `computed`, `linkedSignal`, `effect`).
+- Use signal APIs (`input()`, `input.required()`, `output()`, `model()`, `viewChild()`) and function-based `inject()` — NEVER `@Input()`, `@Output()`, `@ViewChild()`, or constructor DI parameter lists.
+- Use built-in template control flow (`@if`, `@for (...; track item.id)`, `@switch`, `@defer`) — NEVER `*ngIf`, `*ngFor`, `*ngSwitch`.
+- Keep RxJS strictly at async transport/stream edges (`toSignal`, `takeUntilDestroyed`); never leak manual `.subscribe()` calls.
+
+## 2. Clean Modular Structure & Token Efficiency
+- Keep files `<= 300 LOC` (split `> 350 LOC`) and pure `ui/` dumb components `<= 200 LOC` (`input()`/`output()` only, zero injected services). Open every file with a 3-line `/** Module / Invariants / Spec */` header.
+- Respect `web/libs/<domain>/src/index.ts` as the sole public barrel — NEVER deep-import internal paths of another workbench library. Coordinate cross-pane highlights strictly via `@signal/workspace-bus`.
+- Lazy-load every core & extended workbench (`loadChildren` + `@defer`) so initial shell stays `< 250 KB` gzipped. Use `cdk-virtual-scroll` for any list/tree/grid `> 50` rows.
+
+## 3. 64-Bit `bigint` Precision & Engineering UX
+- ALL 64-bit integer contract fields (`_nm`, `_ps`, `_fs`, `fencing_epoch`, `provider_repo_id`) MUST remain ES2020 `bigint` (`longAsBigint: true`). **NEVER** cast them to JS `number` (`Number(x)`).
+- Always render explicit SI unit confirmation pills distinguishing `m` (`milli`) from `Meg` (`mega`).
+- Comply with WCAG 2.2 AA: Okabe-Ito color-blind-safe palettes + procedural stipple patterns, keyboard-only CAD wiring/navigation, and ARIA live announcements.
+- Keep context URL-scoped (`/org/:org_slug/project/:proj_slug/*`) — never store active org/project in global singleton state.
+
+## 4. Zero-Leak Viewport, DLP & XSS Guardrails
+- **NEVER** store design IP, netlists, layouts, waveforms, specs, or firmware in `localStorage`, `sessionStorage`, `IndexedDB`, Service Worker caches, or downloadable Blob URLs. Reconnect buffers (`<= 60 s`) live strictly in a volatile JS RAM closure.
+- Under Enterprise Zero-Leak mode, never buffer raw geometry in JS; render interactive HUD widgets via `HudOverlayPrimitive` over `signal-render`'s Dual-Plane `Zstd-QOI`/WebP + hardware video GPU Atlas. Multi-Monitor pop-outs use same-origin volatile `BroadcastChannel` + inherited focus curtains & watermarks.
+- **NEVER** use `bypassSecurityTrust*`, `innerHTML`, `eval`, `new Function`, or `window.print()`. Preserve CSP nonces, Trusted Types, and Route-Partitioned `COOP`/`COEP`.
+
+## 5. Verification Before Commit
+Run `pnpm --filter @signal/web lint`, `pnpm --filter @signal/web typecheck`, `pnpm --filter @signal/web test --run`, and `pnpm audit --ignore-scripts`.

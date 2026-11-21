@@ -1,0 +1,31 @@
+---
+description: Signal Pure-Rust EDA Engine — Safety, Determinism, Exact Geometry, Physics & Clean Modular Standards
+globs: ["engine/**", "benchmarks/**"]
+alwaysApply: false
+---
+
+# Signal Rust Engine Rules (`engine/**`, `benchmarks/**`)
+
+Deep reference: `docs/engineering/RUST_ENGINEERING_GUIDE.md` | Skills: `signal-rust-crate-architect`, `signal-rust-physics-and-geometry`.
+
+## 1. Crate Structure & Token Efficiency
+- Rust **2024 Edition**; every crate `lib.rs` declares `#![forbid(unsafe_code)]` (audited SIMD/FFI leaves live in tiny micro-crates with `// SAFETY:` proofs + Miri + fuzz tests).
+- Keep files `<= 300 LOC` (split `> 350 LOC`) with a 3-line `//!` header (`Module`, `Invariants`, `Spec`). Separate `types.rs`, `error.rs`, `stamping.rs`/`model.rs`, and `kernel.rs`; keep `lib.rs` to concise re-exports.
+- Centralize ALL Protobuf/gRPC build-time codegen in `engine/crates/signal-proto` (`cargo-hakari` workspace-hack) — never add duplicate `prost`/`tonic` `build.rs` steps to domain crates.
+- Respect strict acyclic crate layering: Tier 0 (`signal-core`, `signal-proto`) → Tier 1 (`signal-graph`, `signal-geom`, `signal-component`) → Tier 2 (`signal-lib-*`, `signal-module-sdk`) → Tier 3 (solvers & extended domain crates) → Tier 4 (`signal-render`, `signal-git-sync`, `signal-cell-wasm`, `signal-pod`, `signal-operator`).
+
+## 2. Safety, Security & Error Handling
+- Zero `.unwrap()`, `.expect()`, or unchecked `[i]` indexing on untrusted, network, Git, CAD-import, or parser inputs.
+- Library crates use `thiserror::Error` with explicit typed variants; never expose `anyhow::Error` in library crate APIs.
+- Wrap every DEK, token, PDK buffer, and confidential net name in `secrecy::SecretBox<T>` + `zeroize::ZeroizeOnDrop`; never log secrets into `tracing` fields.
+- Never link LLVM or `dlopen` vendor `.so`/`.dll` inside `signal-pod` (use AOT Cranelift/`WASM-SIMD` build workers + out-of-process child `Firecracker`/`gVisor` IPC sandboxes for binary `IBIS-AMI`/`OSDI`).
+- Never block `tokio` threads with CPU physics/crypto/DRC work, and never hold a `Mutex`/`RwLock` across `.await`.
+
+## 3. Deterministic EDA Physics & Exact Geometry
+- Use `#[repr(transparent)]` SI-unit newtypes (`Nanometers(i64)`, `Picoseconds(i64)`, `MicroVolts(i64)`, `NanoAmps(i64)`). Never mix raw `i64`/`f64` units in public APIs.
+- `signal-geom`: store compact `i64` nm; ALWAYS promote cross-products/determinants to exact `i128` or Shewchuk adaptive predicates; preserve native Arc/Bézier/Euler curves.
+- `0.5-ULP` cross-ISA determinism (`ARM64 Mac == x86_64 Linux`): use `core_math`, disable FMA contraction where required, iterate canonically (`BTreeMap`/sorted CSR, never `HashMap` iteration order), deterministic `rayon` tree-reductions, and per-`SignalEntityId` `ChaCha20Rng`.
+- MNA SPICE: stamp exact `q(v)`/`Φ(i)` charge/flux conservation, Ruiz equilibration + `f128` refinement, CPU `KLU`/`CKTSO` (`< 25k`) ↔ GPU `cuDSS` (`>= 25k`), and Filippov Saltation + `Revolve` $O(\log N_t)$ checkpointing for switching adjoints.
+
+## 4. Verification Before Commit
+Run `cargo fmt --all -- --check`, `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test -p <crate>` (then `--workspace`), `cargo deny check`, `cargo vet`, and relevant `benchmarks/` regressions.

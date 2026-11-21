@@ -1,0 +1,22 @@
+---
+description: Signal AI Agents, Partitioned Datasheet RAG, K8s Project Cells & Infrastructure Isolation Rules
+globs: ["ai/**", "infra/**"]
+alwaysApply: false
+---
+
+# Signal AI, RAG & Infrastructure Isolation Rules (`ai/**`, `infra/**`)
+
+Specs: `architecture/04-*`, `05-*`, `09-*`, `15-*` | Skills: `signal-ai-neuro-symbolic-rag`, `signal-security-isolation-audit`, `signal-local-mac-dev`.
+
+## 1. Neuro-Symbolic AI & Multimodal Quarantine (`ai/**`)
+- **Zero LLM Physics Math:** Never let an LLM guess component sizing, transfer functions, or DRC margins — delegate numerical optimization to Rust Saltation/PSS `signal-diff-sim` and verification to `signal-sim`/`signal-formal`.
+- **Multimodal VLM + Dual-LLM Quarantine:** Route 100% of untrusted PDFs, errata, CAD notes, commit messages, AND VLM-processed whiteboard/datasheet images through the **Zero-Tool Quarantine Tier** constrained by `GBNF` schemas — zero reader/VLM model ever holds tool-calling authority!
+- **Tool Safety & Proof Bundles:** Every agent tool call carries the invoking user's non-elevated per-repo RBAC token (zero bindings to `sftp-egress`, `vcs-connector` credentials, or admin APIs). Bind every `DesignProofBundle` to `base_graph_merkle_root` with automatic `< 1 s` post-rebase delta re-verification on merge.
+- **3-Tier `pgvector` HNSW & BOM Privacy:** Query `datasheet_chunks_global` plus ONLY the caller's sharded dedicated enterprise partition (`<= 500` orgs/cluster) or 64-bucket hash partition (`NOBYPASSRLS` + `hnsw.iterative_scan`) using condition-parameterized curves (`C(V,T,f)`, copper-coupled `R_thetaJC/JB`) + bulk-mirrored/`4×` chaff-padded BOM lookups.
+- **Model-Agnostic Gateway:** Support Local Mac Ollama/MLX, `deterministic_mock` offline CI fallback, VPC Confidential GPU vLLM/TensorRT-LLM, and zero-retention APIs behind `ai/llm-gateway` with `GBNF` schema enforcement.
+
+## 2. K8s Project Cell Isolation & Local Mac Infra (`infra/**`)
+- Enforce **1 Project = 1 Isolated Security Cell**: `< 8 MB` `signal-cell-wasm` (`EXPLORER`), Kata/gVisor MicroVM, or `CONFIDENTIAL_SILICON` (AMD SEV-SNP / Intel TDX) + **Exclusive Whole-GPU Hopper `H100 CC`** (never claim simultaneous `MIG + CC` on H100!) or **Blackwell `B200+ TEE-I/O` Confidential MIG** (or standard Hardware MIG).
+- **Cilium eBPF** default-deny drops 100% of Pod ↔ Pod lateral traffic; all external Git/SFTP egress funnels through socket-pinned + `X-Signal-Fencing-Token` epoch-enforcing `signal-egress-proxy`.
+- Use **Host-Aggregated K8s Node Leases** (`1` Lease/node) + sharded project epochs; enforce Strictly In-Jurisdiction Paired-Region DR (`Frankfurt <-> Paris`, `GovCloud-W <-> E`, `Mumbai <-> Hyderabad`) and SLSA L3 / Cosign / Kyverno admission gates.
+- `infra/local/**`: maintain native `linux/arm64` `dev:full` + `< 1.5 GB RAM` `dev:lite`, headless `lavapipe` software-Vulkan WGSL parity, split per-subsystem env files (`infra/local/env/`), and zero-bypass `local-git-mock` seeding `local-guest-0001`.

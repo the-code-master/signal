@@ -31,10 +31,11 @@ Start with the **[Master Architecture Index](./architecture/README.md)**, or jum
 | 16 | [Adversarial & First-Principles Architectural Audit (148 Flaws Resolved) & Futuristic AI-EDA Innovations](./architecture/16-architectural-audit-flaws-and-futuristic-innovations.md) | Complete two-wave audit of **148 cross-layer flaws (`F-001`–`F-148`)** across math, silicon, crypto, consensus, codecs & EDA sign-off plus **12 AI-EDA innovations (`I-01`–`I-12`)** |
 | 17 | [Extended Feature Specifications: 120 Next-Gen EDA Features (Angular UI & Rust Engine)](./architecture/17-extended-feature-specifications-ui-and-rust.md) | Dual **Angular UI (`web/libs/*`) + Pure-Rust (`engine/crates/*`)** specs for **120 advanced features (`FEAT-001`–`FEAT-120`)**: Magnetics, PDN, Creepage, EMC/FMEDA, BSPDN/TVLA, FPGA, Harness/Panel/DFM, Library/Curve-Fitter, Bench/Shmoo/TDR, Multi-Monitor UX, AI Pareto & Academy |
 
-## Parallel AI Development (Antigravity + Cursor)
+## Parallel AI Development, Engineering Guardrails & Cross-IDE Skills (Antigravity + Cursor)
 
-This repository is pre-configured for deadlock-free simultaneous development by **Antigravity** and **Cursor**:
-- **Canonical Rulebook (Both IDEs):** [`AGENTS.md`](./AGENTS.md)
-- **Cursor Always-Apply Rule:** [`.cursor/rules/signal-architecture.mdc`](./.cursor/rules/signal-architecture.mdc)
-- **Collaboration Protocol:** [`architecture/12-multi-ide-collaboration.md`](./architecture/12-multi-ide-collaboration.md)
-- **Task Board & Per-Agent Journals:** [`coordination/TASK_BOARD.md`](./coordination/TASK_BOARD.md) ([Antigravity](./coordination/agents/antigravity.md) | [Cursor](./coordination/agents/cursor.md))
+This repository is equipped with a three-layer, token-efficient engineering operating system shared natively by **Antigravity** and **Cursor**:
+- **Canonical Always-On Rulebook (Both IDEs):** [`AGENTS.md`](./AGENTS.md)
+- **Scoped Cursor Rules (Always-On + 5 Path-Glob `.mdc` Files):** [`.cursor/rules/signal-architecture.mdc`](./.cursor/rules/signal-architecture.mdc) (+ `rust-engine.mdc`, `angular-frontend.mdc`, `nodejs-control-plane.mdc`, `contracts-and-schemas.mdc`, `ai-rag-and-security.mdc`)
+- **14 Portable Cross-IDE Agent Skills (Open Standard `SKILL.md`):** [`.agents/skills/README.md`](./.agents/skills/README.md) (natively discovered by **both Antigravity and Cursor** via progressive disclosure)
+- **Engineering Handbooks & Phase 0 Playbook:** [`docs/engineering/README.md`](./docs/engineering/README.md) ([Rust Guide](./docs/engineering/RUST_ENGINEERING_GUIDE.md) | [Angular Guide](./docs/engineering/ANGULAR_ENGINEERING_GUIDE.md) | [Token Efficiency & Clean Code](./docs/engineering/TOKEN_EFFICIENCY_AND_CLEAN_CODE.md) | [Phase 0 Launch Playbook](./docs/engineering/PHASE0_LAUNCH_PLAYBOOK.md))
+- **Collaboration Protocol & Live Backlog:** [`architecture/12-multi-ide-collaboration.md`](./architecture/12-multi-ide-collaboration.md) | [`coordination/TASK_BOARD.md`](./coordination/TASK_BOARD.md) ([Antigravity](./coordination/agents/antigravity.md) | [Cursor](./coordination/agents/cursor.md))

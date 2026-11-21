@@ -1,0 +1,27 @@
+---
+description: Signal Canonical Contracts — Protobuf SI-Unit Suffixes, Mandatory bigint Safety, Arrow Framing & Stateful Transcripts
+globs: ["contracts/**"]
+alwaysApply: false
+---
+
+# Signal Canonical Contracts Rules (`contracts/**`)
+
+Spec: `architecture/10-api-and-data-contracts.md` | Skill: `signal-contract-first`.
+
+## 1. Serialized Contract Governance (Shared Zone)
+- All edits to `contracts/**` MUST land via a dedicated serialized PR (`contract/<task-id>-<slug>`) merged to `main` BEFORE parallel Lane A (`engine/`) and Lane B (`web/`, `services/`) branches consume them.
+- **NEVER commit generated Rust or TypeScript codegen outputs to Git.** All stubs are generated deterministically at build time (`signal-proto` in Rust, `pnpm codegen` in TS).
+
+## 2. Mandatory SI-Unit Suffixes & `bigint` Precision
+- Every physical quantity field MUST carry an explicit SI-unit suffix: `_nm`, `_ps`, `_fs`, `_uv`, `_na`, `_uw`, `_mkelvin`, `_hz`, `_mohm` (never ambiguous bare `width`, `delay`, `voltage`, or `temp`).
+- **100% of `int64`, `uint64`, `sint64`, and `fixed64` fields** (coordinates, timestamps, `fencing_epoch`, `provider_repo_id`) MUST specify `[jstype = JS_STRING]` for JSON safety and generate ES2020 `bigint` (`longAsBigint: true`) in TypeScript — preventing JavaScript `2^53 - 1` silent corruption!
+- Enforce `<= 1 MB` chunked framing + Apache Arrow RecordBatches for waveforms, visual diffs, FMEDA/Shmoo tables, and SFTP streams.
+- Inside `signal/v1/`, allow additive-only changes (`N-1` wire compatibility) and explicitly `reserve` removed field numbers/names.
+
+## 3. Golden Fixtures & Stateful Transcripts (Zero Parallel Drift)
+- Every new or changed message MUST add/update golden cross-language vectors in `contracts/fixtures/` (including `> 2^53` `int64` edge cases!).
+- Every new multi-step RPC/WebTransport sequence MUST add/update a replayable stateful trace in `contracts/transcripts/*.jsonl` (e.g., `HydrateProject -> MOUNTED -> ApplyTransaction`) verified against both Rust and TS in CI.
+- OpenAPI (`control-plane.v1.yaml`) MUST remain URL-scoped (`/org/:org_slug/...`), require `Idempotency-Key` on mutations, and contain **ZERO** `/export`, `/download`, `/raw-file`, or `/print` routes.
+
+## 4. Verification Before Commit
+Run `buf lint`, `buf breaking --against '.git#branch=main'`, OpenAPI/JSON-Schema validators, and Rust↔TS fixture + transcript replay checks.

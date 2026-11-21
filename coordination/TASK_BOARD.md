@@ -9,8 +9,9 @@
 
 | Status | Milestone | Notes |
 |---|---|---|
-| `DONE` | **Architecture, 148-Flaw Vetting & 120-Feature Dual UI/Rust Spec** | All **17 specification docs (`01`–`17` + `README.md`)**—covering 148 resolved flaws (`F-001`–`F-148`), 12 AI-EDA innovations (`I-01`–`I-12`), and 120 dual UI+Rust extended features (`FEAT-001`–`FEAT-120`)—published and 2-pass scrubbed across `architecture/`, `AGENTS.md`, and `.cursor/rules/signal-architecture.mdc`. |
-| `READY` | **Phase 0 — Foundation, `bigint` SI-Unit Contracts & Local Mac Harness** | Ready to start once the user approves kicking off Phase 0 coding. |
+| `DONE` | **Architecture, 148-Flaw Vetting & 120-Feature Dual UI/Rust Spec** | All **17 specification docs (`01`–`17` + `README.md`)**—covering 148 resolved flaws (`F-001`–`F-148`), 12 AI-EDA innovations (`I-01`–`I-12`), and 120 dual UI+Rust extended features (`FEAT-001`–`FEAT-120`)—published and 2-pass scrubbed. |
+| `DONE` | **Cross-IDE Rules, Clean-Code Guardrails & 14 Portable Skills** | Optimized zero-truncation `AGENTS.md` (`< 12 KB`), 6 scoped `.cursor/rules/*.mdc` rules, 14 Open-Standard `.agents/skills/*/SKILL.md` skills (Antigravity + Cursor), and 5 engineering guides (`docs/engineering/` including `PHASE0_LAUNCH_PLAYBOOK.md`). |
+| `READY` | **Phase 0 — Foundation, `bigint` SI-Unit Contracts & Local Mac Harness** | Ready to start once the user approves kicking off Phase 0 coding (`docs/engineering/PHASE0_LAUNCH_PLAYBOOK.md`). |
 
 ---
 
