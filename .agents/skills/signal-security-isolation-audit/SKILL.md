@@ -32,8 +32,8 @@ Governing specs: `architecture/07-*`, `architecture/15-*`, `architecture/16-*`.
    - Step-Up 2FA enforces WebAuthn or Redis-burned single-use TOTP; SFTP egress uses disposable write-only `russh` pods (`.tmp.part` → SHA-256 verify → `rename`, zero `SSH_FXP_READ`).
    - Tier-0 security actions commit synchronously to the 3x Quorum Audit Outbox (`503` fail-closed) using pseudonymous IDs (GDPR crypto-shreddable PII outside WORM chains).
 
-6. **Browser & Supply Chain:**
-   - Route-Partitioned `COOP`/`COEP` + `__Host-` `SameSite=Strict` cookies; zero `bypassSecurityTrust*`, `eval`, `child_process.exec`, or browser disk design storage; `cargo vet`/`cargo deny` + `pnpm audit --ignore-scripts` clean.
+6. **Browser, FastAPI & Supply Chain:**
+   - Route-Partitioned `COOP`/`COEP` + `__Host-` `SameSite=Strict` cookies; zero `bypassSecurityTrust*`, `eval`, `exec`, `pickle`, `subprocess(..., shell=True)`, or browser disk design storage; `cargo vet`/`cargo deny` (Rust `1.100+` dependency cooldowns) + `pnpm audit --ignore-scripts` + `bandit`/`pip-audit` clean.
 
 ## Dev Response & Anti-Hallucination
 - Cite exact file paths, line numbers, and observed command/grep evidence for every finding—never fabricate vulnerabilities or claim an audit passed without running concrete checks.

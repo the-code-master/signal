@@ -1,18 +1,18 @@
-# Signal — Angular 19/20+ Frontend & Zero-Leak Engineering Guide (`web/`)
+# Signal — Angular v22+ ONLY Frontend & Zero-Leak Engineering Guide (`web/`)
 
-> **Applies To:** `web/apps/signal-web/` and all lazy workbench libraries under `web/libs/*`.  
+> **Applies To:** `web/apps/signal-web/` and all 23 lazy workbench libraries under `web/libs/*` (**Angular `v22+` ONLY**, **TypeScript `6.0+`**, **Node.js `26 LTS+`** Tier 1 edge/CLI, **`pnpm 11+`**).  
 > **UI Style & Component Ecosystem Standard:** [`ANGULAR_UI_STYLE_GUIDE.md`](./ANGULAR_UI_STYLE_GUIDE.md) *(mandatory companion covering separate `.html`/`.ts`/`.logic.ts`/`.model.ts` files, anti-spaghetti templates, and centralized `@signal/design-system` + `@signal/ui-kit` styling)*.  
-> **Governing Specs:** [`architecture/06-frontend-angular-and-nodejs-bff.md`](../../architecture/06-frontend-angular-and-nodejs-bff.md), [`architecture/15-application-security-and-project-isolation.md`](../../architecture/15-application-security-and-project-isolation.md), [`architecture/17-extended-feature-specifications-ui-and-rust.md`](../../architecture/17-extended-feature-specifications-ui-and-rust.md), [`architecture/18-universal-component-and-datasheet-repository.md`](../../architecture/18-universal-component-and-datasheet-repository.md), [`architecture/19-cad-cam-3d-printing-and-plm-operations.md`](../../architecture/19-cad-cam-3d-printing-and-plm-operations.md), [`architecture/20-versioning-release-monorepo-build-and-k8s-topology.md`](../../architecture/20-versioning-release-monorepo-build-and-k8s-topology.md), [`architecture/21-collaboration-space-project-status-and-automated-reviews.md`](../../architecture/21-collaboration-space-project-status-and-automated-reviews.md).
+> **Governing Specs:** [`architecture/06-frontend-angular-and-fastapi-control-plane.md`](../../architecture/06-frontend-angular-and-fastapi-control-plane.md), [`architecture/15-application-security-and-project-isolation.md`](../../architecture/15-application-security-and-project-isolation.md), [`architecture/17-extended-feature-specifications-ui-and-rust.md`](../../architecture/17-extended-feature-specifications-ui-and-rust.md), [`architecture/18-universal-component-and-datasheet-repository.md`](../../architecture/18-universal-component-and-datasheet-repository.md), [`architecture/19-cad-cam-3d-printing-and-plm-operations.md`](../../architecture/19-cad-cam-3d-printing-and-plm-operations.md), [`architecture/20-versioning-release-monorepo-build-and-k8s-topology.md`](../../architecture/20-versioning-release-monorepo-build-and-k8s-topology.md), [`architecture/21-collaboration-space-project-status-and-automated-reviews.md`](../../architecture/21-collaboration-space-project-status-and-automated-reviews.md).
 
 ---
 
-## 1. Modern Angular Core (Zoneless + Signals-First, Zero Legacy Patterns)
+## 1. Modern Angular v22+ ONLY Core (Zoneless + Signals-First + Signal Forms)
 
-Signal is a greenfield Angular 19/20+ application. Legacy NgModule / Zone.js / decorator boilerplate and inline/spaghetti templates are **strictly prohibited**:
+Signal is a greenfield **Angular `v22+` ONLY** application (running on **Node.js `26 LTS+`** + **TypeScript `6.0+`** + **`pnpm 11+`**). Angular `< 22`, `Zone.js`, `NgModule`, legacy decorators, and inline/spaghetti templates are **strictly prohibited**:
 
 | Concern | ALWAYS USE (Signal Standard) | NEVER USE (Rejected in Review) |
 |---|---|---|
-| **Component Architecture & File Split** | Standalone Components, `ChangeDetectionStrategy.OnPush`, **Zoneless**, separate `.component.ts` (`<= 120 LOC`) + `.component.html` (`<= 150 LOC`) + `.logic.ts` (`<= 250 LOC`) + `.model.ts` | `NgModule`, `Zone.js`, inline `template:`, inline `styles:`, dumping business/UI branching into HTML or `.component.ts` |
+| **Component Architecture & File Split** | Angular `v22+` Standalone Components, `ChangeDetectionStrategy.OnPush`, **Zoneless**, Stable Signal Forms, separate `.component.ts` (`<= 120 LOC`) + `.component.html` (`<= 150 LOC`) + `.logic.ts` (`<= 250 LOC`) + `.model.ts` | Angular `< 22`, `NgModule`, `Zone.js`, inline `template:`, inline `styles:`, dumping business/UI branching into HTML or `.component.ts` |
 | **Inputs / Outputs / Queries** | Signal APIs: `input()`, `input.required()`, `output()`, `model()`, `viewChild()`, `contentChild()` | Legacy `@Input()`, `@Output()`, `@ViewChild()`, `EventEmitter` |
 | **Dependency Injection** | Function-based `inject(Service)` (`readonly` class fields) | Verbose constructor parameter lists |
 | **Template Control Flow & Anti-Spaghetti** | Built-in `@if`, `@for (...; track item.id)`, `@switch`, `@defer`; max nesting `<= 2`; pre-computed `vm()` flags & config arrays from `.logic.ts`; extract branches `> 15` lines | `*ngIf`, `*ngFor`, `*ngSwitch`, compound `&&`/`\|\|` role checks in HTML, copy-pasted `@if`/`@else` markup blocks |

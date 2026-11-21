@@ -1,6 +1,6 @@
 ---
 name: signal-verification-and-pr-gate
-description: Executes Signal's complete pre-commit and PR Definition-of-Done verification suite across Rust, Angular, Node.js, Contracts, and Architecture docs, updates the active agent's single-writer journal, and prepares clean Conventional Commits and PRs. Use right before committing, pushing, or opening a pull request in Antigravity or Cursor.
+description: Executes Signal's complete pre-commit and PR Definition-of-Done verification suite across Rust 1.100+, Angular v22+, Python 3.15+ FastAPI, Contracts, and Architecture docs, updates the active agent's single-writer journal, and prepares clean Conventional Commits and PRs. Use right before committing, pushing, or opening a pull request in Antigravity or Cursor.
 ---
 
 # Signal Verification & PR Gate (Definition of Done)
@@ -20,17 +20,19 @@ Governing rules: `AGENTS.md` Section 7 | `architecture/12-multi-ide-collaboratio
 - **Planning / Docs / Rules Changes:**
   - Verify UTF-8 + LF endings, valid relative links & anchors, balanced code fences, exact GFM table column counts (escape any literal `|` inside table cells), valid Mermaid syntax (no HTML tags, balanced `subgraph`/`end`, quoted parens), escaped prose `\$`, and `git fsck --full`.
 - **Contracts (`contracts/**`):**
-  - `buf lint`, `buf breaking --against '.git#branch=main'`, JSON Schema/OpenAPI validation, Rust↔TS `bigint` fixture round-trip & `contracts/transcripts/*.jsonl` replay.
-- **Rust (`engine/**`, `benchmarks/**`):**
-  - `cargo fmt --all -- --check`
-  - `cargo clippy --workspace --all-targets -- -D warnings`
-  - `cargo test --workspace`
+  - `buf lint`, `buf breaking --against '.git#branch=main'`, OpenAPI 3.1 / JSON-Schema validation (zero drift against FastAPI), Rust↔Python↔TS `bigint` fixture round-trip & `contracts/transcripts/*.jsonl` replay.
+- **Rust `1.100+` (`engine/**`, `benchmarks/**`):**
+  - `cargo fmt --all -- --check && cargo clippy --workspace --all-targets -- -D warnings && cargo test --workspace`
   - `cargo deny check && cargo vet`
-  - Verify `#![forbid(unsafe_code)]`, zero `.unwrap()` on untrusted inputs, `dev-guest-auth` release compile-error guard, and golden `benchmarks/` parity.
-- **Angular & Node.js (`web/**`, `services/**`):**
-  - `pnpm lint && pnpm typecheck && pnpm test --run`
-  - `pnpm audit --ignore-scripts`
-  - Verify separate `.component.ts`/`.component.html` (`<= 150 LOC`, nesting `<= 2`, zero `@if`-soup/duplication)/`.logic.ts`/`.model.ts` files, zero inline `template:`/`styles:`, zero component-local `.css`/`.scss` outside `design-system`/`ui-kit` without `/* @sig-style-exception */`, zero `Number()` casts on `bigint`, zero `NgModule`/legacy decorators, zero `bypassSecurityTrust*`/`eval`/`child_process.exec`, zero browser disk design storage, and zero `/export`/`/download`/`/print` routes.
+  - Verify `rust-version >= 1.100`, `#![forbid(unsafe_code)]`, zero `.unwrap()` on untrusted inputs, `dev-guest-auth` release compile-error guard, and golden `benchmarks/` parity.
+- **Angular `v22+` ONLY (`web/**` — Node.js `26 LTS+`, `pnpm 11+`, TS `6.0+`):**
+  - `pnpm --filter @signal/web lint && pnpm --filter @signal/web typecheck && pnpm --filter @signal/web test --run && pnpm audit --ignore-scripts`
+  - Verify Angular `>= 22.0.0`, separate `.component.ts`/`.component.html` (`<= 150 LOC`, nesting `<= 2`, zero `@if`-soup/duplication)/`.logic.ts`/`.model.ts`, zero inline `template:`/`styles:`, zero component-local `.css`/`.scss` outside `design-system`/`ui-kit` without `/* @sig-style-exception */`, zero `Number()` casts on `bigint`, zero `NgModule`/`Zone.js`/legacy decorators, zero `bypassSecurityTrust*`/`eval`, and zero browser disk design storage.
+- **Python `3.15+` FastAPI Control Plane & AI (`services/**`, `ai/**` — Granian `2.8+`, Pydantic v2, `uv`):**
+  - `uv run ruff check services/ ai/ && uv run ruff format --check services/ ai/`
+  - `uv run pyright services/ ai/ && uv run pytest services/ ai/ -q`
+  - `uv run bandit -r services/ ai/ -ll && uv run pip-audit --strict`
+  - Verify startup route-auth introspection gate (`Depends(require_*)` + uniform `404`), PostgreSQL `19+` `with_rls_tx` (`NOBYPASSRLS`), Fail-Closed 3x Quorum Audit Outbox, zero `eval`/`exec`/`pickle`/`shell=True`, and zero `/export`/`/download`/`/print` routes.
 
 ## 3. Anti-Hallucination Verification & 2–3 Sentence Reporting
 - **Observed Ground Truth Only:** Never report a check as passing unless you executed it after your final edit and observed exit code `0`; report exact failing command output or `"Unverified — <reason>"` if skipped.

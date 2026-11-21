@@ -1,16 +1,16 @@
 # 17 — Extended Feature Specifications: 120 Next-Generation EDA Capabilities (Angular UI & Rust Engine Dual Blueprint)
 
-> **Scope:** Defines **120 advanced, industry-leading features (`FEAT-001`–`FEAT-120`)** above and beyond the baseline product scope in [`01-product-vision-and-features.md`](./01-product-vision-and-features.md) through [`16-architectural-audit-flaws-and-futuristic-innovations.md`](./16-architectural-audit-flaws-and-futuristic-innovations.md). Every single feature is **dual-specified** with crystal-clear boundaries across both the **Angular 19+ Web UI (`web/`)** and the **Pure-Rust EDA Engine (`engine/`)**, bound by `bigint`-safe SI-unit contracts (`contracts/proto/signal/v1/*`) and 100% compliant with Signal's Zero-Leak, Complete Project Isolation, and BYO-Git invariants.
+> **Scope:** Defines **120 advanced, industry-leading features (`FEAT-001`–`FEAT-120`)** above and beyond the baseline product scope in [`01-product-vision-and-features.md`](./01-product-vision-and-features.md) through [`16-architectural-audit-flaws-and-futuristic-innovations.md`](./16-architectural-audit-flaws-and-futuristic-innovations.md). Every single feature is **dual-specified** with crystal-clear boundaries across both the **Angular `v22+` ONLY Web UI (`web/`)** and the **Pure-Rust `1.100+` EDA Engine (`engine/`)**, bound by `bigint`-safe SI-unit contracts (`contracts/proto/signal/v1/*`) and 100% compliant with Signal's Zero-Leak, Complete Project Isolation, and BYO-Git invariants.
 
 ---
 
-## 1. Dual-Stack Feature Architecture (Angular UI ↔ Contracts ↔ Pure-Rust Engine)
+## 1. Dual-Stack Feature Architecture (Angular v22+ UI ↔ Contracts ↔ Pure-Rust 1.100+ Engine)
 
-Every extended capability strictly separates **UI presentation, ergonomics, interactive HUDs, and predictive 120 FPS client feedback** (Angular 19+ Signals in `web/libs/*`) from **physics math, exact geometry, constraint solving, rendering, and hardware verification** (Pure Rust crates in `engine/crates/*`):
+Every extended capability strictly separates **UI presentation, ergonomics, interactive HUDs, and predictive 120 FPS client feedback** (**Angular `v22+`** Signals in `web/libs/*`) from **physics math, exact geometry, constraint solving, rendering, and hardware verification** (**Pure Rust `1.100+`** crates in `engine/crates/*`):
 
 ```mermaid
 flowchart TB
-    subgraph UI["Angular 19+ Signals Frontend (web/apps/signal-web + web/libs/*)"]
+    subgraph UI["Angular v22+ ONLY Signals Frontend (web/apps/signal-web + web/libs/*)"]
         HUD["120 FPS Predictive Canvas HUD, Radial Pie-Menu, Omni-Palette & Multi-Monitor Sync"]
         WExt1["libs/magnetics & libs/power-studio (Winding, PDN, Creepage, Motor/BMS)"]
         WExt2["libs/emc-lab & libs/safety-wcca (CISPR/FCC, ESD, FMEDA, FTA, Rad-Hard)"]
@@ -292,5 +292,5 @@ flowchart TB
 |---|---|
 | **Complete Project Isolation (`1 Project = 1 Security Cell`)** | Every new Rust crate (`signal-magnetics`, `signal-power-integrity`, `signal-emc`, `signal-dfm`, `signal-harness`, `signal-fpga`, `signal-security-hw`) executes strictly inside the dedicated Project Cell (`signal-cell-wasm` or Kata/SEV-SNP MicroVM) or ephemeral zero-egress burst pods—zero cross-project memory or lateral Pod-to-Pod sockets. |
 | **Zero Local Design Files & No Browser Export/Print** | All new visualizers (Interactive Board-Map `FEAT-070`, Live Design-Review Deck `FEAT-109`, Multi-Monitor Pop-Out `FEAT-092`, External Partner Review `FEAT-119`, WebAudio Audition `FEAT-090`) operate strictly in volatile RAM over Dual-Plane `Zstd-QOI`/WebP streaming with Tardos + Constellation watermarks; all physical outputs (Nailboard 1:1 `FEAT-062`, Panel Gerbers `FEAT-063`, Fabrication Drawings `FEAT-067`) egress *exclusively* via Step-Up 2FA Authorized SFTP. |
-| **Pure-Rust Physics & Exact `bigint` SI Contracts** | Zero SPICE, magnetics, creepage, EMI, FMEDA, STA, or DFM math ever runs in Angular or Node.js; every new gRPC/Arrow contract enforces explicit SI-unit suffixes (`_nm`, `_ps`, `_fs`, `_uv`, `_na`, `_hz`) and ES2020 `bigint` (`jstype = JS_STRING`). |
+| **Pure-Rust Physics & Exact `bigint` SI Contracts** | Zero SPICE, magnetics, creepage, EMI, FMEDA, STA, or DFM math ever runs in Angular `v22+` or Python FastAPI; every new gRPC/Arrow contract enforces explicit SI-unit suffixes (`_nm`, `_ps`, `_fs`, `_uv`, `_na`, `_hz`) and ES2020 `bigint` / exact Python `int` (`jstype = JS_STRING`). |
 | **Zero-Floor to Infinite-Ceiling Continuity** | Every student/developing-nation feature (`FEAT-003`, `FEAT-010`, `FEAT-111`–`FEAT-115`, `FEAT-120`) executes on the exact same Rust `ElectronicModule` & `signal-graph` core as 2nm BSPDN/Chiplet/Rad-Hard features (`FEAT-038`, `FEAT-044`, `FEAT-048`–`FEAT-050`). |

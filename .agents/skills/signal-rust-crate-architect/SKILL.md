@@ -1,17 +1,18 @@
 ---
 name: signal-rust-crate-architect
-description: Scaffolds and builds clean, idiomatic, human-maintainable Rust 2024 crates inside engine/crates/*. Use when creating a new Rust crate or module, designing crate boundaries, error enums, SecretBox secret handling, async/rayon concurrency, or managing Cargo workspace dependencies and supply-chain vetting.
+description: Scaffolds and builds clean, idiomatic, human-maintainable Rust 1.100+ (2024 Edition) crates inside engine/crates/*. Use when creating a new Rust crate or module, designing crate boundaries, error enums, SecretBox secret handling, async/rayon concurrency, or managing Cargo workspace dependencies and supply-chain vetting.
 ---
 
-# Signal Rust Crate Architect (`engine/crates/*`)
+# Signal Rust 1.100+ Crate Architect (`engine/crates/*`)
 
 Reference: `docs/engineering/RUST_ENGINEERING_GUIDE.md` | Rules: `.cursor/rules/rust-engine.mdc`.
 
-## Crate Scaffolding Blueprint
+## Strict Toolchain Floor & Crate Scaffolding Blueprint
+- **Minimum Rust Version:** **Rust `1.100+`** (`>= 1.100.0`, **Rust 2024 Edition**, pinned in `rust-toolchain.toml`, enforcing Cargo dependency cooldowns and unused-dependency lints).
 Create every new crate under `engine/crates/signal-<domain>/` with this clean, minimal layout:
 ```text
 engine/crates/signal-<domain>/
-├── Cargo.toml           # Workspace-inherited edition/lints; minimal scoped deps + workspace-hack
+├── Cargo.toml           # Workspace-inherited edition/rust-version/lints; minimal scoped deps + workspace-hack
 └── src/
     ├── lib.rs           # 3-line header, #![forbid(unsafe_code)], concise pub use re-exports only
     ├── types.rs         # Strongly-typed SI newtypes & domain structs (<= 250 LOC)
@@ -20,16 +21,16 @@ engine/crates/signal-<domain>/
     └── kernel.rs        # Adapter bridging signal-graph ECS snapshots <-> contracts/Arrow
 ```
 
-## Non-Negotiable Rust Engineering Guardrails
+## Non-Negotiable Rust 1.100+ Engineering Guardrails
 1. **Safety:** Declare `#![forbid(unsafe_code)]` at the top of `lib.rs`. Zero `.unwrap()`, `.expect()`, or unchecked `[i]` indexing on untrusted inputs.
 2. **Crate Layering (Acyclic DAG):**
-   - Tier 0 (`signal-core`, `signal-proto`) ← Tier 1 (`signal-graph`, `signal-geom`, `signal-component`, `signal-parts`) ← Tier 2 (`signal-lib-*`, `signal-module-sdk`) ← Tier 3 (physics/EDA/CAD-CAM/PLM solvers: `signal-sim`, `signal-pcb`, `signal-ic`, `signal-mcad`, `signal-cam`, `signal-plm`, etc.) ← Tier 4 (`signal-render`, `signal-git-sync`, `signal-cell-wasm`, `signal-pod`, `signal-operator`).
+   - Tier 0 (`signal-core`, `signal-proto`) ← Tier 1 (`signal-graph`, `signal-geom`, `signal-component`, `signal-parts`) ← Tier 2 (`signal-lib-*`, `signal-module-sdk`) ← Tier 3 (physics/EDA/CAD-CAM/PLM solvers: `signal-sim`, `signal-pcb`, `signal-ic`, `signal-mcad`, `signal-cam`, `signal-plm`, etc.) ← Tier 4 (`signal-render`, `signal-git-sync`, `signal-cell-wasm`, `signal-pod`, `signal-operator`, `signal-egress-proxy`, `signal-sftp-egress`).
    - Core/solver crates NEVER depend on `tonic`, `wgpu`, or `signal-pod`.
 3. **Single Protobuf Crate:** Consume generated types exclusively from `signal-proto` — never add duplicate `tonic-build` scripts.
 4. **Secret Hygiene:** Wrap tokens, DEKs, PDKs, and confidential net names in `secrecy::SecretBox<T>` + `zeroize::ZeroizeOnDrop`; implement redacted `Debug`; never emit secrets in `tracing` events.
 5. **Concurrency Safety:** Offload CPU-heavy solvers/crypto from `tokio` onto bounded `rayon` pools or `spawn_blocking` with `CancellationToken` checks; NEVER hold a `Mutex`/`RwLock` across `.await`.
 6. **LLVM-Free Pod:** Never link LLVM or `dlopen` vendor `.so`/`.dll` binaries in crates linked by `signal-pod`.
-7. **Supply Chain:** Add dependencies at crate level (not blindly to every crate), refresh `cargo hakari generate` if workspace-hack changes, and audit every new crate via `cargo deny check` and `cargo vet`.
+7. **Supply Chain:** Add dependencies at crate level (not blindly to every crate), enable Cargo dependency cooldowns, refresh `cargo hakari generate` if workspace-hack changes, and audit every new crate via `cargo deny check` and `cargo vet`.
 
 ## Verification Commands
 ```bash

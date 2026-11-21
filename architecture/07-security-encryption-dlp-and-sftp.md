@@ -91,26 +91,26 @@ flowchart LR
 ```mermaid
 sequenceDiagram
     participant Admin as Enterprise Admin / Lead Engineer
-    participant BFF as Node.js Control Plane + 2FA
+    participant API as FastAPI Control Plane + 2FA
     participant Audit as Fail-Closed 3x Quorum Audit Outbox & WORM S3
-    participant SFTP as Disposable russh Egress Worker
+    participant SFTP as Disposable Rust russh Egress Worker
     participant HSM as Vault / HSM Key Custody
-    participant Pod as Rust MicroVM Project Pod
+    participant Pod as Rust 1.100+ MicroVM Project Pod
     participant Target as Authorized SFTP Server
 
     Note over Admin,Target: Phase A — Registering an Authorized SFTP Server
-    Admin->>BFF: Register SFTP Host (strict slug/path regex + SSH host fingerprint)
-    BFF->>Admin: Challenge: Fresh Step-Up 2FA (WebAuthn / Burn-Listed TOTP)
-    Admin-->>BFF: Valid 2FA Assertion
-    BFF->>Audit: Synchronous Quorum Pre-Commit (Fail-Closed 503 if Audit Unavailable!)
-    BFF->>HSM: Generate Per-Target ED25519 Keypair (Private Key Stays in HSM)
-    BFF->>SFTP: Socket-Pinned Anti-SSRF Probe & Verify Pinned Host Key
+    Admin->>API: Register SFTP Host (strict slug/path regex + SSH host fingerprint)
+    API->>Admin: Challenge: Fresh Step-Up 2FA (WebAuthn / Burn-Listed TOTP)
+    Admin-->>API: Valid 2FA Assertion
+    API->>Audit: Synchronous Quorum Pre-Commit (Fail-Closed 503 if Audit Unavailable!)
+    API->>HSM: Generate Per-Target ED25519 Keypair (Private Key Stays in HSM)
+    API->>SFTP: Socket-Pinned Anti-SSRF Probe & Verify Pinned Host Key
     SFTP-->>Audit: Seal Verified SFTP Target Creation Record
 
     Note over Admin,Target: Phase B — Atomic PQC-Signed Manufacturing / Compliance Release
-    Admin->>BFF: Request Release Push (Step-Up 2FA + Optional 4-Eyes / 21 CFR Part 11 Sign-Off)
-    BFF->>Audit: Synchronous Quorum Release Intent Commit (Fail-Closed Gate)
-    BFF->>Pod: Issue Short-Lived Release Token (After Pre-Release vcs-auditor Gate)
+    Admin->>API: Request Release Push (Step-Up 2FA + Optional 4-Eyes / 21 CFR Part 11 Sign-Off)
+    API->>Audit: Synchronous Quorum Release Intent Commit (Fail-Closed Gate)
+    API->>Pod: Issue Short-Lived Release Token (After Pre-Release vcs-auditor Gate)
     Pod->>Pod: Verify Super-Commit Lockstep + Final DRC/ERC/LVS/SOA -> Generate Bundle in RAM
     Pod->>SFTP: Stream Encrypted Bundle + Hybrid ML-DSA-65/Ed25519 Signed Manifest over mTLS
     SFTP->>Target: Write-Only SSH2 (No Read/OPENDIR/PTY/Fwd) -> Upload .tmp.<release_id>.part

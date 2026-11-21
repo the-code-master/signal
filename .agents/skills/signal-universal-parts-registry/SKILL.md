@@ -23,10 +23,10 @@ Governing spec: `architecture/18-universal-component-and-datasheet-repository.md
 - **Gate 4:** Rust `signal-sim` running `testbench.recipe.json` (`< 2%` RMS curve error → `SILVER_SIM_MATCHED`).
 - **Gate 5:** Vendor cryptographic signature or Org Librarian Step-Up 2FA `ML-DSA-65 + Ed25519` attestation (`GOLD_ATTESTED`).
 
-## 3. Dual Stack Boundaries
-- **Rust (`engine/crates/signal-parts`):** `#![forbid(unsafe_code)]`, `ThreeTierResolver`, `PadstackFabAdapter`, `ThreeWayStepPadVerifier`, `PartLockfileManager` (`i64`/`i128` nm, `0.5-ULP`).
-- **Node.js (`services/parts-registry`):** Stateless RLS parametric search, Org AVL overlay APIs (`@RequireOrgAdmin` + Step-Up 2FA), Cross-Project "Where-Used", and `Campus Edge` read-only global mirror sync.
-- **Angular (`web/libs/library-studio`):** Zoneless Signals `UniversalPartBrowser`, `MasterPinTableEditor`, `PadstackSculptor`, `ThreeWayAlignmentViewer`, and Zero-Leak streamed `DatasheetCitationViewer` (zero PDF/STEP browser downloads for NDA parts!).
+## 3. Multi-Stack Boundaries
+- **Rust `1.100+` (`engine/crates/signal-parts`):** `#![forbid(unsafe_code)]`, `ThreeTierResolver`, `PadstackFabAdapter`, `ThreeWayStepPadVerifier`, `PartLockfileManager` (`i64`/`i128` nm, `0.5-ULP`).
+- **Python `3.15+` FastAPI (`services/parts-registry`):** Stateless RLS (`PostgreSQL 19+`) parametric search, Org AVL overlay APIs (`Depends(require_org_admin)` + Step-Up 2FA), Cross-Project "Where-Used", and `Campus Edge` read-only global mirror sync.
+- **Angular `v22+` (`web/libs/library-studio`):** Zoneless Signals `UniversalPartBrowser`, `MasterPinTableEditor`, `PadstackSculptor`, `ThreeWayAlignmentViewer`, and Zero-Leak streamed `DatasheetCitationViewer` (zero PDF/STEP browser downloads for NDA parts!).
 
 ## Dev Response & Anti-Hallucination
 - Never recall component pinouts, pad dimensions, or AbsMax specs from memory—ground every value in verified `pins.json`/datasheet citations and `signal-parts` schema checks.

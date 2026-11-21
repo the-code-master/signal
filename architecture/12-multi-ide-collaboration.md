@@ -59,8 +59,8 @@ flowchart TB
             A3["AI/RAG Core & Security Crypto"]
         end
         subgraph LaneB["Swimlane B (e.g., Cursor Worktree: cursor/*)"]
-            B1["Angular Web IDE (web/apps/*, web/libs/*)"]
-            B2["Node.js BFF & Control Plane (services/*)"]
+            B1["Angular v22+ Web IDE (web/apps/*, web/libs/*)"]
+            B2["Python 3.15+ FastAPI Control Plane (services/*)"]
             B3["UI Design System & Mock/Contract Tests"]
         end
     end
@@ -88,8 +88,8 @@ Because Signal's monorepo is cleanly layered, default swimlanes minimize overlap
 
 | Swimlane | Primary Directories | Default Primary Owner | Shared Interface Boundary |
 |---|---|---|---|
-| **Lane A — Core Engine, Physics, CAD/CAM/PLM Kernels & K8s Infra** | `engine/` (incl. `signal-parts`, `signal-mcad`, `signal-cam`, `signal-plm`), `benchmarks/`, `infra/k8s/` (3-Tier Helm/Karpenter/Cilium/GitOps), `infra/docker/Dockerfile.{rust-pod,operator,bridge}`, `ai/datasheet-ingest/`, `ai/rag-service/` | **Antigravity** (configurable per sprint) | Implements `contracts/proto/signal/v1/*` servers |
-| **Lane B — Web Platform, BFF, PLM-Ops/Parts/Collab & UX** | `web/` (incl. `libs/{design-system,ui-kit,library-studio,mcad-studio,cam-print,plm-ops,collab-hub}` + What's New UI), `services/` (incl. `parts-registry`, `plm-ops`, `collab-hub`, Release Notes API), `infra/docker/Dockerfile.{web,api}`, `ai/orchestrator/` (UI bridge) | **Cursor** (configurable per sprint) | Consumes `contracts/proto/*`, implements `contracts/openapi/*` |
+| **Lane A — Core Engine, Physics, CAD/CAM/PLM Kernels & K8s Infra** | `engine/` (Rust `1.100+` incl. `signal-parts`, `signal-mcad`, `signal-cam`, `signal-plm`), `benchmarks/`, `infra/k8s/` (3-Tier K8s `1.37+` Helm/Karpenter/Cilium/GitOps), `infra/docker/Dockerfile.{rust-pod,operator,bridge}`, `ai/datasheet-ingest/`, `ai/rag-service/` | **Antigravity** (configurable per sprint) | Implements `contracts/proto/signal/v1/*` servers |
+| **Lane B — Angular v22+ UI, FastAPI Control Plane, PLM/Parts/Collab** | `web/` (Angular `v22+` ONLY incl. `libs/{design-system,ui-kit,library-studio,mcad-studio,cam-print,plm-ops,collab-hub}` + What's New UI), `services/` (Python `3.15+` FastAPI incl. `parts-registry`, `plm-ops`, `collab-hub`, Release Notes API), `infra/docker/Dockerfile.{web,api}`, `ai/orchestrator/` (UI bridge) | **Cursor** (configurable per sprint) | Consumes `contracts/proto/*`, implements `contracts/openapi/*` |
 | **Shared Governed Zone (Serialized Only)** | `contracts/`, `architecture/`, `docs/engineering/`, `.agents/skills/`, `.cursor/rules/`, `AGENTS.md`, `infra/local/`, `VERSION`, `CHANGELOG.md`, `justfile`, `releases/`, `.github/workflows/` | **Single-Writer PR Rule** (either agent may propose, merged sequentially to `main` before parallel consumers rebase) | Checked by CI breaking-change detector (`buf breaking`) |
 
 ---
@@ -151,10 +151,11 @@ To ensure both AI IDEs enforce the exact same Signal architecture, security inva
    - Cursor automatically loads [`.cursor/rules/signal-architecture.mdc`](../.cursor/rules/signal-architecture.mdc) (`alwaysApply: true`, `< 4 KB`) + 5 path-scoped `.cursor/rules/*.mdc` files → explicitly referencing `AGENTS.md`, `architecture/01..21`, and `.agents/skills/*/SKILL.md`.
    - Both **Antigravity and Cursor** natively discover all **19 portable Open-Standard skills** under [`.agents/skills/`](../.agents/skills/README.md).
 3. **Automated CI Guardrails (Enforced Equally on Both Agents via `just check` / `.github/workflows/pr-gate.yml`):**
-   - `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace`, `cargo fmt --check`, `cargo vet`, `cargo deny check`, plus headless software-Vulkan (`lavapipe`) WGSL shader parity checks
-   - `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm audit --ignore-scripts`, `helm lint` + `kubeconform`
-   - `buf lint`, `buf breaking`, `contracts/fixtures/`, and **`contracts/transcripts/*.jsonl` stateful protocol replay**
-   - **Security & Isolation Policy CI Check:** Fails any PR that omits a fail-closed `@Require*` route auth decorator, leaks `403` vs `404` resource existence, bypasses PostgreSQL RLS, uses JS `number` on `int64` contract fields, adds HTTP file-download/export headers, writes design entities to `localStorage`/`IndexedDB`, allows `signal-web` to dial Rust pods directly, enables `dev-guest-auth` in release profiles, or creates Tier-0 SFTP/BYO-Git/PLM-CCB endpoints without Step-Up 2FA + synchronous audit pre-commit!
+   - **Rust `1.100+`:** `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test --workspace`, `cargo fmt --check`, `cargo vet`, `cargo deny check`, plus headless software-Vulkan (`lavapipe`) WGSL shader parity checks
+   - **Angular `v22+` (`web/`):** `pnpm --filter @signal/web lint`, `typecheck`, `test`, `pnpm audit --ignore-scripts`, `helm lint` + `kubeconform`
+   - **Python `3.15+` FastAPI & AI (`services/`, `ai/`):** `uv run ruff check`, `uv run ruff format --check`, `uv run pyright`, `uv run pytest`, `uv run bandit -ll`, `uv run pip-audit --strict`
+   - **Contracts:** `buf lint`, `buf breaking`, `contracts/fixtures/` (Rust↔Python↔TS), and **`contracts/transcripts/*.jsonl` stateful protocol replay**
+   - **Security & Isolation Policy CI Check:** Fails any PR that omits a fail-closed `Depends(require_*)` FastAPI auth guard, leaks `403` vs `404` resource existence, bypasses PostgreSQL `19+` RLS, uses JS `number` on `int64` contract fields, adds HTTP file-download/export headers, writes design entities to `localStorage`/`IndexedDB`, allows `signal-web` to dial Rust pods directly, enables `dev-guest-auth` in release profiles, or creates Tier-0 SFTP/BYO-Git/PLM-CCB endpoints without Step-Up 2FA + synchronous audit pre-commit!
 
 ---
 

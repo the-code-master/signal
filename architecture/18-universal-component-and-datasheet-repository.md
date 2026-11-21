@@ -157,9 +157,9 @@ flowchart LR
 
 ---
 
-## 5. Dual Implementation Blueprint (Pure Rust + Node.js Control Plane + Angular UI)
+## 5. Multi-Stack Implementation Blueprint (Pure Rust 1.100+ + FastAPI Control Plane + Angular v22+ UI)
 
-### 5.1 Pure-Rust Engine Side (`engine/crates/signal-parts`)
+### 5.1 Pure-Rust `1.100+` Engine Side (`engine/crates/signal-parts`)
 A new dedicated **Tier-2 Rust crate (`engine/crates/signal-parts`, `#![forbid(unsafe_code)]`)** integrated cleanly into `signal-graph`, `signal-component`, `signal-geom`, `signal-pcb`, and `signal-pod`:
 - **`UniversalPartStore` & `ThreeTierResolver`:** Resolves `part_uid` deterministically across `ProjectLockfile -> OrgByoGitOverlay -> GlobalCasCache`, merging Org AVL overrides (`Preferred`/`Banned`, internal SKU, custom paste apertures) in microseconds with zero disk writes inside the pod.
 - **`PadstackFabAdapter`:** Evaluates `PadstackDef` against the active project's `FabCapabilityProfile` (`*.fabprofile.toml`), computing exact copper/mask/paste/antipad polygons in `i64` nm (`i128` boolean predicates) and emitting real-time IPC-7525 stencil ratio & annular-ring DRC metrics.
@@ -167,13 +167,13 @@ A new dedicated **Tier-2 Rust crate (`engine/crates/signal-parts`, `#![forbid(un
 - **`MasterPinBijectionChecker`:** Verifies exhaustive 1-to-1 pin bindings across `pins.json`, `SymbolDef` units, `FootprintDef` pad instances, `ElectronicModule` ports, and firmware pinmux tables.
 - **`PartLockfileManager`:** Maintains `<project>-meta/.signal/parts.lock.json` inside Dual-Fenced `Super-Commit`s and computes structured `PartRevisionDiff` deltas (`FEAT-078`) when newer global revisions publish.
 
-### 5.2 Node.js Control Plane Side (`services/parts-registry`)
-A new stateless Node.js 22 service (`services/parts-registry`) sitting alongside `project-catalog` and `ai/rag-service`:
-- **Parametric & Hybrid Search API:** Executes sub-50ms SI-normalized SQL filters combined with `ai/rag-service` 3-Tier `pgvector` HNSW search and bulk-mirrored supply-chain/carbon/franchise-lineage joins (returning `bigint`-safe JSON via `[jstype = JS_STRING]`).
-- **Org AVL & Private Library Governance:** `@RequireOrgAdmin` + Step-Up 2FA endpoints for managing Org AVL statuses (`PREFERRED`/`APPROVED`/`NRND_WARN`/`BANNED`), Org-private `signal-org-parts` BYO-Git connection, Cross-Project "Where-Used" scans (`FEAT-075`), and Datasheet Drift Notifications (`FEAT-078`).
+### 5.2 Python `3.15+` FastAPI Control Plane Side (`services/parts-registry`)
+A stateless **Python `3.15+` FastAPI (`Granian 2.8+`, `Pydantic v2`)** service (`services/parts-registry`) sitting alongside `project-catalog` and `ai/rag-service` in the unified `uv` workspace:
+- **Parametric & Hybrid Search API:** Executes sub-50ms SI-normalized PostgreSQL `19+` SQL filters combined with `ai/rag-service` 3-Tier `pgvector` HNSW search and bulk-mirrored supply-chain/carbon/franchise-lineage joins (returning `bigint`-safe JSON strings via `[jstype = JS_STRING]`).
+- **Org AVL & Private Library Governance:** `Depends(require_org_admin)` + Step-Up 2FA endpoints for managing Org AVL statuses (`PREFERRED`/`APPROVED`/`NRND_WARN`/`BANNED`), Org-private `signal-org-parts` BYO-Git connection, Cross-Project "Where-Used" scans (`FEAT-075`), and Datasheet Drift Notifications (`FEAT-078`).
 - **Read-Only Global CAS & Campus Edge Mirroring:** Serves BLAKE3-signed global manifests/meshes via regional CDN and publishes signed delta bundles to `$300` **`Signal Campus Edge`** appliances (`FEAT-120`) for offline-resilient developing-nation schools/universities!
 
-### 5.3 Angular 19/20+ UI Side (`web/libs/library-studio`)
+### 5.3 Angular `v22+` ONLY UI Side (`web/libs/library-studio`)
 Extends `web/libs/library-studio` with clean Zoneless Signals components strictly obeying Zero-Leak DLP & `HudOverlayPrimitive`:
 1. **`UniversalPartBrowserComponent`:** Faceted parametric filter bar (SI unit pills, Trust Badge filter, In-Stock, AEC-Q, PFAS-Free, Org AVL badge) + virtualized result grid (`cdk-virtual-scroll`) + instant 4-tab live preview card (**Symbol [IEEE/IEC]** | **Footprint [Least/Nom/Most] & Padstacks** | **3D Package** | **Condition Curves & Datasheet**).
 2. **`MasterPinTableEditorComponent`:** Unified spreadsheet where editing a pin name, electrical type, swap group, or package flight delay (`bigint` fs) immediately reflects across the linked Symbol units, Footprint pad assignments, and MCU Pinmux matrix!

@@ -25,7 +25,7 @@ Thumbs.db
 **/target/
 **/*.rs.bk
 
-# Node.js / Angular (services/, web/)
+# Angular v22+ / Node.js 26 LTS+ (web/)
 node_modules/
 dist/
 .angular/
@@ -36,13 +36,14 @@ npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 
-# Python (ai/datasheet-ingest/)
+# Python 3.15+ FastAPI & AI (services/, ai/)
 __pycache__/
 *.py[cod]
 .venv/
 venv/
 .pytest_cache/
 .mypy_cache/
+.pyright_cache/
 .ruff_cache/
 
 # Build-Time Generated Contract Stubs (Never Commit — Generated via buf/prost/openapi)
@@ -50,6 +51,8 @@ contracts/gen/
 **/generated/
 **/*.pb.ts
 **/*.pb.js
+**/*_pb2.py
+**/*_pb2.pyi
 
 # Local Dev Data Volumes & Logs
 infra/local/data/

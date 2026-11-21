@@ -3,7 +3,7 @@
 **Project Name:** Signal  
 **Default Development Organization:** Signal Design, Inc.  
 **Status:** Complete Architecture & Blueprint (Pre-Implementation)  
-**Primary Stack:** Pure Rust Core Engine (Kubernetes Stateful Pods) • Node.js Control Plane & BFF • Angular Web Platform • GPU-Accelerated Rendering, Simulation & AI Agents  
+**Primary Stack:** Pure **Rust `1.100+`** Core Engine (Kubernetes `1.37+` Stateful Pods) • **Python `3.15+` FastAPI** (`Granian`/`Pydantic v2`) Control Plane & AI • **Angular `v22+` ONLY** Web Platform (**Node.js `26 LTS+`** Tier 1 edge) • **PostgreSQL `19+`** • GPU-Accelerated Rendering & Simulation  
 
 ---
 
@@ -29,7 +29,7 @@ Legacy EDA suites suffer from four structural failures:
 
 ```mermaid
 flowchart TB
-    subgraph Client["Zero-Trust Web Client (Angular 19+)"]
+    subgraph Client["Zero-Trust Web Client (Angular v22+ ONLY + Node 26 LTS Edge)"]
         UI["Unified Multi-Domain IDE Shell + Progressive Profiles"]
         Canvas["Dual-Plane Zstd-QOI/WebP Dirty-Tile + HEVC/Dual-Luma Stream"]
         AgentUI["Neuro-Symbolic AI Copilot, Visual Diff, ECO & Spatial Review"]
@@ -39,18 +39,18 @@ flowchart TB
         Envoy["Envoy HTTP/3 WebTransport + WSS + turns:443 Zero-Copy Relay"]
     end
 
-    subgraph ControlPlane["Platform Control Plane (Node.js 22 / TypeScript)"]
+    subgraph ControlPlane["Platform Control Plane (Python 3.15+ FastAPI + Rust Granian)"]
         AuthSvc["Identity, Dual SSO + PKCE Cookie Upgrade & Access Review"]
-        BFF["Node.js BFF, Project Catalog & Federation Broker"]
+        API["FastAPI Control Plane, Project Catalog, PLM-Ops, Collab & Federation"]
         VCSSvc["VCS Connector (Lazy Repo Pacer) & Security Auditor (vcs-auditor)"]
         Router["Session Broker + Host-Aggregated K8s Lease Router"]
-        SFTP["2FA-Gated Write-Only Authorized SFTP Egress"]
-        Proxy["signal-egress-proxy (Pinned Anti-SSRF + X-Signal-Fencing-Token Gate)"]
+        SFTP["2FA-Gated Write-Only Authorized SFTP Egress (Rust russh)"]
+        Proxy["Rust signal-egress-proxy (Pinned Anti-SSRF + X-Signal-Fencing-Token Gate)"]
     end
 
-    subgraph K8sRuntime["Kubernetes Compute Plane (1 Project = 1 Isolated Security Cell)"]
+    subgraph K8sRuntime["Kubernetes 1.37+ Compute Plane (1 Project = 1 Isolated Security Cell)"]
         subgraph ProjectPod["Dedicated WASM Isolate / Kata / SEV-SNP Pod (RAM tmpfs Only)"]
-            Engine["Pure Rust EDA Engine (signal-engine + Per-Repo RBAC)"]
+            Engine["Pure Rust 1.100+ EDA Engine (signal-engine + Per-Repo RBAC)"]
             GitSync["signal-git-sync (Blobless gitoxide + jj-lib + 2PC + Padme GCM-SIV)"]
             SimKernel["Saltation/Revolve Adjoint SPICE + KLU/cuDSS + Formal + 3D EM/Aging"]
             Render["Server-Side GPU Atlas (wgpu Zstd-QOI/WebP + Constellation Watermark)"]
@@ -59,7 +59,7 @@ flowchart TB
         WorkerPool["Single-Job Zero-Egress CPU / Exclusive H100 CC / B200 MIG Burst Pool"]
     end
 
-    subgraph AIPlane["Neuro-Symbolic AI & Sharded Datasheet Plane"]
+    subgraph AIPlane["Neuro-Symbolic AI & Sharded Datasheet Plane (Python 3.15+)"]
         Orchestrator["Multimodal VLM + Quarantined Reader LLM -> GBNF -> Specialist Agents"]
         LLMRouter["LLM Gateway (Confidential GPU / Cloud / Local Mac / Mock)"]
         RAG["3-Tier Sharded Hybrid RAG (SQL + Tiered pgvector HNSW + Graph)"]
@@ -67,8 +67,8 @@ flowchart TB
     end
 
     subgraph DataPlane["Split Persistence: Customer BYO-Git vs Platform Metadata"]
-        CustomerGit["Customer BYO-Git (GitHub / GitLab / Bitbucket: <project>-meta & <project>-<type>)"]
-        PG["PostgreSQL RLS + 3-Tier Sharded pgvector (Users, Orgs, RAG)"]
+        CustomerGit["Customer BYO-Git (GitHub / GitLab / Bitbucket: {project}-meta & {project}-{type})"]
+        PG["PostgreSQL 19+ RLS + 3-Tier Sharded pgvector (Users, Orgs, RAG)"]
         PlatformStore["Platform Object Store (Global Datasheets & Templates ONLY — Zero Customer IP)"]
         KMS["Vault / HSM (Hybrid PQC ML-KEM-768 + 2-Level HKDF + BYOK/HYOK)"]
         Audit["Fail-Closed 3x Quorum Outbox -> Pseudonymous RFC-3161 WORM Ledger"]
@@ -78,13 +78,13 @@ flowchart TB
     Canvas <--> Envoy
     AgentUI <--> Envoy
     Envoy <--> AuthSvc
-    Envoy <--> BFF
+    Envoy <--> API
     Envoy <-->|"Zero-Copy Encrypted Media/Deltas"| ProjectPod
-    BFF <--> VCSSvc
-    BFF <--> Router
+    API <--> VCSSvc
+    API <--> Router
     Router <-->|"Linearizable Epoch -> Exact Same Cell"| ProjectPod
     Engine <--> WorkerPool
-    BFF <--> Orchestrator
+    API <--> Orchestrator
     Orchestrator <-->|"Speculative jj CoW + Adjoint Solver + Re-Verify"| Engine
     Orchestrator <--> LLMRouter
     Orchestrator <--> RAG
@@ -96,7 +96,7 @@ flowchart TB
     Proxy <-->|"Pinned IP + Epoch Fence + 2PC Super-Commit"| CustomerGit
     Engine <--> KMS
     Engine -->|"2FA + 21 CFR Part 11 Signed Release"| SFTP
-    BFF <--> PG
+    API <--> PG
     AuthSvc --> Audit
     VCSSvc --> Audit
     SFTP --> Audit
@@ -113,41 +113,41 @@ Read in sequence for a top-down understanding, or jump to your assigned implemen
 2. **[`02-system-architecture.md`](./02-system-architecture.md)**  
    End-to-end cloud architecture, split Customer BYO-Git vs. Platform storage boundary, Envoy HTTP/3 WebTransport & `turns:443` zero-copy edge relay, Strictly In-Jurisdiction Paired-Region DR, monorepo blueprint (`signal-proto`, `signal-cell-wasm`, `benchmarks/`, `contracts/transcripts/`), and SLAs.
 3. **[`03-rust-eda-engine.md`](./03-rust-eda-engine.md)**  
-   Deep technical architecture of the pure-Rust EDA engine: `ElectronicModule` trait, Ruiz-equilibrated / exact `q(v)`/`Φ(i)` MNA SPICE (hybrid CPU `KLU`/`CKTSO` + GPU `cuDSS`), Filippov Saltation + `Revolve` Adjoint Differentiable SPICE (`signal-diff-sim`), Two-Stage PSS/HB & Cryo-CMOS, AOT Cranelift/`WASM-SIMD` Verilog-A + child-MicroVM `OSDI`/`IBIS-AMI` + HSM IEEE 1735, PINN surrogates, Formal solver, Baseband-Envelope CPO & 3D EM (`signal-em3d`), 15-yr Aging, Pelgrom/LVF/Halo IC & ECO kernels, `i128`/Shewchuk curved geometry (`signal-geom`), and Dual-Plane `Zstd-QOI`/WebP + Constellation-Watermarked GPU rendering.
+   Deep technical architecture of the pure-Rust `1.100+` EDA engine: `ElectronicModule` trait, Ruiz-equilibrated / exact `q(v)`/`Φ(i)` MNA SPICE (hybrid CPU `KLU`/`CKTSO` + GPU `cuDSS`), Filippov Saltation + `Revolve` Adjoint Differentiable SPICE (`signal-diff-sim`), Two-Stage PSS/HB & Cryo-CMOS, AOT Cranelift/`WASM-SIMD` Verilog-A + child-MicroVM `OSDI`/`IBIS-AMI` + HSM IEEE 1735, PINN surrogates, Formal solver, Baseband-Envelope CPO & 3D EM (`signal-em3d`), 15-yr Aging, Pelgrom/LVF/Halo IC & ECO kernels, `i128`/Shewchuk curved geometry (`signal-geom`), and Dual-Plane `Zstd-QOI`/WebP + Constellation-Watermarked GPU rendering.
 4. **[`04-kubernetes-runtime-and-collaboration.md`](./04-kubernetes-runtime-and-collaboration.md)**  
-   Kubernetes stateful Project Cell lifecycle: `< 8 MB` Wasmtime `EXPLORER` isolates auto-promoting to Kata/SEV-SNP MicroVMs, Host-Aggregated K8s Node Leases + Dual-Gate External Fencing (`signal-egress-proxy` `412` drop + `<project>-meta` CAS), 3-Phase Pre-Copy `< 150 ms` Live Migration, Live External `git push` Rebase, BYOK-only Continuity WAL, dependency-aware CRDTs, and Exclusive Hopper `H100 CC` vs. Blackwell `B200 TEE-I/O` Confidential MIG orchestration.
+   Kubernetes `1.37+` stateful Project Cell lifecycle: `< 8 MB` Wasmtime `EXPLORER` isolates auto-promoting to Kata/SEV-SNP MicroVMs, Host-Aggregated K8s Leases + Dual-Gate External Fencing (`signal-egress-proxy` `412` drop + `<project>-meta` CAS), 3-Phase Pre-Copy `< 150 ms` Live Migration, Live External `git push` Rebase, BYOK-only Continuity WAL, dependency-aware CRDTs, and Exclusive Hopper `H100 CC` vs. Blackwell `B200 TEE-I/O` Confidential MIG orchestration.
 5. **[`05-ai-agent-and-datasheet-rag.md`](./05-ai-agent-and-datasheet-rag.md)**  
    Neuro-symbolic multi-agent orchestration (LLM topology + Saltation/PSS Rust Adjoint Pareto sizing), Multimodal VLM + Dual-LLM prompt-injection quarantine, `GBNF` grammar-constrained decoding, Merge-Time Proof Re-Verification, Dual-VLM Condition-Parameterized Universal Datasheet & Silicon Errata DB (`C(V,T,f)`, copper-coupled `R_thetaJC/JB`), 3-Tier Sharded `pgvector` HNSW Hybrid RAG, and Bulk-Mirrored + Chaff-Padded BOM intelligence.
-6. **[`06-frontend-angular-and-nodejs-bff.md`](./06-frontend-angular-and-nodejs-bff.md)**  
-   Angular 19+ Signals IDE shell, Capability-Probed Dual-Plane `Zstd-QOI`/WebP + Hardware `HEVC 4:4:4` / Dual-Luma `AV1/H.264` Zero-Leak viewport, Route-Partitioned `COOP`/`COEP` + `SameSite=Lax -> __Host- Strict` OAuth/SAML cookie upgrade, ES2020 `bigint` 64-bit contract safety, Visual Diff & Spatial Review (`libs/visual-diff`, `libs/review`), Encrypted Cloud Clipboard, and stateless Node.js 22 control plane with Fail-Closed 3x Quorum Tier-0 Audit Outbox.
+6. **[`06-frontend-angular-and-fastapi-control-plane.md`](./06-frontend-angular-and-fastapi-control-plane.md)**  
+   **Angular `v22+` ONLY** Signals IDE shell (**Node.js `26 LTS+`** Tier 1 edge), Capability-Probed Dual-Plane `Zstd-QOI`/WebP + Hardware `HEVC 4:4:4` / Dual-Luma `AV1/H.264` Zero-Leak viewport, Route-Partitioned `COOP`/`COEP` + `SameSite=Lax -> __Host- Strict` OAuth/SAML cookie upgrade, ES2020 `bigint` 64-bit contract safety, Visual Diff & Spatial Review (`libs/visual-diff`, `libs/review`), Encrypted Cloud Clipboard, and stateless **Python `3.15+` FastAPI (`Granian 2.8+`, `Pydantic v2`)** Control Plane (ADR-002) with Fail-Closed 3x Quorum Tier-0 Audit Outbox.
 7. **[`07-security-encryption-dlp-and-sftp.md`](./07-security-encryption-dlp-and-sftp.md)**  
    Zero-trust security posture, Hybrid Post-Quantum (`ML-KEM-768 + X25519`, `ML-DSA-65 + Ed25519`) + 2-level `HKDF` keyring + unified Padmé-padded, path-blinded (`blobs/*.sigv`), `.signal/vault.merkle.sig`-bound RFC 8452 `AES-256-GCM-SIV` vault, Hopper vs. Blackwell Confidential GPU attestation, Tardos pixel + Topological Constellation watermarks, Attested Browser + Pan-Scrape freeze, replay-proof Step-Up 2FA, disposable write-only `russh` SFTP workers, and Fail-Closed Tier-0 Quorum → pseudonymous RFC-3161 WORM Merkle logs.
 8. **[`08-identity-enterprise-and-project-model.md`](./08-identity-enterprise-and-project-model.md)**  
    Dual-Identity SAML + GitHub/GitLab/Bitbucket OAuth PKCE user auth (with seamless top-level cookie upgrade), `ORG_NAMESPACE` & `USER_NAMESPACE` onboarding, Strictly In-Jurisdiction Paired-Region DR, 2-of-3 Super Admin Quorum Break-Glass, uniform `404` anti-enumeration, Org & Project Admin Access Review Console, Lazy `<project>-<type>` Repo Materialization (`<= 40/min`), Signed Fab Capability Profiles, ECN Sign-Offs, and 21 CFR Part 11 sign-offs.
 9. **[`09-local-development-environment.md`](./09-local-development-environment.md)**  
-   macOS Apple Silicon developer environment (`pnpm dev:lite` `< 1.5 GB RAM`, `< 2 s` incr Rust builds via `signal-proto` + `sccache`/`lld`, + `pnpm dev:full` native `linux/arm64` + `dev:k8s`), headless `lavapipe` software-Vulkan WGSL parity CI, `GBNF`-constrained Local LLM default (Ollama/MLX + `deterministic_mock` offline fallback), and zero-bypass `Guest @ Signal Design, Inc.` seeded in `local-git-mock`.
+   macOS Apple Silicon developer environment (`just dev` / `dev:lite` `< 1.5 GB RAM`, `< 2 s` incr Rust `1.100+` builds via `signal-proto` + `sccache`/`lld`, + `dev:full` native `linux/arm64` + `dev:k8s`), headless `lavapipe` software-Vulkan WGSL parity CI, `GBNF`-constrained Local LLM default (Ollama/MLX + `deterministic_mock` offline fallback), and zero-bypass `Guest @ Signal Design, Inc.` seeded in `local-git-mock`.
 10. **[`10-api-and-data-contracts.md`](./10-api-and-data-contracts.md)**  
-    Build-time-only contract codegen, SI-unit-suffixed Protobuf (`_nm`, `_uv`, `_ps`) with mandatory ES2020 `bigint` (`jstype = JS_STRING` / `longAsBigint: true`) 64-bit integer safety, `<= 1 MB` chunked Arrow waveform streaming, `Idempotency-Key` REST mutations, Condition-Parameterized Datasheet, `FabCapabilityProfile`, `EcnChangeOrder`, UPF & `Super-Commit` schemas, static `contracts/fixtures/`, and stateful `contracts/transcripts/*.jsonl`.
+    Build-time-only contract codegen, SI-unit-suffixed Protobuf (`_nm`, `_uv`, `_ps`) with mandatory ES2020 `bigint` / exact Python `int` (`jstype = JS_STRING` / `longAsBigint: true`) 64-bit integer safety, `<= 1 MB` chunked Arrow waveform streaming, `Idempotency-Key` OpenAPI 3.1 REST mutations, Condition-Parameterized Datasheet, `FabCapabilityProfile`, `EcnChangeOrder`, UPF & `Super-Commit` schemas, static `contracts/fixtures/`, and stateful `contracts/transcripts/*.jsonl`.
 11. **[`11-implementation-roadmap.md`](./11-implementation-roadmap.md)**  
     Phased execution roadmap (Phase 0 through GA), `benchmarks/` golden SPICE/EM/geometry suites, exit criteria, and comprehensive technical risk register covering all Wave 1 + Wave 2 mitigations.
 12. **[`12-multi-ide-collaboration.md`](./12-multi-ide-collaboration.md)**  
-    Deadlock-free engineering protocol enabling **Antigravity** and **Cursor** to develop Signal simultaneously with shared `signal-proto` build-time codegen, `bigint` SI conformance fixtures, stateful `contracts/transcripts/`, 24h stale-claim expiry, and `cargo vet`/`cargo deny` supply-chain gates.
+    Deadlock-free engineering protocol enabling **Antigravity** and **Cursor** to develop Signal simultaneously with shared `signal-proto` build-time codegen, `bigint` SI conformance fixtures, stateful `contracts/transcripts/`, 24h stale-claim expiry, and `cargo vet`/`cargo deny`/`bandit`/`pip-audit` supply-chain gates.
 13. **[`13-vcs-git-server-and-storage-analysis.md`](./13-vcs-git-server-and-storage-analysis.md)**  
     Unified **Customer-Owned BYO-Git** across **GitHub**, **GitLab**, and **Bitbucket** (`ORG_NAMESPACE` & `USER_NAMESPACE`, immutable `provider_repo_id`, lazy repo pacer), **Padmé-Padded, Path-Blinded, Merkle-Bound RFC 8452 `AES-256-GCM-SIV` `ENCRYPTED_VAULT`**, **Dual-Fenced Two-Phase Cross-Repo `Super-Commit` (`repos.lock.json`)**, blobless `--filter=blob:none` clones + `64 KB` streaming LFS, live external `git push` auto-rebase, BYOK-only Continuity WAL, and `services/vcs-auditor`.
 14. **[`14-universal-scale-accessibility-and-expandability.md`](./14-universal-scale-accessibility-and-expandability.md)**  
     "Zero-Floor, Infinite-Ceiling" architecture: developing-nation student accessibility (`< 8 MB` Wasmtime `EXPLORER` isolates, volatile `<= 60 s` RAM reconnect buffer, declarative `< 10 KB` sim recipes, multilingual AI Tutor) up to 100B-transistor GPU/ASIC zero-lateral-movement federation (`*.lef.sig`, `*.halo.gds.sig` + `signal-federation-broker`), Baseband-Envelope CPO photonics, Cryo-CMOS, and signed WASM multi-physics plugins.
 15. **[`15-application-security-and-project-isolation.md`](./15-application-security-and-project-isolation.md)**  
-    Dedicated **Application Security (OWASP ASVS L3)** and **Complete Project Isolation ("1 Project = 1 Isolated Security Cell")** blueprint covering Hybrid PQC + 2-level `HKDF`, Exclusive `H100 CC` vs. Blackwell `B200 TEE-I/O` Confidential MIG, socket-pinned + epoch-fencing `signal-egress-proxy`, uniform `404` BOLA guards, Multimodal VLM + Dual-LLM quarantine, 3-Tier Sharded `pgvector` HNSW indexes, child-MicroVM `OSDI`/`IBIS-AMI` sandboxes, Fail-Closed Tier-0 Quorum Audit Outbox, and `cargo vet` SDLC gates.
+    Dedicated **Application Security (OWASP ASVS L3)** and **Complete Project Isolation ("1 Project = 1 Isolated Security Cell")** blueprint covering Hybrid PQC + 2-level `HKDF`, Exclusive `H100 CC` vs. Blackwell `B200 TEE-I/O` Confidential MIG, socket-pinned + epoch-fencing `signal-egress-proxy`, uniform `404` BOLA guards, Multimodal VLM + Dual-LLM quarantine, 3-Tier Sharded `pgvector` HNSW indexes, child-MicroVM `OSDI`/`IBIS-AMI` sandboxes, Fail-Closed Tier-0 Quorum Audit Outbox, and `cargo vet`/`bandit` SDLC gates.
 16. **[`16-architectural-audit-flaws-and-futuristic-innovations.md`](./16-architectural-audit-flaws-and-futuristic-innovations.md)**  
     Comprehensive two-wave adversarial & first-principles engineering audit cataloging **148 architectural flaws (`F-001`–`F-148`)** resolved across mathematics, GPU silicon, cryptography, consensus, browser codecs, EDA sign-off, and unit economics, plus **12 industry-first futuristic AI-EDA innovations (`I-01`–`I-12`)**.
 17. **[`17-extended-feature-specifications-ui-and-rust.md`](./17-extended-feature-specifications-ui-and-rust.md)**  
-    Complete dual **Angular 19+ UI (`web/libs/*`) & Pure-Rust Engine (`engine/crates/*`)** specification for **120 next-generation features (`FEAT-001`–`FEAT-120`)** above and beyond baseline specs across 12 domains: smart schematic ergonomics, high-speed/RF/flex PCB, custom magnetics/PDN/creepage/BMS/FOC, EMC/ESD/FMEDA/Rad-Hard, advanced IC/BSPDN/DPA hardware security, FPGA/firmware/battery/DSP, 3D harness/panelization/fatigue/should-cost, library/curve-fitter studio, bench instruments/Shmoo/TDR, multi-monitor/SpaceMouse UX, autonomous AI Pareto/Red-Team co-design, and breadboard/classroom/`Signal Campus Edge`.
+    Complete dual **Angular `v22+` UI (`web/libs/*`) & Pure-Rust `1.100+` Engine (`engine/crates/*`)** specification for **120 next-generation features (`FEAT-001`–`FEAT-120`)** above and beyond baseline specs across 12 domains: smart schematic ergonomics, high-speed/RF/flex PCB, custom magnetics/PDN/creepage/BMS/FOC, EMC/ESD/FMEDA/Rad-Hard, advanced IC/BSPDN/DPA hardware security, FPGA/firmware/battery/DSP, 3D harness/panelization/fatigue/should-cost, library/curve-fitter studio, bench instruments/Shmoo/TDR, multi-monitor/SpaceMouse UX, autonomous AI Pareto/Red-Team co-design, and breadboard/classroom/`Signal Campus Edge`.
 18. **[`18-universal-component-and-datasheet-repository.md`](./18-universal-component-and-datasheet-repository.md)**  
-    Unified **Universal Component, Datasheet, Master Pin Table, IEEE/IEC Symbol, Parametric Padstack, IPC-7351 Footprint & Watertight 3D Package Repository** (`signal-universal-parts`) spanning 3-Tier Federated Resolution (Sharded Global Git + BLAKE3 CAS → Encrypted Org-Private BYO-Git AVL Overlays → Project `.signal/parts.lock.json`), 5-Gate `BRONZE`/`SILVER`/`GOLD` automated 3D lead-to-pad & SPICE verification, Rust `signal-parts`, Node `services/parts-registry`, and Angular `web/libs/library-studio`.
+    Unified **Universal Component, Datasheet, Master Pin Table, IEEE/IEC Symbol, Parametric Padstack, IPC-7351 Footprint & Watertight 3D Package Repository** (`signal-universal-parts`) spanning 3-Tier Federated Resolution (Sharded Global Git + BLAKE3 CAS → Encrypted Org-Private BYO-Git AVL Overlays → Project `.signal/parts.lock.json`), 5-Gate `BRONZE`/`SILVER`/`GOLD` automated 3D lead-to-pad & SPICE verification, Rust `signal-parts`, Python FastAPI `services/parts-registry`, and Angular `v22+` `web/libs/library-studio`.
 19. **[`19-cad-cam-3d-printing-and-plm-operations.md`](./19-cad-cam-3d-printing-and-plm-operations.md)**  
     Integrated **Mechanical CAD (`CAD_MCAD`)**, subtractive **CNC CAM (`CAM_CNC`)**, additive **3D Printing (`PRINT_3D`)**, unified `wgpu` **3D Visualization**, and native **PLM & Operations (`PLM_OPS`)**—auto-compiling `eBOM`/`mBOM`/`sBOM`/`Costed BOM`, signed `ECR`/`ECO`/`ECN`, `MCN`, `PCN`/`PDN`, time/qty-bounded `Deviation`/`Waiver`, `NCR`/`CAPA`, Clear-to-Build (`CTB`) supply-chain, 3D assembly work instructions, and ERP/MES sync (`signal-mcad`, `signal-cam`, `signal-plm`, `services/plm-ops`, `web/libs/{mcad-studio,cam-print,plm-ops}`).
 20. **[`20-versioning-release-monorepo-build-and-k8s-topology.md`](./20-versioning-release-monorepo-build-and-k8s-topology.md)**  
-    Complete **Platform Version Management & Automated Release Notes** (`VERSION`, `CHANGELOG.md`, `releases/notes/vX.Y.Z.{md,json}`, `physics_determinism_epoch`, per-project LTS engine pinning, SLSA L3 + Cosign + SBOM, In-App What's New), **Monorepo-Native Default Build / Local Run / Deploy** (`justfile`, multi-arch Docker, Umbrella Helm Chart, Karpenter, GitOps), and **3-Tier Extensible Kubernetes Topology** (separate Angular+Node `signal-web` pod, dedicated HA `signal-api` + Envoy `signal-engine-bridge` tier, and `1–4` baseline extensible to `N` Rust Core Engine worker nodes).
+    Complete **Platform Version Management & Automated Release Notes** (`VERSION`, `CHANGELOG.md`, `releases/notes/vX.Y.Z.{md,json}`, `physics_determinism_epoch`, per-project LTS engine pinning, SLSA L3 + Cosign + SBOM, In-App What's New), **Monorepo-Native Default Build / Local Run / Deploy** (`justfile`, multi-arch Docker, Umbrella Helm Chart, Karpenter, GitOps), and **3-Tier Extensible Kubernetes `1.37+` Topology** (separate Angular `v22+`/Node `26` `signal-web` pod, dedicated HA Python `3.15+` FastAPI/Granian `signal-api` + Envoy `signal-engine-bridge` tier, and `1–4` baseline extensible to `N` Rust `1.100+` worker nodes).
 21. **[`21-collaboration-space-project-status-and-automated-reviews.md`](./21-collaboration-space-project-status-and-automated-reviews.md)**  
     Built-in Zero-Leak **Cross-Team Collaboration Space** uniting **Design, Development/Bring-Up, Software/Firmware, Manufacturing, and Operations/Supply-Chain** (`services/collab-hub`, `signal-huddle-sfu`, `web/libs/collab-hub`) with per-repo RBAC channels, live `@entity` anchors, encrypted WebRTC audio/video + viewport-follow huddles, live **Project Status Control Tower** (stage gates, RAG, dependencies, action items, `ADR`/`EDR`), and direct automated **Weekly Review, Monthly Executive Review & Stage-Gate Project Status Review** generation (eliminating Slack/Teams & manual slide decks).
 

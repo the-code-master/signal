@@ -1,13 +1,13 @@
-# Signal — Rust Engineering & Clean Architecture Guide (`engine/`)
+# Signal — Rust 1.100+ Engineering & Clean Architecture Guide (`engine/`)
 
 > **Applies To:** All Rust crates under `engine/crates/*` and golden physics suites under `benchmarks/`.  
 > **Governing Specs:** [`architecture/03-rust-eda-engine.md`](../../architecture/03-rust-eda-engine.md), [`architecture/15-application-security-and-project-isolation.md`](../../architecture/15-application-security-and-project-isolation.md), [`architecture/17-extended-feature-specifications-ui-and-rust.md`](../../architecture/17-extended-feature-specifications-ui-and-rust.md), [`architecture/18-universal-component-and-datasheet-repository.md`](../../architecture/18-universal-component-and-datasheet-repository.md), [`architecture/19-cad-cam-3d-printing-and-plm-operations.md`](../../architecture/19-cad-cam-3d-printing-and-plm-operations.md), [`architecture/20-versioning-release-monorepo-build-and-k8s-topology.md`](../../architecture/20-versioning-release-monorepo-build-and-k8s-topology.md).
 
 ---
 
-## 1. Edition, Workspace Hygiene & Fast Incremental Builds
+## 1. Rust 1.100+ Floor, Workspace Hygiene & Fast Incremental Builds
 
-- **Toolchain:** Rust **2024 Edition** (`rust-version` pinned via `rust-toolchain.toml`), workspace-inherited `edition`, `license`, and `lints` in `engine/Cargo.toml` (version synced from root `VERSION` via `justfile`).
+- **Toolchain Floor:** **Rust `1.100+`** (`rust-version = "1.100"` pinned via `rust-toolchain.toml`, **Rust 2024 Edition** — leveraging stabilized `!`, core Allocator API, `DropGuard`, unused-dependency lints, and Cargo dependency cooldowns for supply-chain hardening), workspace-inherited `edition`, `license`, and `lints` in `engine/Cargo.toml` (version synced from root `VERSION` via `justfile`).
 - **Single Shared Protobuf Crate:** ALL `tonic`/`prost` codegen runs **once** inside `engine/crates/signal-proto`—never duplicate `build.rs` proto codegen across domain crates.
 - **Workspace Hack & Linker Speed:** Maintain `engine/crates/workspace-hack` via `cargo-hakari` + configure `sccache` and `lld`/`mold` so macOS Apple Silicon incremental rebuilds stay `< 2 s`.
 - **Strict Acyclic Crate DAG:** Dependencies MUST flow strictly downward—never create circular crate edges or let core physics crates depend on `signal-pod`, `tonic`, or `wgpu`!
@@ -18,7 +18,7 @@ flowchart TB
     L1["Tier 1 — Data, Geometry & Parts: signal-graph (ECS SlotMap, CRDT) + signal-geom (i64/i128/Shewchuk) + signal-component (ElectronicModule) + signal-parts (3-Tier Universal Parts/Padstacks/STEP)"]
     L2["Tier 2 — Libraries & SDK: signal-lib-* + signal-module-sdk (AOT Cranelift/WASM-SIMD, Curve-Fitter)"]
     L3["Tier 3 — Solvers, EDA, CAD/CAM & PLM Kernels: signal-sim, signal-diff-sim, signal-surrogate, signal-formal, signal-em3d, signal-aging, signal-pcb, signal-ic, signal-magnetics, signal-power-integrity, signal-emc, signal-dfm, signal-harness, signal-mcad, signal-cam, signal-plm, signal-fpga, signal-security-hw, signal-twin, signal-import"]
-    L4["Tier 4 — Runtime, 3D Render & K8s Operator: signal-render (wgpu) + signal-git-sync + signal-cell-wasm + signal-pod + signal-operator (1-4 -> N Extensible Rust Nodes & Multi-Version Pinning)"]
+    L4["Tier 4 — Runtime, Security Daemons & K8s Operator: signal-render (wgpu) + signal-git-sync + signal-cell-wasm + signal-pod + signal-operator + signal-egress-proxy + signal-sftp-egress"]
 
     L4 --> L3 --> L2 --> L1 --> L0
 ```

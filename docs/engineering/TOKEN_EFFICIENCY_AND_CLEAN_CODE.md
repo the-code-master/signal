@@ -29,13 +29,21 @@ Every non-trivial source file MUST open with a crisp **3-line header** summarizi
 //! Spec: architecture/03-rust-eda-engine.md | contracts/proto/signal/v1/<file>.proto
 ```
 
-**TypeScript / Angular (`web/` or `services/`):**
+**TypeScript / Angular `v22+` (`web/`):**
 ```ts
 /**
  * Module: <Concise 1-line responsibility>
- * Invariants: <e.g. Zoneless Signals, bigint nm coords, zero browser storage, uniform 404>
- * Spec: architecture/06-frontend-angular-and-nodejs-bff.md | contracts/proto/signal/v1/<file>.proto
+ * Invariants: <e.g. Angular v22+ Zoneless Signals, bigint nm coords, zero browser storage>
+ * Spec: architecture/06-frontend-angular-and-fastapi-control-plane.md | contracts/proto/signal/v1/<file>.proto
  */
+```
+
+**Python `3.15+` FastAPI (`services/` or `ai/`):**
+```python
+"""Module: <Concise 1-line responsibility>
+Invariants: <e.g. Depends(require_*) uniform 404, with_rls_tx NOBYPASSRLS, SecretStr hygiene>
+Spec: architecture/06-frontend-angular-and-fastapi-control-plane.md | contracts/openapi/control-plane.v1.yaml
+"""
 ```
 
 ---
@@ -46,21 +54,22 @@ Consistent file names make `rg --files` instant and remove guesswork:
 
 | Stack | Canonical File Suffixes / Structure | Anti-Pattern (Forbidden) |
 |---|---|---|
-| **Rust (`engine/crates/*`)** | `lib.rs` (crate root + re-exports only), `types.rs`, `error.rs`, `kernel.rs`, `stamping.rs`, `solver.rs`, `tests/` (integration) + inline `#[cfg(test)] mod tests` (unit) | Dumping 1,500 lines into `lib.rs` or creating generic `utils.rs` / `common.rs` grab-bags |
-| **Angular (`web/libs/<lib>/`)** | `src/index.ts` (sole public barrel), `feature/*.component.ts`, `ui/*.component.ts`, `data-access/*.store.ts`, `data-access/*.client.ts`, `models/*.model.ts`, `utils/*.fn.ts` | Cross-library deep imports (`../../other-lib/src/internal/...`), `shared-everything` dumping grounds |
-| **Node.js (`services/<svc>/`)** | `src/main.ts`, `routes/*.route.ts`, `handlers/*.handler.ts`, `policies/*.guard.ts`, `repos/*.repo.ts`, `types/*.dto.ts` | Mixing SQL queries, HTTP parsing, and business policy in one controller file |
+| **Rust `1.100+` (`engine/crates/*`)** | `lib.rs` (crate root + re-exports only), `types.rs`, `error.rs`, `kernel.rs`, `stamping.rs`, `solver.rs`, `tests/` (integration) + inline `#[cfg(test)] mod tests` (unit) | Dumping 1,500 lines into `lib.rs` or creating generic `utils.rs` / `common.rs` grab-bags |
+| **Angular `v22+` (`web/libs/<lib>/`)** | `src/index.ts` (sole public barrel), `feature/<name>/<name>.{component.ts,component.html,logic.ts,model.ts}`, `ui/<name>/*`, `data-access/*.{store,client}.ts` | Cross-library deep imports (`../../other-lib/src/internal/...`), component-local CSS, `shared-everything` dumping grounds |
+| **Python `3.15+` FastAPI (`services/<svc>/`)** | `src/<pkg>/app.py`, `routers/*.py`, `security/*.py`, `services/*.py`, `repositories/*.py`, `schemas/*.py`, `clients/*.py` | Mixing SQL queries, HTTP parsing, and business policy in one router file or `helpers.py` grab-bags |
 
 ---
 
 ## 4. AI Agent Token-Efficiency Protocol (Mandatory for Antigravity & Cursor)
 
 1. **Search Before Reading:** Run `rg -n` / `rg --files` to locate exact symbol definitions and line ranges before calling `view_file`—never open 800-line files speculatively.
-2. **Read Narrow Slices:** Inspect module headers (`lines 1–20`), public interfaces (`lib.rs` / `index.ts`), and the specific target function range rather than ingesting entire unrelated files.
+2. **Read Narrow Slices:** Inspect module headers (`lines 1–20`), public interfaces (`lib.rs` / `index.ts` / `__init__.py`), and the specific target function range rather than ingesting entire unrelated files.
 3. **Batch Independent Calls:** Issue parallel read/search calls for independent files; issue surgical `replace_file_content` edits rather than full-file overwrites.
 4. **Never Paste Generated Code Into Context:** Keep `contracts/` codegen outputs in `target/` and `dist/`/`generated/` (gitignored); inspect `.proto` / `.yaml` source files directly instead of reading thousands of generated boilerplate lines.
 5. **Run Narrowest Feedback Loop First:**
-   - Rust: `cargo test -p <crate> <test_name>` → then `cargo clippy -p <crate> --all-targets -- -D warnings` → full workspace check only at PR readiness.
-   - Angular/Node: `pnpm --filter <pkg> test <spec>` → `typecheck` → full workspace check at PR readiness.
+   - Rust `1.100+`: `cargo test -p <crate> <test_name>` → then `cargo clippy -p <crate> --all-targets -- -D warnings` → full workspace check only at PR readiness.
+   - Angular `v22+`: `pnpm --filter <pkg> test <spec>` → `typecheck` → full workspace check at PR readiness.
+   - Python `3.15+` FastAPI/AI: `uv run pytest services/<svc>/tests/<test>.py` → `uv run ruff check` & `uv run pyright` → full suite at PR readiness.
 6. **Zero Redundant Narration in Code:** Write concise doc comments explaining *why* (mathematical invariance, physical law, security boundary, `// SAFETY:`), never *what* obvious syntax already states.
 7. **Deterministic Diffs:** Never reformat unrelated files, reorder unrelated imports, or touch files outside declared `touched_paths`.
 
@@ -80,8 +89,8 @@ During active code development, debugging, refactoring, or bug-fixing turns, **b
 
 ## 6. Anti-Hallucination Best Practices (Evidence-First Engineering)
 
-1. **Read Before Referencing:** Never invent or guess file paths, crate names, symbol signatures, `.proto` fields, Angular APIs, or CLI flags—ALWAYS verify with `rg` / `view_file` first.
-2. **Verify Exact Installed Versions:** Check `Cargo.toml`, `package.json`, `rust-toolchain.toml`, or official docs before using version-sensitive Rust 2024, Angular 19/20+, `wgpu`, or K8s APIs.
+1. **Read Before Referencing:** Never invent or guess file paths, crate names, symbol signatures, `.proto` fields, Angular `v22+`/FastAPI APIs, or CLI flags—ALWAYS verify with `rg` / `view_file` first.
+2. **Verify Exact Installed Versions:** Check `Cargo.toml`, `package.json`, `pyproject.toml`, `rust-toolchain.toml`, or official docs before using version-sensitive **Rust `1.100+`** (2024 Ed.), **Angular `v22+`**, **Python `3.15+` FastAPI/Pydantic v2**, `wgpu`, or **K8s `1.37+`** APIs.
 3. **Observed Execution Is Ground Truth:** Never claim `"fixed"`, `"compiles"`, or `"tests pass"` unless you ran the exact verification command in the current turn and observed exit code `0`. If a check could not run, state `"Unverified — <reason>"`.
 4. **Never Extrapolate Physical or Contract Constants:** Ground every SI unit, pinout, tolerance, register address, or error code strictly in `contracts/`, `architecture/01..21-*`, or verified `pins.json` / datasheet citations—never recall hardware specs from model memory.
 5. **Fail-Closed on Ambiguity:** If a contract, requirement, or spec is missing or contradictory, STOP and ask one direct question (or log `BLOCKED_ON_CONTRACT`) instead of inventing silent assumptions.

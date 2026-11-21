@@ -3,12 +3,12 @@ name: signal-angular-ui-style-system
 description: Enforces Signal's Angular UI Style Guide, strict multi-file component separation (.component.ts, .component.html, .logic.ts, .model.ts), anti-spaghetti HTML template laws (zero @if chains or duplicated markup), and centralized @signal/design-system + @signal/ui-kit styling (forbidding per-component styles unless explicitly exempted). Use whenever creating, styling, refactoring, or reviewing any Angular component, template, or UI library under web/.
 ---
 
-# Signal Angular UI Style Guide & Standardized Component Ecosystem (`web/**`)
+# Signal Angular v22+ ONLY UI Style Guide & Standardized Component Ecosystem (`web/**`)
 
 Governing guide: `docs/engineering/ANGULAR_UI_STYLE_GUIDE.md` | Rules: `.cursor/rules/angular-frontend.mdc`.
 
-## 1. Mandatory Multi-File Component Separation (Zero Inline Templates or Logic Bloat)
-Every Angular component lives in its own folder with cleanly separated files:
+## 1. Mandatory Multi-File Component Separation (Angular v22+ ONLY — Zero Inline Templates or Logic Bloat)
+Every Angular `v22+` standalone component lives in its own folder with cleanly separated files:
 - `<name>.component.ts` (`<= 120 LOC`): Thin Angular glue ONLY (`templateUrl`, `OnPush`, `input()`, `output()`, `inject()`, `vm = computed(() => buildVm(...))`, event forwarders). **NEVER** inline `template:` or `styles:`.
 - `<name>.component.html` (`<= 150 LOC`): Pure flat declarative markup bound ONLY to pre-computed `vm()` properties and `@signal/ui-kit` components.
 - `<name>.logic.ts` (`<= 250 LOC`): Pure framework-agnostic TypeScript functions owning ALL branching, status-to-badge maps, role/profile filtering, SI `bigint` formatting, and config arrays (unit-tested in `<name>.logic.spec.ts` without TestBed!).

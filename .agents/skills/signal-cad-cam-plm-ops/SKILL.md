@@ -17,10 +17,10 @@ Governing spec: `architecture/19-cad-cam-3d-printing-and-plm-operations.md`.
 - **`signal-plm` (`#![forbid(unsafe_code)]`):** Deterministic multi-view `eBOM`/`mBOM`/`sBOM`/`Costed BOM` compiler, cross-domain blast-radius analyzer, and cryptographic CCB state-machine verifier (`ML-DSA-65 + Ed25519`).
 - **Zero-Leak Egress:** Generate all `STEP AP242`, `DXF`, `G-code`, `3MF`, and turnkey CM packages strictly in volatile Pod RAM and deliver ONLY via Step-Up 2FA write-only `russh` SFTP.
 
-## 3. Native PLM Workflows, Control Plane & Angular UI
-- **`services/plm-ops`:** Enforce `@Require*` uniform-`404`, PostgreSQL RLS (`NOBYPASSRLS`), Step-Up 2FA CCB sign-offs, and **Fail-Closed 3x Quorum Tier-0 Audit Outbox** on every `ECR`/`ECO`/`ECN`, `MCN`, `PCN`/`PDN`, `Deviation`/`Waiver` (enforcing hard `max_quantity` & `expires_at_utc` release gates!), and `NCR`/`CAPA` transition; route ERP/MES webhooks strictly via `signal-egress-proxy`.
-- **`web/libs/{mcad-studio,cam-print,plm-ops}`:** Zoneless Signals standalone components, `bigint` nm dimensions, `HudOverlayPrimitive` sketch/toolpath/slicer overlays, `cdk-virtual-scroll` BOM/CCB/CTB grids, interactive 3D factory work instructions, and zero browser disk IP storage or downloads.
+## 3. Native PLM Workflows, Python FastAPI Control Plane & Angular v22+ UI
+- **`services/plm-ops` (Python `3.15+` FastAPI / Granian):** Enforce fail-closed `Depends(require_*)` uniform-`404`, PostgreSQL `19+` RLS (`NOBYPASSRLS`), Step-Up 2FA CCB sign-offs, and **Fail-Closed 3x Quorum Tier-0 Audit Outbox** on every `ECR`/`ECO`/`ECN`, `MCN`, `PCN`/`PDN`, `Deviation`/`Waiver` (enforcing hard `max_quantity` & `expires_at_utc` release gates!), and `NCR`/`CAPA` transition; route ERP/MES webhooks strictly via Rust `signal-egress-proxy`.
+- **`web/libs/{mcad-studio,cam-print,plm-ops}` (Angular `v22+` ONLY):** Zoneless Signals standalone components, `bigint` nm dimensions, `HudOverlayPrimitive` sketch/toolpath/slicer overlays, `cdk-virtual-scroll` BOM/CCB/CTB grids, interactive 3D factory work instructions, and zero browser disk IP storage or downloads.
 
 ## Dev Response & Anti-Hallucination
-- Verify exact `mcad_cam_print.proto`, `plm_ops.proto`, schema fields, and `Cargo.toml`/`package.json` deps via `rg`/`view_file` before editing; never claim builds/tests pass without observed exit code `0`.
+- Verify exact `mcad_cam_print.proto`, `plm_ops.proto`, schema fields, and `Cargo.toml`/`pyproject.toml`/`package.json` deps via `rg`/`view_file` before editing; never claim builds/tests pass without observed exit code `0`.
 - Reply in **2–3 sentences max** stating ONLY the issue, exact fix applied, and verification result.

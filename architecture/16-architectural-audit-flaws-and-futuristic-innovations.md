@@ -40,7 +40,7 @@ flowchart LR
     Audit --> C3["Cat C: Rust SPICE, Math & Physics (F-023..038)"]
     Audit --> C4["Cat D: K8s Pods, CRDT & Scaling (F-039..051)"]
     Audit --> C5["Cat E: AI Agents & Datasheet RAG (F-052..065)"]
-    Audit --> C6["Cat F: Angular UX, Streaming & BFF (F-066..077)"]
+    Audit --> C6["Cat F: Angular v22+ UX, Streaming & FastAPI (F-066..077)"]
     Audit --> C7["Cat G: AppSec, PQC, DLP & SFTP (F-078..092)"]
     Audit --> C8["Cat H: Identity, Sovereignty & Legal (F-093..100)"]
     Audit --> C9["Cat I: Contracts, Mac Dev & Dual-IDE (F-101..112)"]
@@ -59,7 +59,7 @@ flowchart LR
 | **F-003** | `07` envelope-encryption diagram omitted BYO-Git `ENCRYPTED_VAULT` repos and Customer BYO-S3/Git-LFS pointers. | Unified `07` key hierarchy diagram to cover BYO-Git `ENCRYPTED_VAULT` chunks, Git LFS / BYO-S3 blobs, AND ephemeral crash-recovery WAL under one per-project KMS/BYOK DEK. | `07` |
 | **F-004** | `11` Risk Register still referenced legacy S3 snapshot cold-start and S3-only fencing tokens. | Updated `11` Risk Register to shallow/sparse multi-repo `gitoxide` hydration + Kubernetes/etcd Raft linearizable fencing tokens. | `11` |
 | **F-005** | `14` Tier 2 diagram referenced legacy `Public Open-HW GitHub Mirror` from pre-BYO-Git design. | Updated `14` Tier 2 to native `PLAIN_CANONICAL` Open-Hardware repos on GitHub/GitLab/Bitbucket. | `14` |
-| **F-006** | `02` topology diagram and `06` Node.js Service Decomposition table omitted `vcs-connector` and `vcs-auditor`. | Added `vcs-connector`, `vcs-auditor`, Access Review Console, and Progressive UI Profiles to `02` and `06`. | `02`, `06` |
+| **F-006** | `02` topology diagram and `06` Control-Plane Service Decomposition table omitted `vcs-connector` and `vcs-auditor`. | Added `vcs-connector`, `vcs-auditor`, Access Review Console, and Progressive UI Profiles to `02` and `06`. | `02`, `06` |
 | **F-007** | `04` Cilium network policy omitted the Authenticating Anti-SSRF Egress Proxy (`15`) needed to reach customer Git hosts safely. | Aligned `04` and `15`: Project Pods have zero direct internet egress and reach allowlisted customer Git/LFS/BYO-S3 endpoints exclusively via **`signal-egress-proxy`**. | `04`, `15` |
 | **F-008** | `coordination/TASK_BOARD.md` still cited "13 specification docs" and omitted `signal-git-sync`, `vcs-connector`, `vcs-auditor`, and `MockGit` in Phase 0 tasks. | Updated `TASK_BOARD.md` to reflect all architecture specs and aligned Phase 0 skeleton deliverables. | `TASK_BOARD.md` |
 | **F-009** | `01` Section 5 security summary omitted Multi-Repo BYO-Git, Provider Org/Repo User Auth, Access Review, and Complete Project Isolation. | Updated `01` Section 5 to cross-reference `07`, `08`, `13`, and `15` coherently. | `01` |
@@ -150,7 +150,7 @@ flowchart LR
 
 ---
 
-### Category F — Angular 19+ IDE UX, Zero-Leak Streaming & Node.js BFF (`F-066`–`F-077`)
+### Category F — Angular v22+ IDE UX, Zero-Leak Streaming & Control-Plane API (`F-066`–`F-077`)
 
 | ID | Flaw Identified | Architectural Fix Applied | Target Doc(s) |
 |---|---|---|---|
@@ -160,7 +160,7 @@ flowchart LR
 | **F-069** | Large project trees, multi-file firmware workspaces, or million-point waveforms crash browser tabs at the 2–4 GB V8 heap limit. | Mandatory **Virtual Scrolling (`cdk-virtual-scroll`)**, on-demand Monaco LSP buffer windowing, and server-decimated `<= 4,096` screen-pixel waveform envelopes in browser RAM. | `06` |
 | **F-070** | Red-green color blindness (~8% of male EEs) and mouse-only video canvases hurt usability and accessibility. | **Color-Blind-Safe Okabe-Ito / High-Contrast Palettes + Procedural Layer Stipple/Hatch Patterns**, customizable **KiCad/Altium/Virtuoso/Vim single-key hotkeys**, CLI coordinate bar, and WCAG 2.2 AA compliance. | `06` |
 | **F-071** | Developing-nation 3G/Wi-Fi micro-drops (`14`) lose active edits if nothing buffers in memory, yet disk/IndexedDB caching is forbidden (`07`). | **Volatile JS Heap Ring-Buffer (`<= 60 s` uncommitted `GraphOp`s with `Idempotency-Key`s, zero disk/IndexedDB!)** that auto-replays seamlessly onto the warm sticky Project Pod on reconnect. | `06`, `14` |
-| **F-072** | Routing 120 Hz pointer events and binary tiles through Node.js JSON parsing introduces event-loop jitter. | Node.js `session-broker` handles auth/control-plane orchestration while high-rate binary viewport/input streams use **Envoy HTTP/3 WebTransport / TURN zero-copy binary pass-through** with short-lived Ed25519 stream tickets. | `02`, `06` |
+| **F-072** | Routing 120 Hz pointer events and binary tiles through control-plane JSON handlers introduces serialization & event-loop jitter. | Python FastAPI `session-broker` (on Rust `Granian`) handles auth/control-plane orchestration while high-rate binary viewport/input streams use **Envoy HTTP/3 WebTransport / TURN zero-copy binary pass-through** with short-lived Ed25519 stream tickets. | `02`, `06` |
 | **F-073** | Blocking OS clipboard (`07`) prevents engineers from legitimately copying verified subcircuits across two projects in the same company! | **Pod-to-Pod Encrypted Cloud Clipboard & Verified IP Snippet Registry** mediated by RBAC-checked tickets (`source:read` + `dest:write` + audit log—zero bytes touch OS clipboard!). | `06`, `07` |
 | **F-074** | Lack of built-in spatial redlining & live review huddles tempts engineers to take screenshots for Slack/slides. | **Canvas-Anchored Spatial Review Threads, Redline Markups & Live Follow-Me Audio/Cursor Huddles** (`libs/review`) linked to `(entity_id, x_nm, y_nm, commit_sha)`. | `01`, `06` |
 | **F-075** | Classic SPICE `1M = 1 milli` vs `1 Mega` ambiguity and comma-decimal locales cause 10^9× circuit bugs! | **Strongly-Typed SI Unit Parser (`signal-core::units`)** with explicit `m` (`10^-3`) vs `M`/`Meg` (`10^6`) disambiguation pills and locale-safe input normalization. | `03`, `06` |
@@ -183,10 +183,10 @@ flowchart LR
 | **F-085** | 50 KB Zip-bombs, XML `XXE` bombs (IPC-2581), or `10^100` recursive GDSII cell-array bombs crash parsers via memory amplification. | **Streaming Decompression Ratio Cap (`<= 50x`), XML DTD/Entity Hard-Disable, Max Hierarchy Depth (`<= 64`), and Lazy Instanced DAGs** inside zero-network parser sandboxes. | `03`, `15` |
 | **F-086** | PostgreSQL `pgvector` single global HNSW index with RLS post-filtering suffers 0-row recall drops and cross-tenant timing leakage. | **Physically Partitioned Tables & Separate HNSW Indexes** (`GLOBAL_VERIFIED` partition vs. per-tenant `ORG_PRIVATE_NDA` partitions + `hnsw.iterative_scan` with RLS partition pruning). | `05`, `15` |
 | **F-087** | Compromised control-plane clock or DB admin could backdate or truncate audit rows before S3 flush. | **RFC 3161 Trusted Timestamping + 60s HSM-Signed (`ML-DSA`) Merkle-Tree Transparency Log** committed directly to **S3 Object Lock (`COMPLIANCE` WORM mode)**. | `07`, `15` |
-| **F-088** | Rust panic backtraces or Node.js error logs could leak PATs, DEKs, or netlist snippets into telemetry pipelines. | Mandatory **`SecretBox<T>`** wrapper (`Debug`/`Display` emit `[REDACTED]`, `ZeroizeOnDrop`) + OpenTelemetry span redaction filter at source. | `15`, `AGENTS.md` |
+| **F-088** | Rust panic backtraces or API error logs could leak PATs, DEKs, or netlist snippets into telemetry pipelines. | Mandatory **`SecretBox<T>`** / **`SecretStr`** wrapper (`Debug`/`Display` emit `[REDACTED]`, `ZeroizeOnDrop`) + OpenTelemetry span redaction filter at source. | `15`, `AGENTS.md` |
 | **F-089** | DNS rebinding between `connection/verify` and later `git clone` / `sftp` push bypasses check-time SSRF validation (TOCTOU). | **Socket-Level Resolved-IP Pinning & CIDR Rejection on EVERY Outbound `connect()`** inside `signal-egress-proxy` and `signal-sftp-egress`. | `15` |
 | **F-090** | Prompt injection hidden inside net names, commit messages, or third-party PDF datasheets hijacks AI Agents. | Lexical identifier allowlists + typed Protobuf AST inputs + **Dual-LLM Quarantine Pattern** (untrusted text parsed by a zero-tool Reader model before reaching any Tool-Calling Agent). | `05`, `15` |
-| **F-091** | Dual AI IDEs (Antigravity/Cursor) or developers could pull a typosquatted/compromised crate or npm package. | Mandatory **`cargo vet` + `cargo deny` + `pnpm` lockfile/SBOM provenance gate** requiring explicit human sign-off on any new external dependency. | `12`, `15` |
+| **F-091** | Dual AI IDEs (Antigravity/Cursor) or developers could pull a typosquatted/compromised crate, PyPI wheel, or npm package. | Mandatory **`cargo vet` + `cargo deny` + Cargo cooldowns + `uv.lock`/`pip-audit` + `pnpm` lockfile/SBOM provenance gate** requiring explicit human sign-off on any new external dependency. | `12`, `15` |
 | **F-092** | External contractors retain Git repo access months after contract completion. | **Time-Bounded Access Expirations (`expires_at`)** in Access Review Console with automatic revocation + `vcs-auditor` overdue-contractor `HIGH` alerts. | `08`, `13` |
 
 ---

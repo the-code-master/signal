@@ -21,14 +21,14 @@ Signal's local development architecture ensures:
 ```mermaid
 flowchart TB
     subgraph MacHost["macOS Apple Silicon Developer Laptop"]
-        Browser["Browser (http://localhost:4200)\nAngular Dev Server (HMR)"]
-        Node["Node.js BFF & Control Plane\n(localhost:3000 — Hot Reload)"]
-        Rust["Native macOS Rust signal-engine\n(cargo watch + Metal GPU wgpu)\nOR Local k3d/Kind K8s Cluster"]
-        AI["AI Orchestrator & Hybrid RAG\n(localhost:8000)"]
+        Browser["Browser (http://localhost:4200)\nAngular v22+ Dev Server (HMR, Node 26 LTS)"]
+        API["Python 3.15+ FastAPI Control Plane\n(Granian localhost:3000 — Hot Reload)"]
+        Rust["Native macOS Rust 1.100+ signal-engine\n(cargo watch + Metal GPU wgpu)\nOR Local k3d/OrbStack K8s 1.37+ Cluster"]
+        AI["AI Orchestrator & Hybrid RAG\n(Unified Python 3.15+ uv — localhost:8000)"]
         LocalLLM["Default Local LLM Runtime\nOllama / Apple MLX (localhost:11434)\nMetal GPU Accelerated"]
 
         subgraph Docker["Local Infrastructure (Docker Compose / OrbStack / Colima)"]
-            PG["PostgreSQL 16 + pgvector (:5432)"]
+            PG["PostgreSQL 19+ + pgvector (:5432)"]
             Redis["Redis / Valkey (:6379)"]
             NATS["NATS JetStream (:4222)"]
             MinIO["MinIO Ephemeral Cache / Dev BYO-S3 (:9000)"]
@@ -38,15 +38,15 @@ flowchart TB
         end
     end
 
-    Browser <--> Node
-    Node <--> Rust
-    Node <--> AI
+    Browser <--> API
+    API <--> Rust
+    API <--> AI
     AI <--> LocalLLM
     AI <--> PG
-    Node <--> PG
-    Node <--> Redis
-    Node <--> MockGit
-    Node <--> MockSFTP
+    API <--> PG
+    API <--> Redis
+    API <--> MockGit
+    API <--> MockSFTP
     Rust <--> MockGit
     Rust <--> MinIO
     Rust <--> DevKMS
@@ -55,11 +55,11 @@ flowchart TB
 
 ### Three Local Execution Modes (Monorepo Root `justfile` Defaults — [`20-*`](./20-versioning-release-monorepo-build-and-k8s-topology.md))
 1. **Ultra-Light Inner-Loop Mode (`just dev` / `pnpm dev:lite` — `< 1.5 GB RAM` for 8–16 GB MacBooks):**
-   - Runs `signal-engine` (`aarch64-apple-darwin` + Metal `wgpu`) + Node.js API/BFF + Angular HMR with embedded local Postgres/pgvector, in-memory Redis/NATS, and embedded `MockGit`/`DevKMS`—booting in `< 30 s` without heavy Docker VM memory overhead!
+   - Runs **Rust `1.100+`** `signal-engine` (`aarch64-apple-darwin` + Metal `wgpu`) + **Python `3.15+` FastAPI (`uv` + `granian`)** + **Angular `v22+`** HMR with embedded local Postgres/pgvector, in-memory Redis/NATS, and embedded `MockGit`/`DevKMS`—booting in `< 30 s` without heavy Docker VM memory overhead!
 2. **Full Service-Parity Mode (`just dev-full` / `pnpm dev:full` — Default on 32 GB+ Macs):**
-   - Runs native macOS Rust `signal-engine` + Docker Compose / OrbStack (`linux/arm64` native multi-arch images only—zero slow `amd64` Rosetta emulation!) with PostgreSQL 16 + RLS + partitioned `pgvector`, Redis, NATS JetStream, MinIO, DevKMS, `MockGit (:8085)`, and `MockSFTP (:2222)`.
-3. **Full 3-Tier Kubernetes Parity Mode (`just dev-k8s` / `just deploy-local-k8s` — Exact Prod Topology Locally):**
-   - Runs a local `aarch64` Kubernetes cluster (`OrbStack K8s` / `k3d`) deploying the monorepo Umbrella Helm Chart (`infra/k8s/helm/signal -f values-local.yaml`) with separate **`signal-web` (Angular+Node) pod**, separate **`signal-api` + `signal-engine-bridge` pod**, and **`1–4` simulated Rust Engine worker nodes** (`signal-operator`, linearizable Leases, Cilium NetworkPolicies, and `signal-egress-proxy`).
+   - Runs native macOS Rust `1.100+` `signal-engine` + Docker Compose / OrbStack (`linux/arm64` native multi-arch images only—zero slow `amd64` Rosetta emulation!) with **PostgreSQL `19+`** + RLS + partitioned `pgvector`, Redis/Valkey, NATS JetStream, MinIO, DevKMS, `MockGit (:8085)`, and `MockSFTP (:2222)`.
+3. **Full 3-Tier Kubernetes `1.37+` Parity Mode (`just dev-k8s` / `just deploy-local-k8s` — Exact Prod Topology Locally):**
+   - Runs a local `aarch64` Kubernetes `1.37+` cluster (`OrbStack K8s` / `k3d`) deploying the monorepo Umbrella Helm Chart (`infra/k8s/helm/signal -f values-local.yaml`) with separate **`signal-web` (Angular `v22+` + Node `26 LTS+`) pod**, separate **`signal-api` (FastAPI/Granian) + Envoy `signal-engine-bridge` pod**, and **`1–4` simulated Rust `1.100+` worker nodes** (`signal-operator`, linearizable Leases, Cilium NetworkPolicies, and `signal-egress-proxy`).
 
 ---
 

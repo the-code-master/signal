@@ -32,7 +32,7 @@ flowchart TB
         Render["signal-render (Unified wgpu PBR 3D Studio: PCB + CAD + Toolpaths + Slicer + Thermal)"]
     end
 
-    subgraph ControlUI["Control Plane & Angular 19/20+ Workbenches"]
+    subgraph ControlUI["Python 3.15+ FastAPI Control Plane & Angular v22+ Workbenches"]
         SvcOps["services/plm-ops (ECN/MCN/PCN/Deviation Workflows, CTB Supply-Chain, ERP Webhooks)"]
         SFTP["services/sftp-egress (2FA Write-Only SFTP: Fab, CM, CNC Shop, 3D Printer Farm)"]
         UIMcad["web/libs/mcad-studio + web/libs/cam-print (Zero-Leak 3D + SpaceMouse + Slicer HUD)"]
@@ -147,7 +147,7 @@ flowchart LR
 
 | Layer | New Modules / Contracts Added | Key Responsibilities & Guardrails |
 |---|---|---|
-| **Rust Engine (`engine/crates/`)** | `signal-mcad`, `signal-cam`, `signal-plm` | `#![forbid(unsafe_code)]`, exact `i64`/`i128` nm geometry, deterministic `0.5-ULP` solver/slicer math, watertight `STEP AP242` / `G-code` / `3MF` generation in RAM, multi-view `eBOM`/`mBOM`/`sBOM` compiler, blast-radius analyzer, cryptographic CCB ledger. |
-| **Node.js Control Plane (`services/`)** | `services/plm-ops` | Stateless Node.js 22 service enforcing `@Require*` uniform-`404`, PostgreSQL RLS (`NOBYPASSRLS`), Step-Up 2FA CCB sign-offs, Fail-Closed 3x Quorum Tier-0 Audit Outbox on every `ECO`/`ECN`/`MCN`/`PCN`/`Deviation`/`NCR` state transition, CTB engine, and ERP webhooks via `signal-egress-proxy`. |
-| **Angular Frontend (`web/libs/`)** | `libs/mcad-studio`, `libs/cam-print`, `libs/plm-ops` | Zoneless Signals standalone workbenches, `bigint` nm dimensions, `HudOverlayPrimitive` 3D/sketch/slicer HUDs, SpaceMouse `WebHID`, virtualized `cdk-virtual-scroll` BOM/CCB grids, 3D interactive work instructions, zero browser disk persistence or downloads! |
-| **Canonical Contracts (`contracts/`)** | `mcad_cam_print.proto`, `plm_ops.proto`, 7 JSON schemas (`mcad-feature-tree`, `cam-print-job`, `mbom-structure`, `mcn-change-notice`, `pcn-triage`, `deviation-waiver`, `ncr-capa`) | Mandatory SI-unit suffixes (`_nm`, `_mdeg`, `_um_per_s`, `_grams`), `[jstype = JS_STRING]` / ES2020 `bigint` on all 64-bit integer fields, `<= 1 MB` chunked mesh/toolpath/BOM streaming, golden fixtures & stateful transcripts. |
+| **Rust `1.100+` Engine (`engine/crates/`)** | `signal-mcad`, `signal-cam`, `signal-plm` | `#![forbid(unsafe_code)]`, exact `i64`/`i128` nm geometry, deterministic `0.5-ULP` solver/slicer math, watertight `STEP AP242` / `G-code` / `3MF` generation in RAM, multi-view `eBOM`/`mBOM`/`sBOM` compiler, blast-radius analyzer, cryptographic CCB ledger. |
+| **Python `3.15+` FastAPI Control Plane (`services/`)** | `services/plm-ops` | Stateless FastAPI (`Granian 2.8+`, `Pydantic v2`) service enforcing `Depends(require_*)` uniform-`404`, PostgreSQL `19+` RLS (`NOBYPASSRLS`), Step-Up 2FA CCB sign-offs, Fail-Closed 3x Quorum Tier-0 Audit Outbox on every `ECO`/`ECN`/`MCN`/`PCN`/`Deviation`/`NCR` state transition, CTB engine, and ERP webhooks via Rust `signal-egress-proxy`. |
+| **Angular `v22+` ONLY Frontend (`web/libs/`)** | `libs/mcad-studio`, `libs/cam-print`, `libs/plm-ops` | Zoneless Signals standalone workbenches, `bigint` nm dimensions, `HudOverlayPrimitive` 3D/sketch/slicer HUDs, SpaceMouse `WebHID`, virtualized `cdk-virtual-scroll` BOM/CCB grids, 3D interactive work instructions, zero browser disk persistence or downloads! |
+| **Canonical Contracts (`contracts/`)** | `mcad_cam_print.proto`, `plm_ops.proto`, 7 JSON schemas (`mcad-feature-tree`, `cam-print-job`, `mbom-structure`, `mcn-change-notice`, `pcn-triage`, `deviation-waiver`, `ncr-capa`) | Mandatory SI-unit suffixes (`_nm`, `_mdeg`, `_um_per_s`, `_grams`), `[jstype = JS_STRING]` / ES2020 `bigint` / exact Python `int` on all 64-bit integer fields, `<= 1 MB` chunked mesh/toolpath/BOM streaming, golden fixtures & stateful transcripts. |

@@ -27,23 +27,23 @@ flowchart TB
     end
 
     subgraph CollabTier["Tier 2 API Pool (pool-api): Native Collaboration & Review Engine"]
-        CollabSvc["services/collab-hub (Node.js 22 + RLS + Per-Project DEK)\nChannels, Entity-Anchored Threads, Action Items, Decisions (ADR/EDR), RAG Status"]
+        CollabSvc["services/collab-hub (Python 3.15+ FastAPI / Granian + RLS + Per-Project DEK)\nChannels, Entity-Anchored Threads, Action Items, Decisions (ADR/EDR), RAG Status"]
         ReviewGen["Automated Review Compiler\nWeekly Review | Monthly Exec Review | Stage-Gate Status Review"]
         HuddleSFU["signal-huddle-sfu (Self-Hosted Encrypted WebRTC Audio/Video + Viewport Follow over turns:443)"]
         QuarAI["ai/orchestrator (Zero-Tool Quarantined Narrative Summarizer — GBNF Only)"]
     end
 
     subgraph GroundTruth["Live Ground-Truth Telemetry Sources (Zero Manual Copy-Paste)"]
-        RustPod["Tier 3 Rust Engine Pods (ERC/DRC/LVS/SPICE/DFM/CAM/MCAD Status + Spatial Pins)"]
+        RustPod["Tier 3 Rust 1.100+ Engine Pods (ERC/DRC/LVS/SPICE/DFM/CAM/MCAD Status + Spatial Pins)"]
         PlmOps["services/plm-ops & parts-registry (CTB %, BOM Cost, ECO/ECN/MCN/PCN/Deviations/NCR)"]
         GitAudit["services/vcs-connector & vcs-auditor (Super-Commits, Posture Score, Access Review)"]
     end
 
     subgraph Persistence["Zero-Leak Persistence & Executive Delivery"]
-        PG["PostgreSQL 16 RLS (DEK-Encrypted Messages, Status, Milestones, Action Items)"]
+        PG["PostgreSQL 19+ RLS (DEK-Encrypted Messages, Status, Milestones, Action Items)"]
         NATS["NATS JetStream (Per-Project JWT ACL: signal.{org}.{proj}.collab.>)"]
         OpsGit["Customer BYO-Git {project}-ops/reviews/ (Signed Padme-Blinded Weekly/Monthly Snapshots)"]
-        UICollab["Tier 1 Web Pod: web/libs/collab-hub (@signal/design-system + @signal/ui-kit + Zero-Leak Deck)"]
+        UICollab["Tier 1 Web Pod: web/libs/collab-hub (Angular v22+ @signal/design-system + @signal/ui-kit)"]
     end
 
     Teams <--> UICollab
@@ -123,19 +123,19 @@ Signal **directly generates, renders, snapshots, and signs** all recurring compa
 
 | Architectural Layer | Exact Security & Isolation Design (Zero Slack-Style Leaks!) |
 |---|---|
-| **3-Tier K8s Placement (`20-*`)** | **`services/collab-hub`** (stateless Node.js 22) and **`signal-huddle-sfu`** (encrypted WebRTC media relay) run in **Tier 2 (`pool-api`)**—keeping **Tier 3 Rust Engine Worker Nodes (`pool-rust-engine`, `1–4 -> N`)** 100% focused on physics/CAD compute with zero chat load. |
-| **Per-Project Encryption & RLS** | Every message body, thread reply, decision note, and review narrative is encrypted with the **Project's Hybrid PQC-wrapped DEK** (`HKDF` subkey `collab-v1`) and stored in **PostgreSQL 16 with mandatory RLS (`NOBYPASSRLS`)**. Real-time fan-out uses per-project **NATS JetStream JWT/NKey ACL subjects (`signal.{org}.{proj}.collab.>`)**. |
+| **3-Tier K8s Placement (`20-*`)** | **`services/collab-hub`** (stateless Python `3.15+` FastAPI / `Granian`) and **`signal-huddle-sfu`** (encrypted WebRTC media relay) run in **Tier 2 (`pool-api`)**—keeping **Tier 3 Rust `1.100+` Worker Nodes (`pool-rust-engine`, `1–4 -> N`)** 100% focused on physics/CAD compute with zero chat load. |
+| **Per-Project Encryption & RLS** | Every message body, thread reply, decision note, and review narrative is encrypted with the **Project's Hybrid PQC-wrapped DEK** (`HKDF` subkey `collab-v1`) and stored in **PostgreSQL `19+` with mandatory RLS (`NOBYPASSRLS`)**. Real-time fan-out uses per-project **NATS JetStream JWT/NKey ACL subjects (`signal.{org}.{proj}.collab.>`)**. |
 | **Per-Repo RBAC Masking (Zero Privilege Escalation!)** | Every channel, `@entity` anchor, and review section declares `required_repo_scopes[]` (e.g., `#software-firmware` requires read access on `<project>-firmware` or `<project>-fpga`). Checked live against `REPO_ACCESS_ENTRY` (uniform `404` for unauthorized projects; `[Restricted]` redaction for out-of-scope sub-project anchors—so a PCB contractor NEVER reads IC/BIOS chat or executive BOM margins!). |
 | **Zero Raw File Uploads / Downloads in Chat** | Chat strictly forbids arbitrary binary file upload/download attachments that bypass DLP; engineers link canonical BYO-Git entities, `signal-parts` components, or watermarked Zero-Leak viewport snapshots. Copy/paste honors Signal's **Encrypted Cloud Clipboard**. |
 | **Fail-Closed Tier-0 Audit** | Executive Stage-Gate Sign-Offs (`PROJECT_STATUS_REVIEW` exit approvals), channel RBAC policy edits, and external review link grants commit synchronously to the **3x Quorum Tier-0 Audit Outbox** (`503` fail-closed if unavailable) → pseudonymous RFC-3161 WORM Merkle ledger! |
 
 ---
 
-## 6. Contracts, Clean Angular UI & Dual-Lane Implementation Map
+## 6. Contracts, Clean Angular v22+ UI & Dual-Lane Implementation Map
 
 | Layer | Modules & Contracts Added | Governing Standards |
 |---|---|---|
-| **Canonical Contracts (`contracts/`)** | `contracts/proto/signal/v1/collab_review.proto` (`CollabReviewService`: `PostAnchoredMessage`, `StartHuddleSession`, `UpsertProjectStatus`, `GeneratePeriodicReview`, `SignOffStageGateReview`), OpenAPI `/v1/orgs/{org_slug}/collab/*` & `/v1/orgs/{org_slug}/projects/{id}/reviews/*`, plus `project-status-review.schema.json` & `collab-channel-policy.schema.json`. | SI suffixes, ES2020 `bigint` (`[jstype = JS_STRING]`), `Idempotency-Key`, zero `/export` or `/download` routes (`10-*`). |
-| **Node.js Control Plane (`services/`)** | **`services/collab-hub`** (stateless Node.js 22 service in `pool-api`: channels, entity-anchored threads, action items, decision log, live RAG status aggregator, deterministic Weekly/Monthly/Status review generator, and `signal-huddle-sfu` token broker). | `@Require*` uniform-`404`, `withRlsTx` (`NOBYPASSRLS`), Step-Up 2FA for Stage-Gate approvals, Fail-Closed 3x Quorum Audit Outbox (`06-*`, `15-*`). |
-| **Angular Frontend (`web/libs/collab-hub`)** | Lazy-loaded 23rd workbench (`web/libs/collab-hub/`) hosting Team Channels, Entity-Anchored Thread Drawer, Encrypted Huddle Bar, Program Status Control Tower, Cross-Team Dependency Board, Action Items / Decision Log, and Interactive **Weekly / Monthly / Project Status Review Studio**! | Strictly follows [`ANGULAR_UI_STYLE_GUIDE.md`](../docs/engineering/ANGULAR_UI_STYLE_GUIDE.md): separate `.component.ts` / `.component.html` (`<= 150 LOC`, max nesting `<= 2`, zero `@if`-soup) / `.logic.ts` / `.model.ts`, using ONLY centralized `@signal/design-system` & `@signal/ui-kit` components (`sig-panel`, `sig-card`, `sig-data-grid`, `sig-status-pill`, `sig-stepper-timeline`) with ZERO per-component CSS! |
-| **Rust Engine Integration (`engine/`)** | Lightweight read-only telemetry hooks (`signal-pod` / `signal-plm` / `signal-graph` spatial-pin bridge) feeding exact ERC/DRC/LVS/SPICE/MCAD/CAM/BOM metrics into `ReviewCompiler` and syncing viewport camera pointers during Huddles. | `#![forbid(unsafe_code)]`, read-only ECS snapshots, zero chat traffic inside physics threads (`03-*`, `19-*`). |
+| **Canonical Contracts (`contracts/`)** | `contracts/proto/signal/v1/collab_review.proto` (`CollabReviewService`: `PostAnchoredMessage`, `StartHuddleSession`, `UpsertProjectStatus`, `GeneratePeriodicReview`, `SignOffStageGateReview`), OpenAPI 3.1 `/v1/orgs/{org_slug}/collab/*` & `/v1/orgs/{org_slug}/projects/{id}/reviews/*`, plus `project-status-review.schema.json` & `collab-channel-policy.schema.json`. | SI suffixes, ES2020 `bigint` / exact Python `int` (`[jstype = JS_STRING]`), `Idempotency-Key`, zero `/export` or `/download` routes (`10-*`). |
+| **Python `3.15+` FastAPI Control Plane (`services/`)** | **`services/collab-hub`** (stateless FastAPI / `Granian 2.8+` service in `pool-api`: channels, entity-anchored threads, action items, decision log, live RAG status aggregator, deterministic Weekly/Monthly/Status review generator, and `signal-huddle-sfu` token broker). | Fail-closed `Depends(require_*)` uniform-`404`, `with_rls_tx` (`NOBYPASSRLS`, PostgreSQL `19+`), Step-Up 2FA for Stage-Gate approvals, Fail-Closed 3x Quorum Audit Outbox (`06-*`, `15-*`). |
+| **Angular `v22+` ONLY Frontend (`web/libs/collab-hub`)** | Lazy-loaded 23rd workbench (`web/libs/collab-hub/`) hosting Team Channels, Entity-Anchored Thread Drawer, Encrypted Huddle Bar, Program Status Control Tower, Cross-Team Dependency Board, Action Items / Decision Log, and Interactive **Weekly / Monthly / Project Status Review Studio**! | Strictly follows [`ANGULAR_UI_STYLE_GUIDE.md`](../docs/engineering/ANGULAR_UI_STYLE_GUIDE.md): separate `.component.ts` / `.component.html` (`<= 150 LOC`, max nesting `<= 2`, zero `@if`-soup) / `.logic.ts` / `.model.ts`, using ONLY centralized `@signal/design-system` & `@signal/ui-kit` components (`sig-panel`, `sig-card`, `sig-data-grid`, `sig-status-pill`, `sig-stepper-timeline`) with ZERO per-component CSS! |
+| **Rust `1.100+` Engine Integration (`engine/`)** | Lightweight read-only telemetry hooks (`signal-pod` / `signal-plm` / `signal-graph` spatial-pin bridge) feeding exact ERC/DRC/LVS/SPICE/MCAD/CAM/BOM metrics into `ReviewCompiler` and syncing viewport camera pointers during Huddles. | `#![forbid(unsafe_code)]`, read-only ECS snapshots, zero chat traffic inside physics threads (`03-*`, `19-*`). |

@@ -1,5 +1,5 @@
 ---
-description: Signal AI Agents, Partitioned Datasheet RAG, K8s Project Cells & Infrastructure Isolation Rules
+description: Signal AI Agents (Python 3.15+), Partitioned Postgres 19+ Datasheet RAG, K8s 1.37+ Project Cells & Infrastructure Isolation Rules
 globs: ["ai/**", "infra/**", "releases/**", "justfile", "VERSION", "CHANGELOG.md"]
 alwaysApply: false
 ---
@@ -8,18 +8,18 @@ alwaysApply: false
 
 Specs: `architecture/04-*`, `05-*`, `09-*`, `15-*`, `18-*`, `20-*` | Skills: `signal-ai-neuro-symbolic-rag`, `signal-universal-parts-registry`, `signal-security-isolation-audit`, `signal-local-mac-dev`, `signal-release-deploy-topology`.
 
-## 1. Neuro-Symbolic AI & Multimodal Quarantine (`ai/**`)
-- **Zero LLM Physics Math:** Never let an LLM guess component sizing, transfer functions, or DRC margins — delegate numerical optimization to Rust Saltation/PSS `signal-diff-sim` and verification to `signal-sim`/`signal-formal`.
+## 1. Neuro-Symbolic AI & Multimodal Quarantine (`ai/**` — Python `3.15+` + `uv`)
+- **Zero LLM Physics Math:** Never let an LLM guess component sizing, transfer functions, or DRC margins — delegate numerical optimization to Rust `1.100+` Saltation/PSS `signal-diff-sim` and verification to `signal-sim`/`signal-formal`.
 - **Multimodal VLM + Dual-LLM Quarantine:** Route 100% of untrusted PDFs, errata, CAD notes, commit messages, AND VLM-processed whiteboard/datasheet images through the **Zero-Tool Quarantine Tier** constrained by `GBNF` schemas — zero reader/VLM model ever holds tool-calling authority!
 - **Tool Safety & Proof Bundles:** Every agent tool call carries the invoking user's non-elevated per-repo RBAC token (zero bindings to `sftp-egress`, `vcs-connector` credentials, or admin APIs). Bind every `DesignProofBundle` to `base_graph_merkle_root` with automatic `< 1 s` post-rebase delta re-verification on merge.
-- **3-Tier `pgvector` HNSW & BOM Privacy:** Query `datasheet_chunks_global` plus ONLY the caller's sharded dedicated enterprise partition (`<= 500` orgs/cluster) or 64-bucket hash partition (`NOBYPASSRLS` + `hnsw.iterative_scan`) using condition-parameterized curves (`C(V,T,f)`, copper-coupled `R_thetaJC/JB`) + bulk-mirrored/`4×` chaff-padded BOM lookups.
-- **Model-Agnostic Gateway:** Support Local Mac Ollama/MLX, `deterministic_mock` offline CI fallback, VPC Confidential GPU vLLM/TensorRT-LLM, and zero-retention APIs behind `ai/llm-gateway` with `GBNF` schema enforcement.
+- **3-Tier PostgreSQL `19+` `pgvector` HNSW & BOM Privacy:** Query `datasheet_chunks_global` plus ONLY the caller's sharded dedicated enterprise partition (`<= 500` orgs/cluster) or 64-bucket hash partition (`NOBYPASSRLS` + `hnsw.iterative_scan`) using condition-parameterized curves (`C(V,T,f)`, copper-coupled `R_thetaJC/JB`) + bulk-mirrored/`4×` chaff-padded BOM lookups.
+- **Model-Agnostic Gateway:** Support Local Mac Ollama/MLX, `deterministic_mock` offline CI fallback, VPC Confidential GPU vLLM/TensorRT-LLM, and zero-retention APIs behind `ai/llm-gateway` (unified Python `3.15+` + `uv` workspace shared with `services/`) with `GBNF` schema enforcement.
 
-## 2. 3-Tier K8s Topology, Project Cell Isolation, Versioning & Local Mac Infra (`infra/**`, `releases/**`)
-- **3-Tier K8s Pod & Extensible Worker Node Separation (`20-*`):** Keep `signal-web` (Angular+Node UI pod) in `pool-web` (zero network path to Rust/DB); co-locate stateless `signal-api-gateway` + native Envoy `signal-engine-bridge` in HA `pool-api`; schedule isolated per-project `signal-pod` (Kata/gVisor/`CONFIDENTIAL_SILICON` + Exclusive `H100 CC` or Blackwell `B200+ TEE-I/O` MIG) and `< 8 MB` `signal-cell-wasm` cells across **`1–4` baseline (extensible to `N`) `pool-rust-engine` worker nodes** (`signal.io/workload=rust-engine:NoSchedule`).
-- **Cilium eBPF** default-deny drops 100% of Pod ↔ Pod lateral traffic; all external Git/SFTP/ERP egress funnels through socket-pinned + `X-Signal-Fencing-Token` epoch-enforcing `signal-egress-proxy`.
-- **Platform Versioning, Multi-Version Coexistence & Releases (`20-*`):** Sync single canonical `VERSION` via root `justfile`; maintain `releases/compatibility.json` (`N-2` wire window + `physics_determinism_epoch`), per-project LTS engine pinning (`platform.lock.json`), automated `CHANGELOG.md` + `releases/notes/vX.Y.Z.{md,json}`, SLSA L3 / Cosign / SBOM / Kyverno gates, and Expand-and-Contract DB migrations.
+## 2. 3-Tier K8s 1.37+ Topology, Project Cell Isolation, Versioning & Local Mac Infra (`infra/**`, `releases/**`)
+- **3-Tier K8s `1.37+` Pod & Extensible Worker Node Separation (`20-*`):** Keep `signal-web` (Angular `v22+` + thin Node.js `26 LTS+` edge pod) in `pool-web` (zero network path to Rust/DB); co-locate stateless Python `3.15+` FastAPI (`Granian 2.8+`) `signal-api-gateway` + native Envoy `signal-engine-bridge` in HA `pool-api`; schedule isolated per-project Rust `1.100+` `signal-pod` (Kata/gVisor/`CONFIDENTIAL_SILICON` + Exclusive `H100 CC` or Blackwell `B200+ TEE-I/O` MIG) and `< 8 MB` `signal-cell-wasm` cells across **`1–4` baseline (extensible to `N`) `pool-rust-engine` worker nodes** (`signal.io/workload=rust-engine:NoSchedule`).
+- **Cilium eBPF** default-deny drops 100% of Pod ↔ Pod lateral traffic; all external Git/SFTP/ERP egress funnels through socket-pinned + `X-Signal-Fencing-Token` epoch-enforcing Rust `signal-egress-proxy`.
+- **Platform Versioning, Multi-Version Coexistence & Releases (`20-*`):** Sync single canonical `VERSION` via root `justfile`; maintain `releases/compatibility.json` (`N-2` wire window + `physics_determinism_epoch`), per-project LTS engine pinning (`platform.lock.json`), automated `CHANGELOG.md` + `releases/notes/vX.Y.Z.{md,json}`, SLSA L3 / Cosign / SBOM / Kyverno gates, and Expand-and-Contract PostgreSQL `19+` migrations.
 - `infra/local/**`: maintain `just dev` (`dev:lite` `< 1.5 GB RAM`, `dev:full` ARM64) + `just dev-k8s` (local 3-tier Helm parity), headless `lavapipe` software-Vulkan WGSL parity, and zero-bypass `local-git-mock` seeding `local-guest-0001`.
 
 ## 3. Dev Response & Anti-Hallucination
-Reply in **2–3 sentences max** (`Issue -> Fix -> Observed check result`). Verify K8s CRDs, `pgvector` syntax, and `llm-gateway` config before referencing; never invent APIs or claim unrun checks pass.
+Reply in **2–3 sentences max** (`Issue -> Fix -> Observed check result`). Verify K8s `1.37+` CRDs, `pgvector` syntax, and `llm-gateway` config before referencing; never invent APIs or claim unrun checks pass.

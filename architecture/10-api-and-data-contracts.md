@@ -1,6 +1,6 @@
 # 10 — Canonical API & Data Contracts
 
-> **Scope:** Defines the contract-first interfaces connecting Angular, Node.js Control Plane, Kubernetes Rust Engine Pods, AI Agents, Universal Datasheet RAG, and Authorized SFTP Egress. Locking these contracts first eliminates cross-service drift and prevents deadlocks during parallel Antigravity + Cursor development.
+> **Scope:** Defines the contract-first interfaces connecting **Angular `v22+`**, **Python `3.15+` FastAPI Control Plane**, **Kubernetes `1.37+` Rust `1.100+` Engine Pods**, AI Agents, Universal Datasheet RAG, and Authorized SFTP Egress. Locking these contracts first eliminates cross-service drift and prevents deadlocks during parallel Antigravity + Cursor development.
 
 ---
 

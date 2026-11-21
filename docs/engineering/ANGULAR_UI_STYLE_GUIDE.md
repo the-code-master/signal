@@ -1,8 +1,8 @@
-# Signal — Angular UI Style Guide & Standardized Component Ecosystem (`web/`)
+# Signal — Angular v22+ ONLY UI Style Guide & Standardized Component Ecosystem (`web/`)
 
-> **Applies To:** Every component, template, stylesheet, and workbench under `web/apps/signal-web/` and `web/libs/*`.  
-> **Companion Guides:** [`ANGULAR_ENGINEERING_GUIDE.md`](./ANGULAR_ENGINEERING_GUIDE.md) | [`TOKEN_EFFICIENCY_AND_CLEAN_CODE.md`](./TOKEN_EFFICIENCY_AND_CLEAN_CODE.md) | [`architecture/06-frontend-angular-and-nodejs-bff.md`](../../architecture/06-frontend-angular-and-nodejs-bff.md).  
-> **Core Principle:** **Separation of Concerns + Zero-Spaghetti Templates + One Platform-Wide Style Ecosystem.** Every Angular component MUST keep HTML markup, TypeScript wiring, pure presentation logic, and models in dedicated files, eliminate `@if` duplication in templates, and consume Signal's centralized `@signal/design-system` + `@signal/ui-kit` styles with **zero per-component stylesheets** unless explicitly exempted.
+> **Applies To:** Every **Angular `v22+` ONLY** component, template, stylesheet, and workbench under `web/apps/signal-web/` and `web/libs/*` (TypeScript `6.0+`, Node.js `26 LTS+`, `pnpm 11+`).  
+> **Companion Guides:** [`ANGULAR_ENGINEERING_GUIDE.md`](./ANGULAR_ENGINEERING_GUIDE.md) | [`TOKEN_EFFICIENCY_AND_CLEAN_CODE.md`](./TOKEN_EFFICIENCY_AND_CLEAN_CODE.md) | [`architecture/06-frontend-angular-and-fastapi-control-plane.md`](../../architecture/06-frontend-angular-and-fastapi-control-plane.md).  
+> **Core Principle:** **Separation of Concerns + Zero-Spaghetti Templates + One Platform-Wide Style Ecosystem.** Every Angular `v22+` component MUST keep HTML markup, TypeScript wiring, pure presentation logic, and models in dedicated files, eliminate `@if` duplication in templates, and consume Signal's centralized `@signal/design-system` + `@signal/ui-kit` styles with **zero per-component stylesheets** unless explicitly exempted.
 
 ---
 

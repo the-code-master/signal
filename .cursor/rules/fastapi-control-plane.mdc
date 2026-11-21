@@ -1,0 +1,35 @@
+---
+description: Signal Python 3.15+ FastAPI Control Plane — Granian, Pydantic v2, Fail-Closed Depends Auth, Uniform 404, Postgres 19+ RLS & Quorum Audit
+globs: ["services/**"]
+alwaysApply: false
+---
+
+# Signal Python 3.15+ FastAPI Control Plane Rules (`services/**`)
+
+Deep reference: `docs/engineering/FASTAPI_ENGINEERING_GUIDE.md` | Skills: `signal-fastapi-control-plane`, `signal-byo-git-and-vault`, `signal-universal-parts-registry`, `signal-cad-cam-plm-ops`, `signal-collab-and-status-reviews`, `signal-release-deploy-topology`, `signal-security-isolation-audit`.
+
+## 1. Modern Stack & Clean 4-Layer Architecture
+- **Strict Minimum Toolchain (`services/`):** **Python `3.15+`** (`>= 3.15.2`), **FastAPI `0.165+`**, **Pydantic v2 `2.14+`** (Rust `pydantic-core`), **Granian `2.8+`** (Rust ASGI/RSGI server), **SQLAlchemy `2.0+` Async + `asyncpg`/`psycopg 3`** → **PostgreSQL `19+`**, **`uv` `0.13+`**, **`ruff`**, and **`pyright --strict`**.
+- Keep all services (`api-gateway`, `identity-org`, `project-catalog`, `parts-registry`, `plm-ops`, `collab-hub`, `vcs-connector`, `vcs-auditor`, `session-broker`, `sftp-egress`, `audit-service`) 100% horizontally stateless in `pool-api` alongside native Envoy `signal-engine-bridge` zero-copy relay.
+- Keep files `<= 250 LOC` (hard split `> 350`) with 3-line docstring headers (`Module / Invariants / Spec`). Strictly separate `routers/`, `security/` (`Depends` guards), `services/` (pure async orchestration), `repositories/` (`with_rls_tx` SQL), `schemas/` (strict Pydantic v2 `ConfigDict(extra="forbid", frozen=True)`), and `clients/`.
+- Keep 64-bit contract fields (`_nm`, `_ps`, `_fs`, `fencing_epoch`, `provider_repo_id`) as exact Python `int` internally and serialize as JSON strings (`[jstype = JS_STRING]`) for lossless Angular `v22+` `bigint` parity; never commit generated Protobuf stubs.
+- Never execute EDA physics, SPICE, B-Rep CAD, CNC/3D slicing, DRC/LVS, routing, or Gerber/GDSII/STEP/G-code/3MF generation in Python — delegate to Rust `1.100+` `signal-pod` (or a surgical in-process `PyO3` crate binding for approved CPU hotspots).
+
+## 2. Fail-Closed `Depends` Auth, Anti-Enumeration & PostgreSQL 19+ RLS
+- Every non-health route MUST declare an explicit fail-closed security dependency (`require_org_member`, `require_project_repo_role`, `require_org_admin`, `require_project_admin`, `require_step_up_2fa`); an automated startup route-introspection gate fails boot/CI if any route lacks auth!
+- Return **uniform `404 Not Found`** whenever a caller lacks access to an org, project, sub-project, or resource UUID (never leak `403` vs `404` existence!).
+- Every PostgreSQL `19+` query MUST run inside `async with with_rls_tx(...)` issuing `SET LOCAL app.org_id` / `app.user_id` under a `NOBYPASSRLS` role; name migrations `YYYYMMDDHHMMSS_<ag|cursor>_<slug>.sql`.
+- Auth flows use top-level `/auth/*` PKCE/SAML redirects upgrading `5 min` `SameSite=Lax` state cookies into `__Host-signal_session` (`HttpOnly; Secure; SameSite=Strict`) + `Sec-Fetch-Site` guards.
+- Enforce `Idempotency-Key` on all mutating endpoints and verify OpenAPI 3.1 parity against `contracts/openapi/control-plane.v1.yaml`.
+
+## 3. Step-Up 2FA, Anti-SSRF & Fail-Closed Tier-0 Audit
+- Require fresh Step-Up 2FA (WebAuthn passkey or Redis-nonce-burned TOTP — single-use per 30s window) for VCS credentials, Access Review revocations, ECN/MCN/Stage-Gate/21 CFR Part 11 sign-offs, and Authorized SFTP targets/releases.
+- Route ALL outbound customer Git/SFTP/ERP/webhook calls through socket-pinned Rust `signal-egress-proxy` (zero direct outbound HTTP/TCP sockets from FastAPI services; treat incoming Git webhooks as untrusted dirty hints only).
+- Tier-0 security mutations (`SFTP Release`, `VCS Credentials`, `Access Revocation`, `Break-Glass`, `BYOK Edit`) MUST commit synchronously to the **3x Quorum Audit Outbox** (`503` fail-closed if unavailable) using pseudonymous IDs (zero raw PII in WORM Merkle logs).
+- Strictly forbid `eval`, `exec`, `pickle`, `yaml.load`, `subprocess(..., shell=True)`, raw secret logging (wrap in `SecretStr`/`Redacted[T]`), and any `/export`, `/download`, or `/print` endpoint.
+
+## 4. Verification Before Commit
+Run `uv run ruff check services/ && uv run ruff format --check services/`, `uv run pyright services/`, `uv run pytest services/ -q`, `uv run bandit -r services/ -ll`, and `uv run pip-audit --strict`.
+
+## 5. Dev Response & Anti-Hallucination
+Reply in **2–3 sentences max** (`Issue -> Fix -> Observed check result`). Verify route/schema/DB symbols and `pyproject.toml` deps via `rg`/`view_file` before editing; never claim green without observed exit code `0`.

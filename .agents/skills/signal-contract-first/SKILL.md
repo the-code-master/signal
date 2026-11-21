@@ -13,25 +13,25 @@ Governing spec: `architecture/10-api-and-data-contracts.md`.
 
 ## Hard Schema & Wire Invariants
 1. **Explicit SI-Unit Field Suffixes:** Every physical value MUST end in `_nm`, `_ps`, `_fs`, `_uv`, `_na`, `_uw`, `_mkelvin`, `_hz`, or `_mohm`. Reject ambiguous bare names (`width`, `voltage`, `delay`, `temp`).
-2. **Mandatory 64-Bit `bigint` Safety (Zero `2^53` Corruption):**
+2. **Mandatory 64-Bit `bigint` / Python `int` Safety (Zero `2^53` Corruption):**
    - Annotate 100% of `int64`, `uint64`, `sint64`, and `fixed64` fields (nanometers, femtoseconds, `fencing_epoch`, `provider_repo_id`) with `[jstype = JS_STRING]`.
-   - Configure TypeScript Protobuf codegen with `longAsBigint: true`.
+   - Serialize 64-bit ints as JSON strings in FastAPI Pydantic v2 (`int` internally) and generate ES2020 `bigint` (`longAsBigint: true`) in Angular `v22+` TypeScript `6.0+`.
 3. **Chunked Binary & Arrow Framing:** Cap stream payload chunks at `<= 1 MB` with CRC32C/AEAD framing and credit-based backpressure; use Apache Arrow RecordBatches for waveforms, FMEDA matrices, Shmoo grids, and visual diffs.
-4. **Additive-Only `v1` Evolution (`N-1` Compatibility):** Never reuse or retype an existing field number; explicitly `reserve` retired numbers/names.
-5. **Zero-Export OpenAPI Gate:** Every Control Plane endpoint MUST be URL-scoped (`/org/:org_slug/...`), require `Idempotency-Key` on mutations, and NEVER add `/export`, `/download`, `/raw-file`, or `/print` routes.
-6. **Build-Time Codegen Only:** NEVER commit generated Rust (`tonic`/`prost`) or TypeScript stubs to Git.
+4. **Additive-Only `v1` Evolution (`N-2` Compatibility):** Never reuse or retype an existing field number; explicitly `reserve` retired numbers/names.
+5. **Zero-Export OpenAPI 3.1 Gate:** Every Control Plane endpoint MUST be URL-scoped (`/org/:org_slug/...`), require `Idempotency-Key` on mutations, match FastAPI's generated OpenAPI 3.1 schema with zero drift, and NEVER add `/export`, `/download`, `/raw-file`, or `/print` routes.
+6. **Build-Time Codegen Only:** NEVER commit generated Rust (`tonic`/`prost`), Python, or TypeScript stubs to Git.
 
 ## Required Conformance Artifacts (Every Contract PR)
-1. **Golden Fixtures (`contracts/fixtures/*.json`):** Include edge values `> 9_007_199_254_740_991` (`> 2^53`) to prove lossless Rust `i64` ↔ TypeScript `bigint` round-tripping.
-2. **Stateful Protocol Transcripts (`contracts/transcripts/*.jsonl`):** Record exact multi-step request/response/error transitions (e.g., `HydrateProject -> MOUNTED -> ApplyTransaction`, stale-epoch `412`, `Idempotency-Key` retry) replayed by both Rust and TS CI suites.
+1. **Golden Fixtures (`contracts/fixtures/*.json`):** Include edge values `> 9_007_199_254_740_991` (`> 2^53`) to prove lossless Rust `1.100+` `i64` ↔ Python `3.15+` `int` ↔ Angular `v22+` `bigint` round-tripping.
+2. **Stateful Protocol Transcripts (`contracts/transcripts/*.jsonl`):** Record exact multi-step request/response/error transitions (e.g., `HydrateProject -> MOUNTED -> ApplyTransaction`, stale-epoch `412`, `Idempotency-Key` retry) replayed by Rust, FastAPI, and TS CI suites.
 
 ## Verification Checklist
 ```bash
 buf lint contracts/proto
 buf breaking contracts/proto --against '.git#branch=main,subdir=contracts/proto'
-# Validate OpenAPI + JSON schemas + fixture/transcript tests
+# Validate OpenAPI 3.1 + JSON schemas + Rust/Python/TS fixture/transcript tests
 ```
-- Confirm `git status` contains zero generated `.rs` or `.ts` stub files.
+- Confirm `git status` contains zero generated `.rs`, `.py`, or `.ts` stub files.
 
 ## Dev Response & Anti-Hallucination
 - Inspect existing `.proto` field numbers, reserved ranges, and schemas via `view_file` before editing; never guess wire types or claim `buf` checks passed without running them.

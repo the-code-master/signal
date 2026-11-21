@@ -98,7 +98,7 @@ flowchart TB
         LFS["Git LFS / Optional Customer BYO-S3 (Pinned >100 MB Assets)"]
     end
 
-    subgraph Control["Signal Control Plane (Node.js) + Anti-SSRF Proxy"]
+    subgraph Control["Signal Control Plane (Python 3.15+ FastAPI) + Rust Anti-SSRF Proxy"]
         Auth["services/identity-org (Dual SSO + Provider OAuth + Repo Gate)"]
         Conn["services/vcs-connector (2FA Settings, Repo Provisioner, 70/30 Rate Budget)"]
         Aud["services/vcs-auditor (6h/Daily + Dirty-Hint Webhook Posture Auditor)"]

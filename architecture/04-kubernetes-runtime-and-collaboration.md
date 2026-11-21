@@ -12,9 +12,9 @@ Because an EDA project can hold gigabytes of live hierarchical schematic, PCB, I
 - **N Concurrent Users + AI Agents opening Project X → ALL routed to the EXACT SAME Pod.**
 - Zero conflicting local copies, zero "file locked by another user" errors, shared real-time SPICE probes, shared cursors, and instant multi-user edits.
 - **3-Tier Pod & Extensible Worker Node Separation (Full Spec in [`20-*`](./20-versioning-release-monorepo-build-and-k8s-topology.md)):**
-  - **Tier 1 (`pool-web` — Separate Web Pod):** Hosts `signal-web` (Angular 19/20+ static/SSR assets + Node UI edge) with zero direct network path to Rust engine pods or databases.
-  - **Tier 2 (`pool-api` — Dedicated API & Engine Bridge Tier):** Co-locates stateless Node.js 22 `signal-api-gateway` (Auth/RBAC/REST/Tickets) + native Envoy `signal-engine-bridge` (zero-copy HTTP/3 WebTransport/gRPC/Arrow relay over SPIFFE mTLS connecting frontend traffic to the Rust Core Engine).
-  - **Tier 3 (`pool-rust-engine` — `1–4` Baseline, Elastically Extensible to `N` Worker Nodes):** Tainted `signal.io/workload=rust-engine:NoSchedule`. Schedules isolated per-project `signal-pod` MicroVMs & `< 8 MB` `signal-cell-wasm` cells across `1–4` baseline core nodes (extensible horizontally to `N` nodes or specialized `core-highmem`/`core-gpu`/`core-confidential` pools via Karpenter), supporting **Multi-Version Engine Coexistence** for pinned enterprise LTS projects!
+  - **Tier 1 (`pool-web` — Separate Web Pod):** Hosts `signal-web` (**Angular `v22+` ONLY** static/SSR assets + thin **Node.js `26 LTS+`** UI edge) with zero direct network path to Rust engine pods or databases.
+  - **Tier 2 (`pool-api` — Dedicated API & Engine Bridge Tier):** Co-locates stateless **Python `3.15+` FastAPI (`Granian 2.8+`)** `signal-api-gateway` (Auth/RBAC/REST/Tickets) + native **Envoy `signal-engine-bridge`** (zero-copy HTTP/3 WebTransport/gRPC/Arrow relay over SPIFFE mTLS connecting frontend traffic to the Rust Core Engine).
+  - **Tier 3 (`pool-rust-engine` — `1–4` Baseline, Elastically Extensible to `N` Worker Nodes):** Tainted `signal.io/workload=rust-engine:NoSchedule`. Schedules isolated per-project **Rust `1.100+`** `signal-pod` MicroVMs & `< 8 MB` `signal-cell-wasm` cells across `1–4` baseline core nodes (extensible horizontally to `N` nodes or specialized `core-highmem`/`core-gpu`/`core-confidential` pools via Karpenter on K8s `1.37+`), supporting **Multi-Version Engine Coexistence** for pinned enterprise LTS projects!
 
 ```mermaid
 flowchart LR
@@ -26,15 +26,15 @@ flowchart LR
     end
 
     subgraph EdgeRouting["Envoy Zero-Copy Relay & Sticky Broker"]
-        Broker["Envoy HTTP/3 + turns:443 + Node.js Session Broker"]
+        Broker["Envoy HTTP/3 + turns:443 + FastAPI Session Broker"]
         Dir["K8s Linearizable Lease + Redis Routing Cache"]
     end
 
-    subgraph K8s["Kubernetes Cluster (MicroVM / SEV-SNP Security Cells)"]
+    subgraph K8s["Kubernetes 1.37+ Cluster (MicroVM / SEV-SNP Security Cells)"]
         Op["Signal ProjectSession Operator (kube-rs)"]
         subgraph PodX["Active Pod: signal-proj-x-a8f2 (Dedicated to Project X)"]
             Seq["Conflating CRDT & Causal Sequencer"]
-            Eng["Pure Rust signal-engine (RAM-Only + Memory Governor)"]
+            Eng["Pure Rust 1.100+ signal-engine (RAM-Only + Memory Governor)"]
             GPU["wgpu Multi-Pane Atlas + MIG / Confidential GPU"]
         end
         Warm["Predictive KEDA/Karpenter Warm Pool"]
@@ -93,10 +93,10 @@ stateDiagram-v2
 
 How does Signal ensure Engineer A in New York, Engineer B in Munich, Engineer C in Bangalore, and an AI Agent all hit the exact same Rust Engine Pod smoothly?
 
-1. **Provider-Backed Authentication & Repo Authorization:** Client authenticates via Node.js BFF (`JWT` bound to immutable `provider_user_id` from GitHub / GitLab / Bitbucket) and passes live **Org + Repo membership verification** confirming exact `read`/`write`/`admin` rights on `<project>-meta` and each `<project>-<type>` repo.
-2. **Singleflight Session Resolution:** Node.js `session-broker` checks the Redis routing cache (backed by sharded linearizable project epochs + Host Leases), coalescing concurrent cold-open requests via singleflight so **at most one cell/pod** ever hydrates Project X in its **Jurisdiction-Pinned Region**.
+1. **Provider-Backed Authentication & Repo Authorization:** Client authenticates via Python FastAPI Control Plane (`JWT` bound to immutable `provider_user_id` from GitHub / GitLab / Bitbucket) and passes live **Org + Repo membership verification** confirming exact `read`/`write`/`admin` rights on `<project>-meta` and each `<project>-<type>` repo.
+2. **Singleflight Session Resolution:** FastAPI `session-broker` checks the Redis routing cache (backed by sharded linearizable project epochs + Host Leases), coalescing concurrent cold-open requests via singleflight so **at most one cell/pod** ever hydrates Project X in its **Jurisdiction-Pinned Region**.
 3. **Zero-Copy Sticky Transport & Global Edge Prediction:**
-   - `session-broker` issues short-lived **Ed25519 stream tickets** so high-frequency pointer/viewport traffic flows zero-copy through **Envoy HTTP/3 WebTransport / TURN-over-TLS 443 (`turns:`) / WSS** directly to the Pod without Node.js JSON/GC jitter.
+   - `session-broker` issues short-lived **Ed25519 stream tickets** so high-frequency pointer/viewport traffic flows zero-copy through **Envoy HTTP/3 WebTransport / TURN-over-TLS 443 (`turns:`) / WSS** directly to the Pod with zero API-layer JSON serialization overhead.
    - Regional edge relays + **120 FPS client-side predictive crosshair/pan/ghost-wire overlays** keep distant collaborators feeling instantaneous even at `180 ms` transoceanic RTT.
    - **Per-Subscriber Conflating Ring Buffers:** Each connected user gets an isolated bounded ring buffer—a collaborator on a slow 3G link receives coalesced latest state and adaptive FPS without ever causing head-of-line stalls for fiber teammates!
 4. **Per-Sub-Project Role Enforcement & Instant Eviction Inside the Pod:** Every connection carries its signed per-repo RBAC map enforced directly inside `signal-engine` (users never receive graph nodes, render layers, or AI context from unauthorized `<project>-<type>` repos). Revocation in GitHub/GitLab/Bitbucket or Signal Access Review evicts live pod streams within `< 2 s`.

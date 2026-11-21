@@ -5,23 +5,23 @@ alwaysApply: true
 
 # Signal — Always-On Core Guardrails
 
-You are collaborating in parallel on **Signal** (by **Signal Design, Inc.**): Pure Rust EDA engine in K8s + Node.js 22 BFF + Angular 19/20+ Zoneless Web IDE.
+**Signal** (Signal Design, Inc.): **Rust `1.100+`** EDA/CAD/CAM engine (K8s `1.37+`) + **Python `3.15+` FastAPI** (`Granian`/`Pydantic v2`) Control Plane + **Angular `v22+` ONLY** Zoneless UI (**Node `26 LTS+`** Tier 1 edge).
 
 ## 1. Sources of Truth & Phase Gate
-- **Canonical Rulebook:** [`AGENTS.md`](../../AGENTS.md) | **Specs:** `architecture/01..21-*.md` | **Guides:** `docs/engineering/*.md` | **Skills:** `.agents/skills/*/SKILL.md`.
-- **Phase Gate:** Check `AGENTS.md` Section 1 and `coordination/TASK_BOARD.md`. Never write production code (`engine/`, `services/`, `web/`, `ai/`, `contracts/`, `infra/`) before explicit Phase 0 user approval.
-- **Session Start:** Run `git fetch origin --prune`, read `coordination/TASK_BOARD.md`, peer journal (`coordination/agents/antigravity.md` read-only for Cursor), and `coordination/handoffs/`. Branch `cursor/<task-id>-<slug>` or `contract/<task-id>-<slug>` with zero `touched_paths` overlap.
+- **Rules & Docs:** [`AGENTS.md`](../../AGENTS.md) | `architecture/01..21-*.md` | `docs/engineering/*.md` | `.agents/skills/*/SKILL.md`.
+- **Phase Gate:** Check `AGENTS.md` §1 & `coordination/TASK_BOARD.md`. Never write production code (`engine/`, `services/`, `web/`, `ai/`, `contracts/`, `infra/`) before explicit Phase 0 user approval.
+- **Session Start:** Run `git fetch origin --prune`, read `TASK_BOARD.md`, peer journal (`coordination/agents/antigravity.md` read-only for Cursor), & `coordination/handoffs/`. Branch `cursor/*` or `contract/*` with zero `touched_paths` overlap.
 - **Single-Writer Journals:** Cursor edits ONLY `coordination/agents/cursor.md`; Antigravity edits ONLY `coordination/agents/antigravity.md`.
 
 ## 2. Hard Red-Line Invariants (PR Rejection If Violated)
-1. **1 Project = 1 Security Cell & 3-Tier K8s (`20-*`):** Separate `signal-web` pod (`pool-web`), HA `signal-api` + Envoy `signal-engine-bridge` (`pool-api`), & `1–4 -> N` extensible `pool-rust-engine` worker nodes (`signal-cell-wasm` or Kata/`CONFIDENTIAL_SILICON` + Exclusive `H100 CC` / `B200 TEE-I/O` MIG); RLS (`NOBYPASSRLS`), Hybrid PQC DEK/SVID, Cilium 100% lateral drop, uniform `404`, epoch-fenced `signal-egress-proxy`.
-2. **Rust Owns All Physics, CAD/CAM & Manufacturing:** Zero SPICE, magnetics, creepage, EMC/FMEDA, B-Rep CAD, CNC/3D slicing, DRC/LVS, routing, ECO, or Gerber/GDSII/STEP/G-code/3MF logic in Node.js or Angular.
-3. **Zero Local Design Files & No Browser Export/Print:** Never persist design IP in `localStorage`/`sessionStorage`/`IndexedDB`/SW caches or expose `/export`, `/download`, or `/print` routes. All physical manufacturing/CNC/3D-print/MCAD/ECN/MCN bundles egress ONLY via Step-Up 2FA write-only `russh` SFTP.
-4. **BYO-Git, Padmé Vault & Universal Parts (`18-*`):** Customer owns design repos (`GitHub`/`GitLab`/`Bitbucket`: `<project>-meta` + lazy `<project>-<type>` by `provider_repo_id`) + `<org>/signal-org-parts` AVL under Padmé-blinded `AES-256-GCM-SIV` + Dual-Fenced 2PC `Super-Commit`; never leak NDA parts into Global CAS.
-5. **Contract-First `bigint` & Platform Releases (`20-*`):** All 64-bit contract fields (`_nm`, `_ps`, `fencing_epoch`) use ES2020 `bigint` (`longAsBigint: true`); build-time codegen ONLY. Monorepo `justfile`/`VERSION`/auto Release Notes (`CHANGELOG.md`, `releases/notes/`), `N-2` compat, LTS pinning, SLSA L3/Cosign, and Expand-and-Contract SQL.
-6. **Zero-Bypass Local Dev:** `dev-guest-auth` (`local-guest-0001`) executes full RBAC + encryption and MUST fail compilation in release/staging builds.
+1. **1 Project = 1 Cell & 3-Tier K8s (`20-*`):** Separate `signal-web` (`pool-web`, Angular `v22+` + Node `26 LTS+`), HA FastAPI `signal-api` + Envoy `signal-engine-bridge` (`pool-api`), & `1–4 -> N` `pool-rust-engine` nodes (Rust `1.100+` `signal-cell-wasm` or Kata/`CONFIDENTIAL_SILICON` + Exclusive `H100 CC`/`B200 TEE-I/O` MIG); Postgres `19+` RLS (`NOBYPASSRLS`), Hybrid PQC DEK/SVID, Cilium 100% lateral drop, uniform `404`, epoch-fenced Rust `signal-egress-proxy`.
+2. **Rust `1.100+` Owns Physics, CAD/CAM & Manufacturing:** Zero SPICE, magnetics, creepage, EMC/FMEDA, B-Rep CAD, CNC/3D slicing, DRC/LVS, routing, ECO, or Gerber/GDSII/STEP/G-code/3MF logic in FastAPI or Angular.
+3. **Zero Local Files & No Browser Export/Print:** Never store IP in `localStorage`/`sessionStorage`/`IndexedDB`/SW or expose `/export`/`/download`/`/print`. All manufacturing/CNC/3D-print/MCAD/ECN/MCN bundles egress ONLY via Step-Up 2FA write-only Rust `russh` SFTP.
+4. **BYO-Git, Padmé Vault & Universal Parts (`18-*`):** Customer owns repos (`GitHub`/`GitLab`/`Bitbucket`: `<project>-meta` + lazy `<project>-<type>` by `provider_repo_id`) + `<org>/signal-org-parts` AVL under Padmé `AES-256-GCM-SIV` + Dual-Fenced 2PC `Super-Commit`; never leak NDA parts into Global CAS.
+5. **Contract-First `bigint` & Releases (`20-*`):** All 64-bit contract fields (`_nm`, `_ps`, `fencing_epoch`) use `[jstype = JS_STRING]` → ES2020 `bigint` (`longAsBigint: true`) & exact Python `int`; build-time codegen ONLY. Monorepo `justfile`/`VERSION`/auto Release Notes, `N-2` compat, LTS pinning, SLSA L3/Cosign, Expand-and-Contract SQL.
+6. **Zero-Bypass Local Dev:** `dev-guest-auth` (`local-guest-0001`) executes full RBAC + crypto and MUST fail compilation in release/staging builds.
 
-## 3. Token Efficiency, 2–3 Sentence Dev Replies, Clean UI & Anti-Hallucination
-- **2–3 Sentence Coding Replies:** During code development/bug-fixing, reply in **2–3 sentences max** (`Issue -> Fix -> Verification`) — omit recaps unless asked.
-- **Zero-Hallucination:** Verify paths, symbols, deps (`Cargo.toml`/`package.json`), & contracts via `rg`/`view_file` before editing; claim pass ONLY on observed exit `0`; never invent pinouts/SI constants; stop/ask or log `BLOCKED_ON_CONTRACT` on ambiguity.
-- **Clean Modularity & Standardized UI:** Files `<= 300 LOC`, functions `<= 40 LOC`, nesting `<= 3`, 3-line header; Angular MUST split `.component.ts`/`.html` (`<= 150 LOC`, zero `@if`-soup/copy-paste)/`.logic.ts`/`.model.ts` and use centralized `@signal/design-system` + `@signal/ui-kit` (NO per-component styles unless `@sig-style-exception`).
+## 3. Token Efficiency, 2–3 Sentence Replies, Clean UI & Anti-Hallucination
+- **2–3 Sentence Dev Replies:** During coding/fixes, reply in **2–3 sentences max** (`Issue -> Fix -> Verification`); omit recaps unless asked.
+- **Zero-Hallucination:** Verify paths, symbols, deps (`Cargo.toml`/`package.json`/`pyproject.toml`), & contracts via `rg`/`view_file`; claim pass ONLY on exit `0`; never invent pinouts/SI constants; stop/ask or log `BLOCKED_ON_CONTRACT` on ambiguity.
+- **Clean Modularity & UI:** Files `<= 300 LOC`, functions `<= 40 LOC`, nesting `<= 3`, 3-line header; Angular `v22+` splits `.component.ts`/`.html` (`<= 150 LOC`, zero `@if`-soup/duplication)/`.logic.ts`/`.model.ts` with centralized `@signal/design-system` + `@signal/ui-kit` (NO per-component CSS unless `@sig-style-exception`).
