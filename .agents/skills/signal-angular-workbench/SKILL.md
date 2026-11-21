@@ -34,3 +34,7 @@ pnpm --filter @signal/web lint
 pnpm --filter @signal/web typecheck
 pnpm --filter @signal/web test --run
 ```
+
+## Dev Response & Anti-Hallucination
+- Verify Angular version (`package.json`), component symbols, and contract `bigint` types via `rg`/`view_file` before editing; never claim pass without observed `pnpm` exit code `0`.
+- Reply in **2–3 sentences max** stating ONLY the issue, exact fix applied, and verification result.

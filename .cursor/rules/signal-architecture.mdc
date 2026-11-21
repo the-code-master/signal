@@ -21,6 +21,7 @@ You are collaborating in parallel on **Signal** (by **Signal Design, Inc.**): Pu
 5. **Contract-First `bigint` Safety:** All 64-bit integer contract fields (`_nm`, `_ps`, `fencing_epoch`) use `[jstype = JS_STRING]` / ES2020 `bigint` (`longAsBigint: true`). Generate stubs at build time ONLY (never commit generated stubs).
 6. **Zero-Bypass Local Dev:** `dev-guest-auth` (`local-guest-0001`) executes full RBAC + encryption and MUST fail compilation in release/staging builds.
 
-## 3. Token-Efficient Clean-Code Defaults
-- Keep source files `<= 300 LOC` (split `> 350 LOC`), functions `<= 40 LOC`, nesting `<= 3`, and open every file with a 3-line module/invariant/spec header.
-- Search with `rg` before reading; load scoped `.cursor/rules/*.mdc` and `.agents/skills/*/SKILL.md` on demand rather than pulling full architecture docs into context.
+## 3. Token Efficiency, 2–3 Sentence Dev Replies & Anti-Hallucination
+- **2–3 Sentence Coding Replies:** During code development/bug-fixing, reply in **2–3 sentences max** stating ONLY the issue, exact fix applied, and verification result—no verbose recaps or repeated diffs unless explicitly asked.
+- **Zero-Hallucination Discipline:** Always verify paths, symbols, versions (`Cargo.toml`/`package.json`), and contracts via `rg`/`view_file` before editing; NEVER claim tests/builds pass without observing exit code `0`; NEVER invent pinouts/SI constants; stop and ask (or log `BLOCKED_ON_CONTRACT`) when ambiguous.
+- **Clean Modularity:** Files `<= 300 LOC` (split `> 350 LOC`), functions `<= 40 LOC`, nesting `<= 3`, 3-line module header; load scoped `.cursor/rules/*.mdc` and `.agents/skills/*/SKILL.md` on demand.

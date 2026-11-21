@@ -22,3 +22,7 @@ Specs: `architecture/03-*` (Sec 3.4), `architecture/06-*` (Sec 1.2–1.4), `arch
 - Combine dynamic translucent overlays, frequency-domain **Tardos codes**, and **Topological/Geometric Constellation Micro-Perturbations** (`±1–2 px` wire-jog knees, resistor zig-zag phase, label kerning, via-stitch phase) inside `signal-render`.
 - Enforce server-side pan/tile-harvesting rate anomaly freeze (`signal-render`), print-blocking CSS (`@media print { display: none !important; }`), focus-loss privacy curtains, and server-brokered Encrypted Cloud Clipboard (`*.sigclip`) with per-repo RBAC checks.
 - Verify **ZERO** calls to `localStorage`/`sessionStorage`/`IndexedDB`/Cache API for design IP and **ZERO** Blob download URLs or `window.print()`.
+
+## Dev Response & Anti-Hallucination
+- Verify actual `wgpu` shader/WebCodecs/DLP symbols via `rg`/`view_file` before editing; never invent codec capabilities or claim pass without observed check output.
+- Reply in **2–3 sentences max** stating ONLY the issue, exact fix applied, and verification result.

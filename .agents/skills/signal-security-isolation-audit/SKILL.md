@@ -34,3 +34,7 @@ Governing specs: `architecture/07-*`, `architecture/15-*`, `architecture/16-*`.
 
 6. **Browser & Supply Chain:**
    - Route-Partitioned `COOP`/`COEP` + `__Host-` `SameSite=Strict` cookies; zero `bypassSecurityTrust*`, `eval`, `child_process.exec`, or browser disk design storage; `cargo vet`/`cargo deny` + `pnpm audit --ignore-scripts` clean.
+
+## Dev Response & Anti-Hallucination
+- Cite exact file paths, line numbers, and observed command/grep evidence for every finding—never fabricate vulnerabilities or claim an audit passed without running concrete checks.
+- Reply in **2–3 sentences max** during dev fixes stating ONLY the security issue, fix applied, and observed check result.

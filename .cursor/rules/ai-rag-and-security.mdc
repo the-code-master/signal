@@ -20,3 +20,6 @@ Specs: `architecture/04-*`, `05-*`, `09-*`, `15-*` | Skills: `signal-ai-neuro-sy
 - **Cilium eBPF** default-deny drops 100% of Pod ↔ Pod lateral traffic; all external Git/SFTP egress funnels through socket-pinned + `X-Signal-Fencing-Token` epoch-enforcing `signal-egress-proxy`.
 - Use **Host-Aggregated K8s Node Leases** (`1` Lease/node) + sharded project epochs; enforce Strictly In-Jurisdiction Paired-Region DR (`Frankfurt <-> Paris`, `GovCloud-W <-> E`, `Mumbai <-> Hyderabad`) and SLSA L3 / Cosign / Kyverno admission gates.
 - `infra/local/**`: maintain native `linux/arm64` `dev:full` + `< 1.5 GB RAM` `dev:lite`, headless `lavapipe` software-Vulkan WGSL parity, split per-subsystem env files (`infra/local/env/`), and zero-bypass `local-git-mock` seeding `local-guest-0001`.
+
+## 3. Dev Response & Anti-Hallucination
+Reply in **2–3 sentences max** (`Issue -> Fix -> Observed check result`). Verify K8s CRDs, `pgvector` syntax, and `llm-gateway` config before referencing; never invent APIs or claim unrun checks pass.

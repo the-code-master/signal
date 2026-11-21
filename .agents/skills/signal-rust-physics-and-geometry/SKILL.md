@@ -27,3 +27,7 @@ Specs: `architecture/03-rust-eda-engine.md`, `architecture/16-*`, `architecture/
 ## 4. Verification & Benchmarks
 - Unit-test every new `ElectronicModule` analytical Jacobian against central finite differences (`< 1e-6` relative error) and verify KCL/charge conservation.
 - Add or update golden parity fixtures in `benchmarks/` (NGSPICE/XYCE `< 0.2%` parity, Sky130 DRC/LVS, exact geometry edge cases).
+
+## Dev Response & Anti-Hallucination
+- Ground all equations, SI units, and tolerances strictly in `architecture/03-*`/`16-*`/`17-*` and `benchmarks/`—never extrapolate physics formulas or report unexecuted test results.
+- Reply in **2–3 sentences max** stating ONLY the issue, exact fix applied, and verification result.

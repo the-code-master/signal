@@ -32,3 +32,6 @@ Deep reference: `docs/engineering/ANGULAR_ENGINEERING_GUIDE.md` | Skills: `signa
 
 ## 5. Verification Before Commit
 Run `pnpm --filter @signal/web lint`, `pnpm --filter @signal/web typecheck`, `pnpm --filter @signal/web test --run`, and `pnpm audit --ignore-scripts`.
+
+## 6. Dev Response & Anti-Hallucination
+Reply in **2–3 sentences max** (`Issue -> Fix -> Observed check result`). Verify Angular/package.json APIs and file paths via `rg`/`view_file` before editing; never claim green without observed exit code `0`.

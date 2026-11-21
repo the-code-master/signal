@@ -63,3 +63,26 @@ Consistent file names make `rg --files` instant and remove guesswork:
    - Angular/Node: `pnpm --filter <pkg> test <spec>` → `typecheck` → full workspace check at PR readiness.
 6. **Zero Redundant Narration in Code:** Write concise doc comments explaining *why* (mathematical invariance, physical law, security boundary, `// SAFETY:`), never *what* obvious syntax already states.
 7. **Deterministic Diffs:** Never reformat unrelated files, reorder unrelated imports, or touch files outside declared `touched_paths`.
+
+---
+
+## 5. Ultra-Compact Coding Response Standard (2–3 Sentences Max)
+
+During active code development, debugging, refactoring, or bug-fixing turns, **both Antigravity and Cursor MUST limit final responses to 2–3 concise sentences** to eliminate output-token waste:
+1. **Sentence 1 — Issue / Scope:** State the root cause or task scope with exact file/symbol reference.
+2. **Sentence 2 — Fix Applied:** State the exact code change made.
+3. **Sentence 3 — Verification:** State the exact check run and observed pass/fail outcome (or explicitly note if unverified/blocked).
+
+- **Do NOT** dump unrequested multi-paragraph summaries, repeated code blocks already visible in the diff, or lengthy narration during coding turns.
+- **Exception:** Expand into structured tables/sections ONLY when the user explicitly requests an architecture review, design proposal, or detailed walkthrough.
+
+---
+
+## 6. Anti-Hallucination Best Practices (Evidence-First Engineering)
+
+1. **Read Before Referencing:** Never invent or guess file paths, crate names, symbol signatures, `.proto` fields, Angular APIs, or CLI flags—ALWAYS verify with `rg` / `view_file` first.
+2. **Verify Exact Installed Versions:** Check `Cargo.toml`, `package.json`, `rust-toolchain.toml`, or official docs before using version-sensitive Rust 2024, Angular 19/20+, `wgpu`, or K8s APIs.
+3. **Observed Execution Is Ground Truth:** Never claim `"fixed"`, `"compiles"`, or `"tests pass"` unless you ran the exact verification command in the current turn and observed exit code `0`. If a check could not run, state `"Unverified — <reason>"`.
+4. **Never Extrapolate Physical or Contract Constants:** Ground every SI unit, pinout, tolerance, register address, or error code strictly in `contracts/`, `architecture/01..18-*`, or verified `pins.json` / datasheet citations—never recall hardware specs from model memory.
+5. **Fail-Closed on Ambiguity:** If a contract, requirement, or spec is missing or contradictory, STOP and ask one direct question (or log `BLOCKED_ON_CONTRACT`) instead of inventing silent assumptions.
+6. **Narrow Grounded Edits:** Re-read the exact target line range before patching so edits never fabricate surrounding context or overwrite peer changes.

@@ -27,3 +27,7 @@ Governing spec: `architecture/13-vcs-git-server-and-storage-analysis.md`, `archi
 2. **Gate 2 (Atomic Coordinator CAS):** Push member `refs/signal/txn/<id>` prepare refs → commit signed `.signal/repos.lock.json` to `<project>-meta` **FIRST via strict Git `old_oid -> new_oid` CAS** → fast-forward member branch refs.
 3. Restrict Continuity WAL (`<= 72h`) to BYOK/HYOK orgs wrapped strictly under Customer BYOK with `ML-DSA`-signed Crypto-Shred Receipts on Git commit.
 4. Allocate 70/30 provider API rate-limit budget (70% interactive sync, 30% `services/vcs-auditor`).
+
+## Dev Response & Anti-Hallucination
+- Verify exact Git provider API headers, `repos.lock.json` schema, and crypto crate APIs before editing; never claim sync/encryption works without observed tests passing.
+- Reply in **2–3 sentences max** stating ONLY the issue, exact fix applied, and verification result.

@@ -32,6 +32,6 @@ Governing rules: `AGENTS.md` Section 7 | `architecture/12-multi-ide-collaboratio
   - `pnpm audit --ignore-scripts`
   - Verify zero `Number()` casts on 64-bit `bigint` fields, zero `NgModule`/legacy decorators, zero `bypassSecurityTrust*`/`eval`/`child_process.exec`, zero browser disk design storage, and zero `/export`/`/download`/`/print` routes.
 
-## 3. Journal Update & Conventional Commit
-1. Update ONLY your own journal (`coordination/agents/antigravity.md` OR `coordination/agents/cursor.md`) with status, branch, verification summary, and concise handoff notes.
-2. Commit with a clean Conventional Commit prefix (`docs:`, `contract:`, `feat:`, `fix:`, `refactor:`, `chore:`) and push branch cleanly.
+## 3. Anti-Hallucination Verification & 2–3 Sentence Reporting
+- **Observed Ground Truth Only:** Never report a check as passing unless you executed it after your final edit and observed exit code `0`; report exact failing command output or `"Unverified — <reason>"` if skipped.
+- **2–3 Sentence Dev Summary:** After completing a coding fix/PR gate, respond to the user in **2–3 sentences max** (`Issue -> Fix -> Verification command & result`), updating ONLY your own journal (`coordination/agents/antigravity.md` OR `coordination/agents/cursor.md`) and committing with a clean Conventional Commit (`docs:`, `contract:`, `feat:`, `fix:`, `refactor:`, `chore:`).

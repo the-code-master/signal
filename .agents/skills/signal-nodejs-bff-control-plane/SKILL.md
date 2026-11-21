@@ -27,3 +27,7 @@ Rules: `.cursor/rules/nodejs-control-plane.mdc` | Specs: `architecture/06-*`, `0
 pnpm --filter @signal/services lint && pnpm --filter @signal/services typecheck
 pnpm --filter @signal/services test --run && pnpm audit --ignore-scripts
 ```
+
+## Dev Response & Anti-Hallucination
+- Verify route paths, `@Require*` guards, SQL columns, and generated DTOs via `rg`/`view_file` before editing; never claim tests/lint pass without observed exit code `0`.
+- Reply in **2–3 sentences max** stating ONLY the issue, exact fix applied, and verification result.

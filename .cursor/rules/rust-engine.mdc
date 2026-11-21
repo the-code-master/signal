@@ -29,3 +29,6 @@ Deep reference: `docs/engineering/RUST_ENGINEERING_GUIDE.md` | Skills: `signal-r
 
 ## 4. Verification Before Commit
 Run `cargo fmt --all -- --check`, `cargo clippy --workspace --all-targets -- -D warnings`, `cargo test -p <crate>` (then `--workspace`), `cargo deny check`, `cargo vet`, and relevant `benchmarks/` regressions.
+
+## 5. Dev Response & Anti-Hallucination
+Reply in **2–3 sentences max** (`Issue -> Fix -> Observed check result`). Verify crate/symbol/Cargo.toml versions before referencing; never claim green without observed exit code `0`.

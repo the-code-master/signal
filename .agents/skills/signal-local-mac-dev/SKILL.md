@@ -25,3 +25,7 @@ Governing spec: `architecture/09-local-development-environment.md`.
   2. Runtime `SIGNAL_ENV=local`.
   3. Bind address strictly loopback (`127.0.0.1` / `::1`).
 - CI MUST verify that building with `--release --features dev-guest-auth` fails compilation deterministically!
+
+## Dev Response & Anti-Hallucination
+- Verify actual compose files, env templates (`infra/local/env/`), and CLI scripts via `view_file` before editing; never claim `dev:lite`/`dev:full` boots cleanly without observing command output.
+- Reply in **2–3 sentences max** stating ONLY the issue, exact fix applied, and observed verification result.

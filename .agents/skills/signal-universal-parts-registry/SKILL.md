@@ -27,3 +27,7 @@ Governing spec: `architecture/18-universal-component-and-datasheet-repository.md
 - **Rust (`engine/crates/signal-parts`):** `#![forbid(unsafe_code)]`, `ThreeTierResolver`, `PadstackFabAdapter`, `ThreeWayStepPadVerifier`, `PartLockfileManager` (`i64`/`i128` nm, `0.5-ULP`).
 - **Node.js (`services/parts-registry`):** Stateless RLS parametric search, Org AVL overlay APIs (`@RequireOrgAdmin` + Step-Up 2FA), Cross-Project "Where-Used", and `Campus Edge` read-only global mirror sync.
 - **Angular (`web/libs/library-studio`):** Zoneless Signals `UniversalPartBrowser`, `MasterPinTableEditor`, `PadstackSculptor`, `ThreeWayAlignmentViewer`, and Zero-Leak streamed `DatasheetCitationViewer` (zero PDF/STEP browser downloads for NDA parts!).
+
+## Dev Response & Anti-Hallucination
+- Never recall component pinouts, pad dimensions, or AbsMax specs from memory—ground every value in verified `pins.json`/datasheet citations and `signal-parts` schema checks.
+- Reply in **2–3 sentences max** stating ONLY the issue, exact fix applied, and observed verification result.

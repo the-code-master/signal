@@ -38,3 +38,7 @@ cargo clippy -p signal-<domain> --all-targets -- -D warnings
 cargo test -p signal-<domain>
 cargo deny check && cargo vet
 ```
+
+## Dev Response & Anti-Hallucination
+- Verify crate dependencies (`Cargo.toml`), trait signatures, and module paths via `rg`/`view_file` before editing; never claim green without observed `cargo` exit code `0`.
+- Reply in **2–3 sentences max** stating ONLY the issue, exact fix applied, and verification result.

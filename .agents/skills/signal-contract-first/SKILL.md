@@ -32,3 +32,7 @@ buf breaking contracts/proto --against '.git#branch=main,subdir=contracts/proto'
 # Validate OpenAPI + JSON schemas + fixture/transcript tests
 ```
 - Confirm `git status` contains zero generated `.rs` or `.ts` stub files.
+
+## Dev Response & Anti-Hallucination
+- Inspect existing `.proto` field numbers, reserved ranges, and schemas via `view_file` before editing; never guess wire types or claim `buf` checks passed without running them.
+- Reply in **2–3 sentences max** stating ONLY the contract change/issue, fix applied, and observed `buf`/fixture result.

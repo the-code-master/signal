@@ -29,3 +29,6 @@ Skills: `signal-nodejs-bff-control-plane`, `signal-byo-git-and-vault`, `signal-s
 
 ## 4. Verification Before Commit
 Run `pnpm --filter @signal/services lint`, `typecheck`, `test --run`, and `pnpm audit --ignore-scripts`.
+
+## 5. Dev Response & Anti-Hallucination
+Reply in **2–3 sentences max** (`Issue -> Fix -> Observed check result`). Verify route/schema/DB symbols via `rg`/`view_file` before editing; never claim green without observed exit code `0`.

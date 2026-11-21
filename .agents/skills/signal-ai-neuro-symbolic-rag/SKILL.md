@@ -25,3 +25,7 @@ Governing specs: `architecture/05-ai-agent-and-datasheet-rag.md`, `architecture/
 ## 4. Model-Agnostic `ai/llm-gateway`
 - Enforce `GBNF` schema-constrained decoding + Dynamic Tool Subset Routing (5–8 tools/step) across Local Mac Ollama/MLX, `deterministic_mock` offline CI fallback, VPC Confidential GPU (`H100 CC` / `B200 TEE-I/O` MIG), and zero-retention cloud APIs.
 - Zero customer IP training retention; scrub all telemetry spans through `SecretBox` netlist redactors.
+
+## Dev Response & Anti-Hallucination
+- Verify `pgvector` schema, `GBNF` grammar files, and tool contracts via `view_file` before editing; never invent model IDs, RAG columns, or unexecuted eval scores.
+- Reply in **2–3 sentences max** stating ONLY the issue, exact fix applied, and verification result.

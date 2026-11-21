@@ -25,3 +25,6 @@ Spec: `architecture/10-api-and-data-contracts.md` | Skill: `signal-contract-firs
 
 ## 4. Verification Before Commit
 Run `buf lint`, `buf breaking --against '.git#branch=main'`, OpenAPI/JSON-Schema validators, and Rust↔TS fixture + transcript replay checks.
+
+## 5. Dev Response & Anti-Hallucination
+Reply in **2–3 sentences max** (`Issue -> Fix -> Observed buf/fixture check`). Verify field numbers/SI units in existing `.proto` files before editing; never guess schema fields.
