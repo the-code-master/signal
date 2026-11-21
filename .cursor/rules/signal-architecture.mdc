@@ -5,24 +5,27 @@ alwaysApply: true
 
 # Signal — Cursor Workspace Rules
 
-You are **Cursor**, collaborating in parallel with **Antigravity** on **Signal** (by **Signal Design, Inc.**), a cloud-native, AI-Agent-First EDA platform (Pure Rust core engine in Kubernetes + Node.js BFF + Angular web UI).
+You are **Cursor**, collaborating in parallel with **Antigravity** on **Signal** (by **Signal Design, Inc.**), a cloud-native, AI-Agent-First EDA platform (Pure Rust core engine in Kubernetes + Node.js BFF + Angular 19+ web IDE).
 
-## Mandatory Context Reading
-1. Always treat `AGENTS.md` and `architecture/README.md` as the single source of truth.
-2. Never contradict architectural decisions documented in `architecture/01-*.md` through `architecture/12-*.md` without explicit user approval.
-3. Check `coordination/TASK_BOARD.md` and `coordination/agents/antigravity.md` (read-only!) after running `git fetch origin` before starting any new task.
+## 1. Canonical Source of Truth & Phase Gate
+- Treat `AGENTS.md` and `architecture/README.md` as the **single source of truth**. Read `AGENTS.md` in full before starting major work and consult the matching `architecture/01..12-*.md` spec for your task domain.
+- **Phase Gate:** Check `AGENTS.md` Section 1 and `coordination/TASK_BOARD.md`. Do **not** write production application code while in Architecture & Planning phase unless the user explicitly initiates Phase 0.
 
-## Deadlock-Free Rules for Cursor (Parallel with Antigravity)
-1. **Branch Naming:** Always work on feature branches named `cursor/<task-id>-<slug>` (never push parallel feature work directly to `main`).
-2. **Contract-First:** If your task needs new Protobuf/OpenAPI/JSON schemas under `contracts/`, open a small `contract/<task-id>-<slug>` PR first, merge to `main`, and let both IDEs rebase. Never wait/poll for Antigravity — develop against frozen `contracts/` stubs.
-3. **Default Swimlane (Lane B):** Focus by default on `web/` (Angular), `services/` (Node.js BFF/control plane), and UI/AI bridge layers unless the user explicitly assigns a Lane A task with disjoint `touched_paths`. Never overlap `touched_paths` with an active Antigravity task.
-4. **Exclusive Status Journal:** Log your task claims, `touched_paths`, and status ONLY in `coordination/agents/cursor.md`. **NEVER edit `coordination/agents/antigravity.md`.** For cross-IDE handoffs, create a new immutable file `coordination/handoffs/YYYYMMDD-<id>.md`.
-5. **Migration Naming:** Always name DB migrations `YYYYMMDDHHMMSS_cursor_<slug>.sql` (never sequential numbers).
-6. **Clean Sync:** Run `git fetch origin && git rebase origin/main` before pushing/merging to keep history clean.
+## 2. Mandatory Session-Start Ritual
+1. Run `git fetch origin --prune`.
+2. Read `coordination/TASK_BOARD.md`, `coordination/agents/antigravity.md` (**read-only**), and any new files under `coordination/handoffs/`.
+3. Confirm your planned `touched_paths` have **zero overlap** with any active Antigravity task.
+4. Branch from `origin/main` using `cursor/<task-id>-<slug>` (or `contract/<task-id>-<slug>` for serialized contract-only PRs). Never push parallel feature work directly to `main`.
 
-## Hard Product & Security Invariants (Never Violate)
-- **Zero local design files:** Never write schematics, netlists, layouts, firmware, waveforms, or specs to `localStorage`, `sessionStorage`, `IndexedDB`, or browser downloads.
-- **No export / no print / anti-screenshot:** Never create HTTP file download/export endpoints for design files. Maintain print-blocking, watermark overlays, and Enterprise Zero-Leak mode compatibility.
-- **Authorized SFTP-only delivery with mandatory 2FA:** Every SFTP server add/edit/delete/push endpoint (Enterprise and Individual) must require fresh Step-Up 2FA (WebAuthn/TOTP), SSH host-key pinning, and audit logging.
-- **Rust owns physics & geometry:** Never implement SPICE, DRC, LVS, or Gerber/GDSII generation in Node.js or Angular.
-- **Local Mac Dev Mode:** Support local Mac LLM (Ollama/MLX) as default and `Guest` @ `Signal Design, Inc.` ONLY behind strict `SIGNAL_ENV=local` + compile-time `dev-guest-auth` guards that cannot compile into production.
+## 3. Deadlock-Free Rules for Cursor
+- **Default Swimlane (Lane B):** `web/**` (Angular 19+ Standalone + Signals), `services/**` (Node.js 22 TypeScript BFF & Control Plane), and `ai/orchestrator/**` UI bridges—unless explicitly assigned a disjoint task on `TASK_BOARD.md`.
+- **Contract-First (Zero Waiting):** If a new gRPC/OpenAPI/JSON contract is needed, land a small `contract/<task-id>-<slug>` PR on `main` FIRST so both IDEs rebase. Never wait/poll for Antigravity; build against frozen `contracts/` stubs.
+- **Exclusive Journal:** Update ONLY `coordination/agents/cursor.md`. **NEVER edit `coordination/agents/antigravity.md`.** Write cross-IDE handoffs as new immutable files `coordination/handoffs/YYYYMMDD-<task-id>-cursor-to-ag.md`.
+- **Migrations & Rebase:** Name DB migrations `YYYYMMDDHHMMSS_cursor_<slug>.sql` (never sequential integers). Rebase onto `origin/main` before pushing/merging.
+
+## 4. Non-Negotiable Product & Security Invariants
+- **Rust owns physics & geometry (`ElectronicModule` trait):** Never implement SPICE, circuit math, DRC/LVS/PEX, routing, or Gerber/GDSII generation in Node.js or Angular.
+- **Zero local design copies:** Never persist schematics, netlists, layouts, firmware, waveforms, or specs in `localStorage`, `sessionStorage`, `IndexedDB`, Service Workers, or client downloads.
+- **No export / no print / anti-screenshot:** Never add file download/export endpoints or print views for design artifacts. Preserve print-blocking, privacy curtains, watermarks, and Enterprise Zero-Leak pixel-stream mode.
+- **Mandatory 2FA Authorized SFTP only:** Every SFTP server registration/edit/delete/release push (Enterprise AND Individual) MUST enforce fresh Step-Up 2FA (WebAuthn/TOTP), SSH host-key pinning, and immutable audit logging.
+- **Local Mac Dev Mode:** Support Local Mac LLM (Ollama/MLX) as default and `Guest` @ `Signal Design, Inc.` ONLY behind strict compile-time (`dev-guest-auth`) + runtime (`SIGNAL_ENV=local` + loopback) guards that can never ship in production.

@@ -1,0 +1,51 @@
+# Operating System & IDE Clutter
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Local Environment & Secrets (Never Commit)
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.p12
+*.crt
+
+# Rust (engine/)
+/engine/target/
+**/target/
+**/*.rs.bk
+
+# Node.js / Angular (services/, web/)
+node_modules/
+dist/
+.angular/
+.nx/
+coverage/
+*.tsbuildinfo
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# Python (ai/datasheet-ingest/)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local Dev Data Volumes & Logs
+infra/local/data/
+*.log
+tmp/

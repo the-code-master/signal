@@ -96,7 +96,7 @@ Because Signal's monorepo is cleanly layered, default swimlanes minimize overlap
 
 ## 5. Lock-Free Coordination Ledger (`coordination/`)
 
-When coding starts in Phase 0, we create a lightweight, human-readable `coordination/` directory engineered so **Antigravity and Cursor NEVER suffer merge conflicts on status tracking**:
+The repository includes a lightweight, human-readable [`coordination/`](../coordination/TASK_BOARD.md) directory engineered so **Antigravity and Cursor NEVER suffer merge conflicts on status tracking**:
 
 ```text
 coordination/
@@ -145,9 +145,9 @@ Even with disjoint swimlanes, certain files traditionally attract conflicts in m
 
 To ensure both AI IDEs enforce the exact same Signal architecture, security invariants (zero local files, no export/print, mandatory 2FA for SFTP, RAM-only decryption, local `Guest @ Signal Design, Inc.` compile-guards), and coding standards:
 
-1. **Single Source of Truth:** Create one canonical `AGENTS.md` at repository root (when entering Phase 0) pointing directly to `architecture/` and summarizing all hard invariants.
+1. **Single Source of Truth:** Canonical [`AGENTS.md`](../AGENTS.md) at the repository root points directly to `architecture/` and codifies all invariants, session-start rituals, engineering standards, and definition-of-done gates.
 2. **IDE Adapter Files (Thin Pointers Only):**
-   - Cursor reads `.cursor/rules/signal-core.mdc` → explicitly references `AGENTS.md` and `architecture/` (never duplicates diverging rules).
+   - Cursor automatically loads [`.cursor/rules/signal-architecture.mdc`](../.cursor/rules/signal-architecture.mdc) (`alwaysApply: true`) → explicitly references `AGENTS.md` and `architecture/` (never duplicates diverging rules).
    - Antigravity reads `AGENTS.md` and `architecture/` directly.
 3. **Automated CI Guardrails (Enforced Equally on Both Agents):**
    - `cargo clippy --deny warnings`, `cargo test`, `rustfmt --check`

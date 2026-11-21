@@ -114,7 +114,7 @@ Read in sequence for a top-down understanding, or jump to your assigned implemen
 9. **[`09-local-development-environment.md`](./09-local-development-environment.md)**  
    macOS Apple Silicon developer environment, default Local LLM integration (Ollama/MLX), hard-guarded local `Guest` user under `Signal Design, Inc.`, local K8s emulation, and local mock SFTP testing.
 10. **[`10-api-and-data-contracts.md`](./10-api-and-data-contracts.md)**  
-    Contract-first schemas (gRPC/Protobuf, REST, WebSocket/WebTransport, Rust `ElectronicComponent` trait interfaces, Datasheet & SFTP manifest schemas).
+    Contract-first schemas (gRPC/Protobuf, REST, WebSocket/WebTransport, Rust `ElectronicModule` trait interfaces, Datasheet & SFTP manifest schemas).
 11. **[`11-implementation-roadmap.md`](./11-implementation-roadmap.md)**  
     Phased execution roadmap (Phase 0 through GA), exit criteria, verification benchmarks, and technical risk register with mitigations.
 12. **[`12-multi-ide-collaboration.md`](./12-multi-ide-collaboration.md)**  

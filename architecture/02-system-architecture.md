@@ -193,7 +193,7 @@ signal/
 │   ├── crates/
 │   │   ├── signal-core/       # IDs, units, errors, crypto, memory zeroization
 │   │   ├── signal-graph/      # Unified multi-domain design graph + CRDT/event store
-│   │   ├── signal-component/  # ElectronicComponent trait, ports, tolerance, SOA framework
+│   │   ├── signal-component/  # ElectronicModule trait, ports, tolerance, SOA framework
 │   │   ├── signal-lib-*/      # Modular component crates (passive, semi, ic, rf, digital)
 │   │   ├── signal-sim/        # MNA SPICE, mixed-signal, thermal, SI/PI, Monte Carlo
 │   │   ├── signal-geom/       # Spatial indexing, exact geometry, polygon booleans, DRC
