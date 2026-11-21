@@ -20,6 +20,7 @@ contracts/
 │   ├── design_graph.proto     # Idempotent GraphOps, Dependency-Causal CRDT, CoW branches, UPF, ECN, Variants
 │   ├── vcs_sync.proto         # Multi-repo BYO-Git lazy materialization, History Scrubber & Dual-Fenced Super-Commit
 │   ├── component.proto        # ElectronicModule manifests, multi-physics/optical/cryo ports, SOA, Aging, Curves
+│   ├── universal_parts.proto  # 3-Tier Universal Parts, Master Pin Table, IEEE/IEC Symbols, Padstacks & 3D STEP
 │   ├── simulation.proto       # KLU/cuDSS SPICE, Saltation+Revolve Diff-Sim, PINNs, Virtual Bench & Arrow waveforms
 │   ├── formal_verify.proto    # SAT/SMT/IC3 formal property proofs, RTL-to-Gate LEC, CDC/UPF & FTA cut-sets
 │   ├── em_thermal.proto       # 2D BEM + GPU 3D Full-Wave EM, 224G SerDes, Baseband CPO, TDR & thermal FVM
@@ -36,9 +37,15 @@ contracts/
 │   ├── academy_campus.proto   # Breadboard twin, deterministic lab grader, TinyTapeout wizard & Campus Edge sync
 │   └── sftp_release.proto     # Fail-closed PQC-signed RAM-to-SFTP manufacturing/regulatory/MCAD/nailboard release
 ├── openapi/
-│   └── control-plane.v1.yaml  # URL-scoped (/org/:slug) Auth, Access Review, BYO-Git, AVL, FinOps, Guest Review & SFTP
+│   └── control-plane.v1.yaml  # URL-scoped (/org/:slug) Auth, Access Review, BYO-Git, Parts/AVL, FinOps & SFTP
 ├── schemas/
 │   ├── datasheet-record.schema.json
+│   ├── universal-part-manifest.schema.json
+│   ├── universal-padstack.schema.json
+│   ├── universal-symbol.schema.json
+│   ├── universal-footprint.schema.json
+│   ├── org-avl-overlay.schema.json
+│   ├── parts-lockfile.schema.json
 │   ├── project-template.schema.json
 │   ├── fab-capability-profile.schema.json
 │   ├── ecn-change-order.schema.json
@@ -104,6 +111,7 @@ Every passive, active, IC, RF, optical, cryo-quantum, digital, and hierarchical 
   - `EmcSafetyService`: `RunPreComplianceEmissions`, `SynthesizeEmiFilter`, `InjectEsdSurgePulse`, `RunAutomatedFmeda`, `SolveFaultTreeCutSets`, `RunAdjointWcca`, `InjectRadHardSeu`, `AuditComponentDerating`.
   - `DfmHarnessService`: `CheckMultiBoardClearance`, `EvaluateRigidFlexBend`, `GenerateHarnessNailboard`, `ComposeFabPanel`, `RunDfaAndSolderFatigue`, `EstimateLiveShouldCost`, `ComputeIctTestCoverage`, `GenerateIpc7351FootprintStep`.
   - `FpgaSecurityService`: `ValidateFpgaFloorplanAndSso`, `SolveSatPinmux`, `DecodeBusProtocolStream`, `ProfileFirmwareBatteryLife`, `SynthesizeFsmOrDsp`, `AuditHwSideChannelAndIft`, `GradeAcademyLab`.
+  - `UniversalPartsService` (`18-*`): `ResolveUniversalPart` (3-Tier Global + Org AVL + Project Lockfile), `AdaptPadstackToFabProfile`, `VerifyMasterPinBijection`, `VerifyThreeWayStepPadAlignment`, `ComputePartRevisionDiff`, `PinPartInLockfile`.
 
 ---
 

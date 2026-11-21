@@ -102,6 +102,8 @@ sequenceDiagram
 
 ## 4. Universal Datasheet Database & Tiered Multi-Tenant Hybrid RAG
 
+> **Full Repository, Symbol, Padstack & 3D Asset Spec:** See [`18-universal-component-and-datasheet-repository.md`](./18-universal-component-and-datasheet-repository.md) for the complete 3-Tier Sharded Git + BLAKE3 CAS Universal Parts Repository (`signal-universal-parts`), Master Pin Table (`pins.json`), IEEE/IEC Symbols, Parametric Padstacks, IPC-7351 Footprints, Org-Private BYO-Git AVL overlays, and Project `parts.lock.json` pinning.
+
 ### 4.1 High-Assurance Condition-Parameterized Ingestion & Trust Tiers (`ai/datasheet-ingest`)
 Single-pass PDF OCR can misread `1.8 V` as `18 V`, swap QFN pad numbers, or quote misleading headline ratings (`I_D = 100 A` at infinite-heatsink `25°C`, or MLCC `10 µF` at `0 V` when it derates `82%` at `12 V DC`!). Signal enforces a **Zero-Hallucination, Operating-Condition-Aware Ingestion Pipeline** inside zero-network parser sandboxes:
 

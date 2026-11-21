@@ -175,11 +175,11 @@ sequenceDiagram
 
 ```text
 signal/
-├── architecture/              # Master design, security, 148-flaw audit & 120-feature specs (01..17)
+├── architecture/              # Master design, security, 148-flaw, 120-feature & Universal Parts specs (01..18)
 ├── contracts/                 # Source of truth: Protobuf (.proto), OpenAPI, JSON Schemas, Golden Fixtures
 │   ├── proto/signal/v1/       # SI-unit-suffixed gRPC (int64 -> bigint) + Arrow binary framing contracts
 │   ├── openapi/               # Control-plane REST APIs
-│   ├── schemas/               # Datasheet, Template, UPF, FabProfile, ECN, Magnetics, EMC, Panel & SFTP schemas
+│   ├── schemas/               # Datasheet, Universal Part/Padstack/Symbol/Footprint, UPF, FabProfile, ECN & SFTP
 │   ├── fixtures/              # Cross-language golden conformance vectors (Antigravity <-> Cursor)
 │   └── transcripts/           # Stateful multi-step gRPC/WebTransport conformance transcripts (*.jsonl)
 ├── engine/                    # Pure Rust Workspace (Cargo workspace — shared build-time proto codegen)
@@ -188,6 +188,7 @@ signal/
 │   │   ├── signal-core/       # IDs, strongly-typed SI units, SecretBox, Hybrid PQC + 2-level HKDF, zeroize
 │   │   ├── signal-graph/      # Multi-domain ECS graph, UPF power intent, dependency-aware CRDT & undo
 │   │   ├── signal-component/  # ElectronicModule trait, charge/flux ports, Pelgrom mismatch, SOA, faults
+│   │   ├── signal-parts/      # Universal 3-Tier Part/Datasheet/Pin/Symbol/Padstack/3D-STEP resolver & verifier
 │   │   ├── signal-lib-*/      # Modular component crates (passive, semi, analog-ic, rf, digital, fw-bridge)
 │   │   ├── signal-module-sdk/ # Multi-dialect SPICE, AOT OpenVAF/Cranelift WASM-SIMD, LM curve-fitter & SDK
 │   │   ├── signal-sim/        # Equilibrated f64/f128 MNA SPICE (CPU KLU/CKTSO + GPU cuDSS), PSS/HB, Cryo
@@ -217,6 +218,7 @@ signal/
 │   ├── api-gateway/           # Auth, CSRF/CSP nonces, rate limiting, fail-closed policy enforcement
 │   ├── identity-org/          # Provider OAuth + SAML dual-binding, 2FA, Enterprise onboarding, Access Review
 │   ├── project-catalog/       # Multi-repo Projects, metadata, SPDX license gate, Templates, Portfolio DAG
+│   ├── parts-registry/        # Universal Parts search, BLAKE3 CAS gateway, Org AVL overlays & Where-Used scans
 │   ├── vcs-connector/         # 2FA BYO-Git settings (GitHub/GitLab/Bitbucket), GraphQL/ETag sync
 │   ├── vcs-auditor/           # Periodic multi-provider security posture, drift, CVE & contractor-expiry auditor
 │   ├── session-broker/        # Sticky pod resolution, Ed25519 stream tickets, FinOps metering & cloud clipboard

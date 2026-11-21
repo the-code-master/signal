@@ -4,7 +4,7 @@
 
 ---
 
-## Available Skills (14)
+## Available Skills (15)
 
 | Skill Name | Scope / Lane | Purpose |
 |---|---|---|
@@ -13,6 +13,7 @@
 | [`signal-contract-first`](./signal-contract-first/SKILL.md) | Shared (Serialized) | Authoring `contracts/` (`signal/v1/*`, SI suffixes, `bigint`, Arrow, `fixtures/`, `transcripts/`) |
 | [`signal-rust-crate-architect`](./signal-rust-crate-architect/SKILL.md) | Lane A (`engine/`) | Scaffolding Rust 2024 crates (`#![forbid(unsafe_code)]`, `signal-proto`, `thiserror`, `SecretBox`) |
 | [`signal-rust-physics-and-geometry`](./signal-rust-physics-and-geometry/SKILL.md) | Lane A (`engine/`) | Implementing `ElectronicModule`, Saltation/`Revolve` SPICE, `i128`/Shewchuk & `0.5-ULP` determinism |
+| [`signal-universal-parts-registry`](./signal-universal-parts-registry/SKILL.md) | Both | Universal Datasheet/Component repo, Master Pin Table, IEEE/IEC Symbols, Parametric Padstacks & 3-Tier AVL |
 | [`signal-angular-workbench`](./signal-angular-workbench/SKILL.md) | Lane B (`web/`) | Building Angular 19/20+ Zoneless Signals standalone workbenches (`web/libs/*`), `bigint`, WCAG |
 | [`signal-zero-leak-canvas-and-dlp`](./signal-zero-leak-canvas-and-dlp/SKILL.md) | Both (`web/` + `engine/`) | Dual-Plane `Zstd-QOI`/WebP streaming, `HudOverlayPrimitive`, Multi-Monitor & Constellation DLP |
 | [`signal-nodejs-bff-control-plane`](./signal-nodejs-bff-control-plane/SKILL.md) | Lane B (`services/`) | Stateless Node.js 22 services, `@Require*` uniform `404`, RLS, PKCE cookies & Fail-Closed Outbox |
