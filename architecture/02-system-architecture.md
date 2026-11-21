@@ -175,11 +175,11 @@ sequenceDiagram
 
 ```text
 signal/
-├── architecture/              # Master design, security & 148-flaw audit specs (01..16)
+├── architecture/              # Master design, security, 148-flaw audit & 120-feature specs (01..17)
 ├── contracts/                 # Source of truth: Protobuf (.proto), OpenAPI, JSON Schemas, Golden Fixtures
 │   ├── proto/signal/v1/       # SI-unit-suffixed gRPC (int64 -> bigint) + Arrow binary framing contracts
 │   ├── openapi/               # Control-plane REST APIs
-│   ├── schemas/               # Datasheet, Template, UPF, FabProfile, ECN, Super-Commit & SFTP schemas
+│   ├── schemas/               # Datasheet, Template, UPF, FabProfile, ECN, Magnetics, EMC, Panel & SFTP schemas
 │   ├── fixtures/              # Cross-language golden conformance vectors (Antigravity <-> Cursor)
 │   └── transcripts/           # Stateful multi-step gRPC/WebTransport conformance transcripts (*.jsonl)
 ├── engine/                    # Pure Rust Workspace (Cargo workspace — shared build-time proto codegen)
@@ -189,7 +189,7 @@ signal/
 │   │   ├── signal-graph/      # Multi-domain ECS graph, UPF power intent, dependency-aware CRDT & undo
 │   │   ├── signal-component/  # ElectronicModule trait, charge/flux ports, Pelgrom mismatch, SOA, faults
 │   │   ├── signal-lib-*/      # Modular component crates (passive, semi, analog-ic, rf, digital, fw-bridge)
-│   │   ├── signal-module-sdk/ # Multi-dialect SPICE + AOT OpenVAF/Cranelift WASM-SIMD compiler & SDK
+│   │   ├── signal-module-sdk/ # Multi-dialect SPICE, AOT OpenVAF/Cranelift WASM-SIMD, LM curve-fitter & SDK
 │   │   ├── signal-sim/        # Equilibrated f64/f128 MNA SPICE (CPU KLU/CKTSO + GPU cuDSS), PSS/HB, Cryo
 │   │   ├── signal-diff-sim/   # Saltation-exact + Revolve Adjoint Differentiable SPICE/thermal/STA optimizer
 │   │   ├── signal-surrogate/  # Physics-Informed Neural Operators (PINN) fast preview engine
@@ -199,8 +199,15 @@ signal/
 │   │   ├── signal-twin/       # Post-silicon & lab oscilloscope/VNA/ATE Digital Twin calibration bridge
 │   │   ├── signal-import/     # Zero-network clean-room legacy CAD (KiCad/Altium/OrCAD/GDSII) & sketch importer
 │   │   ├── signal-geom/       # i64 nm storage + exact i128/Shewchuk predicates, arcs/Beziers, R-tree DRC
-│   │   ├── signal-pcb/        # Stackup, 2D BEM, push-shove + Minimal-Perturbation ECO, FabProfiles, IPC-2581
-│   │   ├── signal-ic/         # PDK, IEEE 1735, WASM PCELLs, Halo LVS/PEX, LVF/POCV STA, Spare-Cell Metal ECO
+│   │   ├── signal-pcb/        # Stackup, 2D BEM, glass-weave/meander/backdrill, Incremental ECO, IPC-2581
+│   │   ├── signal-ic/         # PDK, IEEE 1735, gm/Id, BSPDN, CTS, LVF STA, Metal ECO, 20um Halo, GDSII/OASIS
+│   │   ├── signal-magnetics/  # Planar/bobbin transformer iGSE core-loss, Dowell winding & leakage kernel
+│   │   ├── signal-power-integrity/ # PDN Z_target opt, 3D geodesic creepage, IR-drop, hot-loop, BMS/FOC/thermal
+│   │   ├── signal-emc/        # CISPR/FCC pre-compliance, ESD/surge, ISO 26262 FMEDA/FTA, WCCA, Rad-Hard, piezo
+│   │   ├── signal-dfm/        # Panelization, MLCC flex-crack, reflow/tombstone DFA, fatigue, should-cost, ICT
+│   │   ├── signal-harness/    # Multi-board 3D BVH clearance, 1:1 wire-harness formboard, rigid-flex bend strain
+│   │   ├── signal-fpga/       # FPGA SLR/SSO floorplan, SAT pinmux, protocol decoders, battery/FSM/DSP co-sim
+│   │   ├── signal-security-hw/# Hardware DPA/TVLA side-channel, laser fault injection & RTL IFT Trojan audit
 │   │   ├── signal-render/     # wgpu Zstd-QOI/WebP dirty-tile + HEVC/Dual-Luma video & Constellation watermarks
 │   │   ├── signal-git-sync/   # Multi-repo gitoxide + jj-lib, Dual-Fenced 2PC Super-Commit & Padme GCM-SIV
 │   │   ├── signal-cell-wasm/  # < 8 MB Wasmtime EXPLORER isolate cell runtime (auto-promotes to Kata MicroVM)
@@ -209,22 +216,24 @@ signal/
 ├── services/                  # Node.js 22 / TypeScript Control Plane & BFF
 │   ├── api-gateway/           # Auth, CSRF/CSP nonces, rate limiting, fail-closed policy enforcement
 │   ├── identity-org/          # Provider OAuth + SAML dual-binding, 2FA, Enterprise onboarding, Access Review
-│   ├── project-catalog/       # Multi-repo Projects, metadata, SPDX license gate, Templates
+│   ├── project-catalog/       # Multi-repo Projects, metadata, SPDX license gate, Templates, Portfolio DAG
 │   ├── vcs-connector/         # 2FA BYO-Git settings (GitHub/GitLab/Bitbucket), GraphQL/ETag sync
 │   ├── vcs-auditor/           # Periodic multi-provider security posture, drift, CVE & contractor-expiry auditor
-│   ├── session-broker/        # Sticky pod resolution, Ed25519 stream tickets & cross-project encrypted clipboard
+│   ├── session-broker/        # Sticky pod resolution, Ed25519 stream tickets, FinOps metering & cloud clipboard
 │   ├── sftp-egress/           # 2FA Authorized SFTP registry & disposable atomic russh transfer workers
-│   └── audit-service/         # Pseudonymous RFC-3161 + ML-DSA Merkle WORM audit pipeline
+│   └── audit-service/         # Fail-closed 3x Quorum Outbox -> Pseudonymous RFC-3161 + ML-DSA Merkle WORM
 ├── ai/                        # AI Agent Orchestration & Universal Datasheet RAG
-│   ├── orchestrator/          # Neuro-symbolic supervisor, domain specialists, Dual-LLM prompt quarantine
-│   ├── llm-gateway/           # Grammar-constrained (GBNF) router (Confidential GPU / Cloud / Local Mac LLM)
-│   ├── datasheet-ingest/      # Dual-VLM consensus parser, curve digitizer & SPICE/Footprint sanity verifier
-│   └── rag-service/           # Partitioned Hybrid RAG + k-anonymous live supply-chain & carbon/PFAS analyzer
+│   ├── orchestrator/          # Neuro-symbolic supervisor, domain specialists, Multimodal + Dual-LLM quarantine
+│   ├── llm-gateway/           # Grammar-constrained (GBNF) router (Confidential GPU / Cloud / Local Mac / Mock)
+│   ├── datasheet-ingest/      # Dual-VLM consensus parser, curve digitizer, rev differ & SPICE sanity verifier
+│   └── rag-service/           # 3-Tier Sharded Hybrid RAG + Bulk-Mirrored/Chaff-Padded supply-chain & carbon
 ├── web/                       # Angular 19+ Web Platform
-│   ├── apps/signal-web/       # Main IDE shell, Progressive UI Profiles & 120 FPS predictive overlay
-│   └── libs/                  # Workbenches (schematic, pcb, ic, sim, fw, specs, visual-diff, review, admin)
+│   ├── apps/signal-web/       # Main IDE shell, Omni-Palette, Radial Menu, Multi-Monitor & 120 FPS HUD overlay
+│   └── libs/                  # Core + Extended Workbenches (schematic, pcb, ic, sim-viewer, code-ide, specs,
+│                              #   visual-diff, review, admin, magnetics, power-studio, emc-lab, safety-wcca,
+│                              #   fpga-studio, harness-3d, dfm-panel, library-studio, bringup-lab, academy)
 ├── benchmarks/                # Continuous NGSPICE parity, Sky130 DRC/LVS, IPC-2581 & SignalBench-AI suites
-├── infra/                     # Helm charts, Kata/Cilium/Kyverno policies, Anti-SSRF Egress Proxy, local Mac dev
+├── infra/                     # Helm charts, Kata/Cilium/Kyverno policies, Anti-SSRF Egress Proxy, Campus Edge
 └── coordination/              # Multi-AI-IDE task board & single-writer per-agent journals
 ```
 

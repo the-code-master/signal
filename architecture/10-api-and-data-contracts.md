@@ -16,27 +16,37 @@ All inter-service boundaries live in `contracts/` and are versioned (`v1`, `v2`)
 ```text
 contracts/
 ├── proto/signal/v1/
-│   ├── session.proto          # Host-Lease/Epoch hydration, N-1 capability handshake, eviction
-│   ├── design_graph.proto     # Idempotent GraphOps, Dependency-Causal CRDT, CoW branches, UPF & ECN
-│   ├── vcs_sync.proto         # Multi-repo BYO-Git lazy materialization & Dual-Fenced Super-Commit
-│   ├── component.proto        # ElectronicModule manifests, multi-physics/optical/cryo ports, SOA, Aging
-│   ├── simulation.proto       # KLU/cuDSS SPICE, Saltation+Revolve Diff-Sim, PINNs & Arrow waveforms
-│   ├── formal_verify.proto    # SAT/SMT/IC3 formal property proofs, RTL-to-Gate LEC & CDC/UPF checks
-│   ├── em_thermal.proto       # 2D BEM + GPU 3D Full-Wave EM, 224G SerDes, Baseband CPO & thermal
-│   ├── digital_twin.proto     # Lab oscilloscope / VNA / ATE measurement ingestion & model calibration
-│   ├── import_sandbox.proto   # Clean-room legacy CAD (KiCad/Altium/OrCAD/GDSII) & sketch import jobs
-│   ├── layout_verify.proto    # Exact i128/Euler geometry, Fab Profiles, Metal/PCB ECO, 20um Halo DRC
-│   ├── render_stream.proto    # Dual-Plane Zstd-QOI/WebP dirty tiles + HW video & Constellation watermarks
-│   ├── agent_tools.proto      # RBAC-scoped Neuro-Symbolic AI tools & K-Hop cone-of-influence queries
-│   └── sftp_release.proto     # Fail-closed PQC-signed RAM-to-SFTP manufacturing/regulatory/MCAD release
+│   ├── session.proto          # Host-Lease/Epoch hydration, N-1 capability handshake, eviction, FinOps metering
+│   ├── design_graph.proto     # Idempotent GraphOps, Dependency-Causal CRDT, CoW branches, UPF, ECN, Variants
+│   ├── vcs_sync.proto         # Multi-repo BYO-Git lazy materialization, History Scrubber & Dual-Fenced Super-Commit
+│   ├── component.proto        # ElectronicModule manifests, multi-physics/optical/cryo ports, SOA, Aging, Curves
+│   ├── simulation.proto       # KLU/cuDSS SPICE, Saltation+Revolve Diff-Sim, PINNs, Virtual Bench & Arrow waveforms
+│   ├── formal_verify.proto    # SAT/SMT/IC3 formal property proofs, RTL-to-Gate LEC, CDC/UPF & FTA cut-sets
+│   ├── em_thermal.proto       # 2D BEM + GPU 3D Full-Wave EM, 224G SerDes, Baseband CPO, TDR & thermal FVM
+│   ├── magnetics_power.proto  # Planar/bobbin iGSE magnetics, PDN Z_target, 3D creepage, hot-loop, BMS/FOC
+│   ├── emc_safety.proto       # CISPR/FCC emissions, ESD/surge, ISO 26262 FMEDA/WCCA, Rad-Hard SEU, Derating
+│   ├── dfm_harness.proto      # Multi-board 3D mate, rigid-flex bend, 1:1 nailboard, panels, fatigue, should-cost
+│   ├── fpga_firmware.proto    # FPGA SLR/SSO floorplan, SAT pinmux, protocol decoders, battery energy & DSP/FSM
+│   ├── hw_security.proto      # DPA/TVLA side-channel leakage, laser fault-injection & RTL GLIFT Trojan audits
+│   ├── digital_twin.proto     # Lab oscilloscope / VNA / ATE Shmoo measurement ingestion & board-map bring-up
+│   ├── import_sandbox.proto   # Clean-room legacy CAD (KiCad/Altium/OrCAD/GDSII), sketch & datasheet reconstruction
+│   ├── layout_verify.proto    # Exact i128/Euler geometry, glass-weave, Fab Profiles, Metal/PCB ECO, 20um Halo, OPC
+│   ├── render_stream.proto    # Dual-Plane Zstd-QOI/WebP dirty tiles, HudOverlayPrimitive, 6-DOF & Constellation
+│   ├── agent_tools.proto      # RBAC-scoped Neuro-Symbolic AI tools, Pareto explorer, Red-Team & NL rule compiler
+│   ├── academy_campus.proto   # Breadboard twin, deterministic lab grader, TinyTapeout wizard & Campus Edge sync
+│   └── sftp_release.proto     # Fail-closed PQC-signed RAM-to-SFTP manufacturing/regulatory/MCAD/nailboard release
 ├── openapi/
-│   └── control-plane.v1.yaml  # URL-scoped (/org/:slug) Auth, Access Review, BYO-Git, ECN, Auditor & SFTP
+│   └── control-plane.v1.yaml  # URL-scoped (/org/:slug) Auth, Access Review, BYO-Git, AVL, FinOps, Guest Review & SFTP
 ├── schemas/
 │   ├── datasheet-record.schema.json
 │   ├── project-template.schema.json
 │   ├── fab-capability-profile.schema.json
 │   ├── ecn-change-order.schema.json
 │   ├── upf-power-intent.schema.json
+│   ├── winding-magnetics.schema.json
+│   ├── emc-safety-policy.schema.json
+│   ├── dfm-panel-plan.schema.json
+│   ├── hw-security-audit.schema.json
 │   ├── super-commit-manifest.schema.json
 │   └── sftp-release-manifest.schema.json
 ├── fixtures/                  # Cross-IDE golden bigint/SI-unit serialization vectors
@@ -88,7 +98,12 @@ Every passive, active, IC, RF, optical, cryo-quantum, digital, and hierarchical 
 - **`ProjectSessionService`:** `HydrateProject` (blobless fetch + 1-shot KMS DEK unwrap), `AttachCollaborator` (`N-1` capability + hardware codec probe + per-repo RBAC map), `EvictCollaborator`, `ThreePhaseLiveMigrate`, `SuperCommitNow`, `HibernateAndZeroize`.
 - **`DesignGraphService`:** `ApplyTransaction` (idempotent + power-short contention guard), `UndoActorLastTransaction` (read-after-write causal check), `CreateSpeculativeBranch`, `DiffBranches` (`<= 1 MB` chunked visual diff), `MergeBranch` (verifies `base_graph_merkle_root` + runs `< 1 s` incremental post-rebase delta check on AI proof bundle!), `ApplyEcoPatch`, `QueryTraceability`.
 - **`SimulationService`, `FormalVerifyService`, `EmThermalService` & `DigitalTwinService`:** `RunAnalysis` (DC, AC, Transient, Noise, Pelgrom MonteCarlo, LVF/PVT, Aging, 3SpeedFWCoSim), `RunSaltationAdjointOptimization` (`signal-diff-sim` PSS/Revolve), `QueryPinnPreview` (`signal-surrogate`), `RunFormalProof` (SAT/SMT/IC3/LEC/UPF), `RunEm3dAndBasebandCpo`, `CorrelateLabMeasurement` (`signal-twin`), `QueryWaveformViewport` (Arrow binary chunks).
-- **`AgentToolsService`:** `QueryConeOfInfluence`, `PlaceComponentModule`, `ConnectPorts`, `RunAdjointParetoSizing`, `RunAnalyticalPlacer`, `RunFabAwareDrcLvsPex`, `SynthesizeMetalOnlyEco`, `SyncFirmwarePinmux`, `GenerateReleaseChecklist`.
+- **`AgentToolsService`:** `QueryConeOfInfluence`, `PlaceComponentModule`, `ConnectPorts`, `RunAdjointParetoSizing`, `RunAnalyticalPlacer`, `RunFabAwareDrcLvsPex`, `SynthesizeMetalOnlyEco`, `SyncFirmwarePinmux`, `CompileNlConstraintRule`, `ConsolidateBomSkus`, `RunPrincipalRedTeamAudit`, `GenerateReleaseChecklist`.
+- **`ExtendedDomainServices` (`17-*`):**
+  - `MagneticsPowerService`: `SynthesizeTransformerWinding`, `OptimizePdnTargetImpedance`, `Verify3dGeodesicCreepage`, `SolveDcIrJouleMap`, `ExtractHotLoopInductance`, `SynthesizeCompensator`, `SimulateBmsPackOrFocMotor`, `VerifyPowerSequence`.
+  - `EmcSafetyService`: `RunPreComplianceEmissions`, `SynthesizeEmiFilter`, `InjectEsdSurgePulse`, `RunAutomatedFmeda`, `SolveFaultTreeCutSets`, `RunAdjointWcca`, `InjectRadHardSeu`, `AuditComponentDerating`.
+  - `DfmHarnessService`: `CheckMultiBoardClearance`, `EvaluateRigidFlexBend`, `GenerateHarnessNailboard`, `ComposeFabPanel`, `RunDfaAndSolderFatigue`, `EstimateLiveShouldCost`, `ComputeIctTestCoverage`, `GenerateIpc7351FootprintStep`.
+  - `FpgaSecurityService`: `ValidateFpgaFloorplanAndSso`, `SolveSatPinmux`, `DecodeBusProtocolStream`, `ProfileFirmwareBatteryLife`, `SynthesizeFsmOrDsp`, `AuditHwSideChannelAndIft`, `GradeAcademyLab`.
 
 ---
 

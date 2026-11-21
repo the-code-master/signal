@@ -29,6 +29,7 @@ Start with the **[Master Architecture Index](./architecture/README.md)**, or jum
 | 14 | [Universal Scale, Global Accessibility & Future Expandability](./architecture/14-universal-scale-accessibility-and-expandability.md) | Zero-floor/infinite-ceiling design: `< 8 MB` WASM `EXPLORER` mode to 100B-transistor Halo-view GPU federation, Baseband CPO photonics, Cryo-CMOS & WASM SDK |
 | 15 | [Application Security & Complete Project Isolation](./architecture/15-application-security-and-project-isolation.md) | OWASP ASVS L3 AppSec, "1 Project = 1 Security Cell" (Exclusive `H100 CC` / `B200 TEE-I/O` MIG, Cilium eBPF, epoch-fencing anti-SSRF, child-MicroVM `OSDI`/`AMI`, Multimodal VLM quarantine) |
 | 16 | [Adversarial & First-Principles Architectural Audit (148 Flaws Resolved) & Futuristic AI-EDA Innovations](./architecture/16-architectural-audit-flaws-and-futuristic-innovations.md) | Complete two-wave audit of **148 cross-layer flaws (`F-001`–`F-148`)** across math, silicon, crypto, consensus, codecs & EDA sign-off plus **12 AI-EDA innovations (`I-01`–`I-12`)** |
+| 17 | [Extended Feature Specifications: 120 Next-Gen EDA Features (Angular UI & Rust Engine)](./architecture/17-extended-feature-specifications-ui-and-rust.md) | Dual **Angular UI (`web/libs/*`) + Pure-Rust (`engine/crates/*`)** specs for **120 advanced features (`FEAT-001`–`FEAT-120`)**: Magnetics, PDN, Creepage, EMC/FMEDA, BSPDN/TVLA, FPGA, Harness/Panel/DFM, Library/Curve-Fitter, Bench/Shmoo/TDR, Multi-Monitor UX, AI Pareto & Academy |
 
 ## Parallel AI Development (Antigravity + Cursor)
 
