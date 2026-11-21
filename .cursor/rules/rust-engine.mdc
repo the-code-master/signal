@@ -6,13 +6,13 @@ alwaysApply: false
 
 # Signal Rust Engine Rules (`engine/**`, `benchmarks/**`)
 
-Deep reference: `docs/engineering/RUST_ENGINEERING_GUIDE.md` | Skills: `signal-rust-crate-architect`, `signal-rust-physics-and-geometry`.
+Deep reference: `docs/engineering/RUST_ENGINEERING_GUIDE.md` | Skills: `signal-rust-crate-architect`, `signal-rust-physics-and-geometry`, `signal-universal-parts-registry`, `signal-cad-cam-plm-ops`.
 
 ## 1. Crate Structure & Token Efficiency
 - Rust **2024 Edition**; every crate `lib.rs` declares `#![forbid(unsafe_code)]` (audited SIMD/FFI leaves live in tiny micro-crates with `// SAFETY:` proofs + Miri + fuzz tests).
 - Keep files `<= 300 LOC` (split `> 350 LOC`) with a 3-line `//!` header (`Module`, `Invariants`, `Spec`). Separate `types.rs`, `error.rs`, `stamping.rs`/`model.rs`, and `kernel.rs`; keep `lib.rs` to concise re-exports.
 - Centralize ALL Protobuf/gRPC build-time codegen in `engine/crates/signal-proto` (`cargo-hakari` workspace-hack) — never add duplicate `prost`/`tonic` `build.rs` steps to domain crates.
-- Respect strict acyclic crate layering: Tier 0 (`signal-core`, `signal-proto`) → Tier 1 (`signal-graph`, `signal-geom`, `signal-component`) → Tier 2 (`signal-lib-*`, `signal-module-sdk`) → Tier 3 (solvers & extended domain crates) → Tier 4 (`signal-render`, `signal-git-sync`, `signal-cell-wasm`, `signal-pod`, `signal-operator`).
+- Respect strict acyclic crate layering: Tier 0 (`signal-core`, `signal-proto`) → Tier 1 (`signal-graph`, `signal-geom`, `signal-component`, `signal-parts`) → Tier 2 (`signal-lib-*`, `signal-module-sdk`) → Tier 3 (solvers, `signal-pcb`, `signal-ic`, `signal-mcad`, `signal-cam`, `signal-plm` & extended domain crates) → Tier 4 (`signal-render`, `signal-git-sync`, `signal-cell-wasm`, `signal-pod`, `signal-operator`).
 
 ## 2. Safety, Security & Error Handling
 - Zero `.unwrap()`, `.expect()`, or unchecked `[i]` indexing on untrusted, network, Git, CAD-import, or parser inputs.

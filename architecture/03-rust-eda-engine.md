@@ -89,11 +89,11 @@ flowchart TB
 
     subgraph Core["Unified Design Kernel"]
         Graph["signal-graph (ECS Arena, UPF Power Intent, Causal CRDT & Dependency Undo)"]
-        Comp["signal-component (ElectronicModule Trait, Charge/Flux/Optical/Cryo Ports)"]
+        Comp["signal-component (ElectronicModule Trait) + signal-parts (3-Tier Universal Parts/Padstacks/STEP)"]
         Libs["signal-lib-* + AOT Verilog-A/IEEE-1735 + signal-import (Clean-Room CAD)"]
     end
 
-    subgraph Solvers["Simulation, Saltation-Adjoint AI & Formal Kernels"]
+    subgraph Solvers["Simulation, Saltation-Adjoint AI, EDA, CAD/CAM & PLM Kernels"]
         Sim["signal-sim (CPU KLU/CKTSO <-> GPU cuDSS/Mixed-FP, Electro-Thermal, RF)"]
         Diff["signal-diff-sim (Saltation + Revolve Adjoint Optimizer) & signal-surrogate"]
         Formal["signal-formal (SAT/SMT/IC3, LEC, CDC/UPF) & signal-aging (BTI/HCI/TDDB/EM)"]
@@ -101,10 +101,12 @@ flowchart TB
         Geom["signal-geom (i64 nm Storage + Exact i128/Shewchuk Predicates, Arcs/Euler, DRC)"]
         PCB["signal-pcb (Fab Profiles, 2D BEM, Incremental ECO, Harness, JTAG/ICT, IPC-2581)"]
         IC["signal-ic (Pelgrom/LVF, LVS, PEX, STA, Metal-Only ECO, 20um Halo, GDSII/OASIS)"]
+        MCAD["signal-mcad (Parametric B-Rep CAD/Sheet-Metal) + signal-cam (5-Axis CNC & B-Rep 3D Slicer)"]
+        PLM["signal-plm (Multi-View eBOM/mBOM/sBOM Compiler, Blast-Radius & CCB Ledger)"]
     end
 
-    subgraph Visual["GPU Rendering Pipeline"]
-        Render["signal-render (wgpu Zstd-QOI/WebP Dirty Tiles + HW Video & Constellation Watermarks)"]
+    subgraph Visual["Unified 2D & 3D GPU Rendering Pipeline"]
+        Render["signal-render (Unified wgpu PBR 3D + Zstd-QOI/WebP Dirty Tiles + HW Video & Watermarks)"]
     end
 
     PodDaemon <--> Graph
@@ -117,15 +119,18 @@ flowchart TB
     Graph <--> Geom
     Geom <--> PCB
     Geom <--> IC
+    Geom <--> MCAD
+    Graph <--> PLM
     Graph <--> Render
     Sim -->|"Live Probes & Waveforms"| Render
     PCB -->|"2D/3D Geometry"| Render
     IC -->|"Hierarchical Instanced Masks"| Render
+    MCAD -->|"B-Rep Enclosures, CNC Toolpaths & 3D-Print Slices"| Render
 ```
 
 ### 3.1 `signal-graph`: Unified Multi-Domain Design Graph, UPF & Dependency-Aware Causal CRDT
 - **Data-Oriented Storage:** Generational slot-maps and ECS Struct-of-Arrays keep 100,000+ nets and instanced multi-million-polygon hierarchies cache-resident with zero GC stalls.
-- **Cross-Domain Semantic & UPF Power Links:** Stable `SignalEntityId` (UUIDv7) links `RequirementNode (PRD)` ↔ `SpecConstraint (HFS)` ↔ `UPFPowerDomain` ↔ `ComponentInstance (Schematic)` ↔ `Footprint/Traces (PCB)` ↔ `CellInstance/Polygons (IC)` ↔ `PinConstraint (FPGA)` ↔ `Register/GPIO (Firmware/BIOS)` ↔ `SimAssertion / FormalProof (Verification)`.
+- **Cross-Domain Semantic & UPF Power Links:** Stable `SignalEntityId` (UUIDv7) links `RequirementNode (PRD)` ↔ `SpecConstraint (HFS)` ↔ `UPFPowerDomain` ↔ `ComponentInstance (Schematic)` ↔ `Footprint/Traces (PCB)` ↔ `CellInstance/Polygons (IC)` ↔ `BRepSolid/Enclosure (CAD_MCAD)` ↔ `CncToolpath/PrintSlice (CAM_CNC/PRINT_3D)` ↔ `BomLine/ChangeOrder (PLM_OPS)` ↔ `PinConstraint (FPGA)` ↔ `Register/GPIO (Firmware/BIOS)` ↔ `SimAssertion / FormalProof (Verification)`.
 - **Dependency-Aware Topological CRDT & Safe Selective Undo:**
   - **Delete-vs-Wire & Power-Short Guards:** Concurrent `Delete(U1)` + `Wire(U1.pin4)` deterministically converts the wire end to a **Floating Junction Marker**; concurrent merges of distinct power/ground-tagged nets (`VCC` + `GND`) insert a **Contention Bridge Marker** rather than silently shorting rails! Overlapping component drags resolve deterministically by `actor_id` with instant spatial DRC collision halos.
   - **Read-After-Write Safe Selective Undo (`Cmd+Z`):** Reverses *only* that engineer's last transaction after checking the **Causal Dependency DAG**—if a teammate's subsequent edit wired onto `R1`, `Cmd+Z` safely prompts to detach dependent wires into Floating Markers instead of corrupting downstream state.
@@ -157,14 +162,16 @@ flowchart TB
   - **Plane 2 (60–120 FPS Continuous 3D Orbit/Pan):** Probes `WebCodecs` hardware support (`HEVC 4:4:4` on Apple Silicon → **Dual-Luma Hardware `AV1/H.264 4:2:0` Plane Split** reconstructing exact `4:4:4` on standard NVDEC/Intel GPUs!), snapping back to Plane 1 within `80 ms` of motion stop.
 - **AI-Stripper-Resistant Geometric Constellation + Tardos Watermarks:** Combines translucent overlays and frequency-domain **Tardos codes** with **per-session Topological/Geometric Constellation Micro-Perturbations** (`±1–2 px` wire-jog knee positions, resistor zig-zag phase, label kerning, via-stitch phase)—**surviving even AI diffusion denoising, B&W thresholding, or vector re-tracing of smartphone photos!**
 
-### 3.5 Extended Specialized Rust Kernel Crates (`FEAT-001`–`FEAT-120`)
-Full dual UI+Rust specifications live in [`17-extended-feature-specifications-ui-and-rust.md`](./17-extended-feature-specifications-ui-and-rust.md). Every extended Rust crate plugs directly into `signal-graph`'s read-only ECS snapshots or CoW transaction arenas under `#![forbid(unsafe_code)]`, `i64`/`i128` exact geometry, and `0.5-ULP` cross-ISA determinism:
+### 3.5 Extended Specialized Rust Kernel Crates (`17-*`, `18-*`, `19-*`)
+Full dual UI+Rust specifications live in [`17-extended-feature-specifications-ui-and-rust.md`](./17-extended-feature-specifications-ui-and-rust.md), [`18-universal-component-and-datasheet-repository.md`](./18-universal-component-and-datasheet-repository.md), and [`19-cad-cam-3d-printing-and-plm-operations.md`](./19-cad-cam-3d-printing-and-plm-operations.md). Every extended Rust crate plugs directly into `signal-graph`'s read-only ECS snapshots or CoW transaction arenas under `#![forbid(unsafe_code)]`, `i64`/`i128` exact geometry, and `0.5-ULP` cross-ISA determinism:
 1. **`signal-magnetics` (`FEAT-021`):** Bobbin & planar transformer geometry synthesizer solving nonlinear `iGSE` non-sinusoidal core loss, Dowell/Ferreira AC skin/proximity winding loss, and 2D axisymmetric leakage inductance/capacitance—emitting native coupled `ElectronicModule` instances directly into `signal-sim`.
 2. **`signal-power-integrity` (`FEAT-022`–`030`):** Multi-rail PDN `Z_target(f)` MILP/gradient decoupling optimizer, 3D triangulated Dijkstra/Fast-Marching geodesic surface creepage & Paschen clearance solver, coupled `ρ(T)` DC IR-drop/Joule-heating FVM solver, SiC/GaN hot-loop PEEC inductance extractor, Type-II/III & digital `2p2z`/`3p3z` compensator kernel, multi-cell BMS thermal-runaway stack, `d-q` FOC motor drive coupler, heatsink/airflow compact thermal network, and power-sequencing/back-powering transient verifier.
 3. **`signal-emc` (`FEAT-031`–`040`):** `CISPR 11/25/32` / `FCC` / `MIL-STD-461` RBW quasi-peak & 3m/10m radiated pre-compliance kernel, Middlebrook-stable EMI filter synthesizer, `IEC 61000-4-2/-4/-5` ESD/EFT/surge clamping tracer, shield-can cavity resonance solver, burst-dispatched ISO 26262 FMEDA (`SPFM`/`LFM`/`PMHF`) & BDD/SAT Fault-Tree minimal cut-set solver, adjoint extreme-value WCCA (`O(1)` corner discovery), Rad-Hard double-exponential SEU/SET injector, MLCC piezo-singing acoustic checker, and org stress-derating engine.
 4. **`signal-dfm` & `signal-harness` (`FEAT-020`, `FEAT-061`–`070`):** Multi-board 3D BVH collision & connector mate verifier, rigid-flex cylindrical neutral-axis copper-strain kinematics, 1:1 wire-harness formboard & ampacity engine, multi-up panelizer with MLCC V-score flex-crack halos, DFA reflow-shadow/tombstone/IPC-7525 stencil checker, Engelmaier/Coffin-Manson solder fatigue & plate modal frequency solver, parametric GD&T fabrication drawing engine, real-time should-cost/yield HUD model, and ICT/flying-probe coverage optimizer.
 5. **`signal-fpga` & `signal-security-hw` (`FEAT-050`–`060`):** FPGA SLR/clock-region/SSO tile model, formally cross-checked SDC/XDC verifier, zero-allocation Arrow bus-protocol decoders (`AXI4`/`SPI`/`I2C`/`CAN-FD`/`USB`/`PCIe`), MaxSAT MCU pinmux solver, ISS-coupled firmware battery-life energy profiler, formal graphical FSM & Parks-McClellan fixed-point DSP generators, plus **`signal-security-hw`** computing Welch `t`-test DPA/TVLA side-channel power leakage, optical/laser fault-injection exposure maps, and formal GLIFT RTL information-flow Trojan proofs!
-6. **Core-Crate Interactive Extensions (`signal-graph`, `signal-pcb`, `signal-ic`, `signal-sim`, `signal-module-sdk`):** Sugiyama schematic auto-beautifier, typed protocol bus bundles, `< 0.5 ms` interactive potentiometer/switch incremental LU re-stamping, dimensional-analysis KaTeX math AST engine, glass-weave `Dk(x,y)` zig-zag skew planner, curved-arc meanders, back-drill stub optimizer, `gm/Id` Chebyshev lookup tensors, automated common-centroid analog PCELLs, BSPDN negative-Z backside layers, incremental MMMC STA path-slacking, SOCS aerial-image OPC/CMP dummy fill, Levenberg-Marquardt curve-fitter, Arrow SIMD waveform DSL (`RMS`/`THD`/`EYEW`), TDR-to-trace-mm mapper, deterministic CLI parser, and `BreadboardTopologyMapper` / `DeterministicLabGrader`.
+6. **`signal-parts` (`18-*`):** Universal 3-Tier Component, Datasheet, Master Pin Table (`pins.json`), Dual-Standard IEEE/IEC Symbol, Parametric Padstack (`PadstackDef`), IPC-7351 Footprint, and 3D STEP Alignment Resolver & 5-Gate Verifier (`BRONZE`/`SILVER`/`GOLD`, Org BYO-Git AVL overlays, and Project `parts.lock.json` pinning).
+7. **`signal-mcad`, `signal-cam` & `signal-plm` (`19-*`):** Pure-Rust parametric 2D constraint sketcher + B-Rep 3D solids + sheet-metal K-factor unfold + live `signal-pcb` anchor bindings (`signal-mcad`); 2.5D/3/5-axis adaptive CNC toolpaths, voxel/dexel gouge & fixture BVH collision verification, signed post-processors, and direct-B-Rep FDM/SLA/SLS/DMLS 3D-printing slicer (`signal-cam`); and multi-view `eBOM`/`mBOM`/`sBOM`/`Costed BOM` compiler, cross-domain blast-radius analyzer, and cryptographic CCB state-machine verifier (`signal-plm`).
+8. **Core-Crate Interactive Extensions (`signal-graph`, `signal-pcb`, `signal-ic`, `signal-sim`, `signal-module-sdk`):** Sugiyama schematic auto-beautifier, typed protocol bus bundles, `< 0.5 ms` interactive potentiometer/switch incremental LU re-stamping, dimensional-analysis KaTeX math AST engine, glass-weave `Dk(x,y)` zig-zag skew planner, curved-arc meanders, back-drill stub optimizer, `gm/Id` Chebyshev lookup tensors, automated common-centroid analog PCELLs, BSPDN negative-Z backside layers, incremental MMMC STA path-slacking, SOCS aerial-image OPC/CMP dummy fill, Levenberg-Marquardt curve-fitter, Arrow SIMD waveform DSL (`RMS`/`THD`/`EYEW`), TDR-to-trace-mm mapper, deterministic CLI parser, and `BreadboardTopologyMapper` / `DeterministicLabGrader`.
 
 ---
 

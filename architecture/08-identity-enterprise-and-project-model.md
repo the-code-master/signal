@@ -122,7 +122,7 @@ erDiagram
     SUB_PROJECT {
         uuid id PK
         uuid project_id FK
-        string domain_type "PRD|HFS|SCHEMATIC|PCB|IC_ANALOG|IC_DIGITAL|IC_PACKAGE|FPGA|FIRMWARE|BIOS|SOFTWARE|VERIFICATION|MECHANICAL_REF"
+        string domain_type "PRD|HFS|SCHEMATIC|PCB|IC_ANALOG|IC_DIGITAL|IC_PACKAGE|FPGA|FIRMWARE|BIOS|SOFTWARE|VERIFICATION|CAD_MCAD|CAM_CNC|PRINT_3D|PLM_OPS|MECHANICAL_REF"
         string instance_slug "collision-free suffix"
         string name
         string provider_repo_id "immutable ID survives manual Git renames!"
@@ -193,7 +193,7 @@ erDiagram
 
 ### 3.1 Example: Single Signal Project → Neatly Prefixed Multi-Repo Tree
 Creating Signal Project **`"ev-inverter-400v"`** inside organization **`acme-hw`** creates:
-- `acme-hw/ev-inverter-400v-meta` — Project metadata, rules, AVL policy, `repos.lock.json` Super-Commit manifest, unified traceability graph
+- `acme-hw/ev-inverter-400v-meta` — Project metadata, rules, AVL policy, `repos.lock.json` Super-Commit manifest, `parts.lock.json`, `platform.lock.json`, unified traceability graph
 - `acme-hw/ev-inverter-400v-prd` — Product Requirements (`REQ-001..240` with ISO-26262 ASIL-D tags)
 - `acme-hw/ev-inverter-400v-hfs` — Hardware Functional Spec (UPF power/clock trees, isolation barriers)
 - `acme-hw/ev-inverter-400v-schematic-power` & `acme-hw/ev-inverter-400v-schematic-ctrl`
@@ -203,15 +203,19 @@ Creating Signal Project **`"ev-inverter-400v"`** inside organization **`acme-hw`
 - `acme-hw/ev-inverter-400v-firmware` — Embedded Rust/C Motor Control Firmware
 - `acme-hw/ev-inverter-400v-bios` — Secure Bootloader & Hardware Bring-Up POST
 - `acme-hw/ev-inverter-400v-verification` — Rust SPICE, Aging, Formal/LEC, FMEDA, and 3-Speed Co-Sim Suites
+- `acme-hw/ev-inverter-400v-cad` — Parametric B-Rep die-cast housing, sheet-metal EMI shields & liquid-coldplate assemblies (`CAD_MCAD`, [`19-*`](./19-cad-cam-3d-printing-and-plm-operations.md))
+- `acme-hw/ev-inverter-400v-cam` — 5-axis CNC machining setups, fixtures, tool cribs & signed post-processors (`CAM_CNC`)
+- `acme-hw/ev-inverter-400v-3dprint` — Additive SLS/DMLS prototype bracket & busbar-jig build plates (`PRINT_3D`)
+- `acme-hw/ev-inverter-400v-ops` — Native multi-view `eBOM`/`mBOM`/`sBOM`, signed `ECR`/`ECO`/`ECN`, `MCN`, `PCN`, `Deviation`/`Waiver`, `NCR`/`CAPA` & 3D assembly work instructions (`PLM_OPS`)
 
-All child repositories bind by immutable `provider_repo_id` (**with `<project>-meta` created synchronously in `< 800 ms` and child `<project>-<type>` repos materialized lazily on first write or via a `<= 40/min` paced queue so 60-student classroom or large enterprise Template launches never trip GitHub `80/min` secondary rate limits!**), mount into **one active Kubernetes Rust Project Pod**, version atomically via Dual-Fenced Two-Phase `Super-Commit`s, and enforce **per-repository user permissions + compute quotas**!
+All child repositories bind by immutable `provider_repo_id` (**with `<project>-meta` created synchronously in `< 800 ms` and child `<project>-<type>` repos materialized lazily on first write or via a `<= 40/min` paced queue so 60-student classroom or large enterprise Template launches never trip GitHub `80/min` secondary rate limits!**), mount into **one active Kubernetes Rust Project Pod** on the `1–4 -> N` extensible `pool-rust-engine` worker nodes, version atomically via Dual-Fenced Two-Phase `Super-Commit`s, and enforce **per-repository user permissions + compute quotas**!
 
 ### 3.2 Rich Extensible Metadata, Sovereign Paired-Region DR & SPDX License Policy Gate
 Every Project enforces an **SPDX License Compatibility Policy** (`PROPRIETARY_STRICT` blocks copyleft `GPL`/`CERN-OHL-S` templates/IPs from contaminating commercial silicon), **Strictly In-Jurisdiction Paired-Region Failover** (`EU_SOVEREIGN`: Frankfurt ↔ Paris/Zurich; `US_ITAR`: GovCloud-West ↔ East; `INDIA`: Mumbai ↔ Hyderabad—zero cross-border DR spillover!), and **Top-Level Redirect PKCE/SAML Cookie Upgrade** (`5 min` `SameSite=Lax` `/auth/*` transaction cookies upgraded on callback to `__Host-signal_session` `SameSite=Strict`).
 
 ---
 
-## 4. Project Templates, Fab Capability Profiles & ECN Governance
+## 4. Project Templates, Fab Capability Profiles, PLM Change Governance & Engine Pinning
 
 1. **Signal Official Templates**, **Enterprise Approved Templates**, and **Personal User Templates** (each tagged with explicit SPDX license & `VerificationBadge` minimum tier).
-2. **What a Project Template Bundles:** Sub-Project `<project>-<type>` lazy repo blueprints, default Git team permission mappings, PRD/HFS compliance scaffolds, **Signed Fab Capability Profiles (`*.fabprofile.toml` — exact fab drill aspect ratios, dielectric stackups, impedance coupons, copper balance)**, stackup/DRC/ERC/UPF rule decks, **AI Agent Guardrails** (derating margins, minimum `SILVER`/`GOLD` datasheet badge, budget caps), and **Engineering Change Order (`ECN`/`ECO`) + 21 CFR Part 11 / ISO 26262 Release Sign-Off Gates**.
+2. **What a Project Template Bundles:** Sub-Project `<project>-<type>` lazy repo blueprints (including `CAD_MCAD`, `CAM_CNC`, `PRINT_3D`, `PLM_OPS`), default Git team permission mappings, PRD/HFS compliance scaffolds, **Signed Fab Capability Profiles (`*.fabprofile.toml` — exact fab drill aspect ratios, dielectric stackups, impedance coupons, copper balance)**, stackup/DRC/ERC/UPF rule decks, **AI Agent Guardrails** (derating margins, minimum `SILVER`/`GOLD` datasheet badge, budget caps), **Native PLM Change Control (`ECR`/`ECO`/`ECN`, `MCN`, `PCN`, qty/time-gated `Deviation`/`Waiver`, `NCR`/`CAPA`) + 21 CFR Part 11 / ISO 26262 Release Sign-Off Gates**, and optional **Certified LTS Engine Pinning (`platform.lock.json`, [`20-*`](./20-versioning-release-monorepo-build-and-k8s-topology.md))**.

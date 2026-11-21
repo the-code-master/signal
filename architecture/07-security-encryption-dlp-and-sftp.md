@@ -122,7 +122,7 @@ sequenceDiagram
 ### 4.3 SFTP Hardening Against Partial Writes, Path Traversal & Hostile Servers
 - **Atomic `.tmp.part` → Verify → `rename`:** Eliminates half-written Gerbers/GDSII in foundry pickup folders; supports resumable chunk retries.
 - **Disposable Write-Only `russh` Workers:** Pure safe Rust (`russh`) one-shot sandboxes with **port forwarding, X11, agent forwarding, PTY, `SSH_FXP_READ`, and `OPENDIR` disabled**, plus **socket-level anti-SSRF IP pinning** on every `connect()`.
-- **Host-Key Pinning, Static NAT Egress IPs, HSM `ED25519` Keys, Optional Fab PGP Encryption, 4-Eyes Approval, and Artifact-Type Target Scoping** (`IC_GDSII` | `PCB_ODBPP` | `REGULATORY_DOSSIER` | `MCAD_STEP`).
+- **Host-Key Pinning, Static NAT Egress IPs, HSM `ED25519` Keys, Optional Fab PGP Encryption, 4-Eyes Approval, Active `Deviation`/`Waiver` Quantity/Expiry Gate (`19-*`), and Artifact-Type Target Scoping** (`IC_GDSII` | `PCB_ODBPP` | `REGULATORY_DOSSIER` | `MCAD_STEP_DXF` | `CAM_GCODE` | `PRINT_3MF` | `PLM_ECN_MCN_TURNKEY`).
 
 ---
 

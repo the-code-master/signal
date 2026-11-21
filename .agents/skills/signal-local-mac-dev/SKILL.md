@@ -5,13 +5,15 @@ description: Configures, runs, and debugs Signal's macOS Apple Silicon local dev
 
 # Signal Local Mac Apple Silicon Dev Harness (`infra/local/**`)
 
-Governing spec: `architecture/09-local-development-environment.md`.
+Governing specs: `architecture/09-local-development-environment.md`, `architecture/20-versioning-release-monorepo-build-and-k8s-topology.md`.
 
-## 1. Two Local Profiles (Zero Heavy-Laptop Tax)
-- **`pnpm dev:lite` (Default Daily Inner Loop — `< 1.5 GB RAM`, `< 30 s` Boot):**
+## 1. Three Local Execution Profiles (Monorepo `justfile` Defaults)
+- **`just dev` / `pnpm dev:lite` (Default Daily Inner Loop — `< 1.5 GB RAM`, `< 30 s` Boot):**
   - Native Rust `signal-pod` (Apple Silicon Metal `wgpu`), Angular HMR, Node.js BFF, SQLite/in-proc store, `local-git-mock`, DevKMS (active Hybrid PQC!), Mock SFTP, and Local Mac Ollama/MLX (falling back automatically to `deterministic_mock` when offline or in CI).
-- **`pnpm dev:full` (Full Parity — Native `linux/arm64` Docker Compose):**
+- **`just dev-full` / `pnpm dev:full` (Full Service Parity — Native `linux/arm64` Docker Compose):**
   - PostgreSQL + `pgvector` (with RLS active), Redis, NATS JetStream, Envoy edge relay, `signal-egress-proxy`, Vault/DevKMS, `local-git-mock`, and Mock SFTP.
+- **`just dev-k8s` / `just deploy-local-k8s` (Full 3-Tier K8s Parity — Local `k3d` / `OrbStack`):**
+  - Deploys `infra/k8s/helm/signal -f values-local.yaml` with separate `signal-web` (Angular+Node) pod, separate `signal-api` + Envoy `signal-engine-bridge` pod, and `1–4` simulated Rust Engine worker nodes (`signal-operator`, linearizable Leases, Cilium NetworkPolicies).
 
 ## 2. Fast Build & Cross-Platform GPU Parity
 - Centralize Rust Protobuf codegen in `engine/crates/signal-proto` + `cargo-hakari` + `sccache` + `lld` so incremental Rust rebuilds stay `< 2 s`.

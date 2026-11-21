@@ -23,7 +23,7 @@ engine/crates/signal-<domain>/
 ## Non-Negotiable Rust Engineering Guardrails
 1. **Safety:** Declare `#![forbid(unsafe_code)]` at the top of `lib.rs`. Zero `.unwrap()`, `.expect()`, or unchecked `[i]` indexing on untrusted inputs.
 2. **Crate Layering (Acyclic DAG):**
-   - Tier 0 (`signal-core`, `signal-proto`) ← Tier 1 (`signal-graph`, `signal-geom`, `signal-component`) ← Tier 2 (`signal-lib-*`, `signal-module-sdk`) ← Tier 3 (physics/domain solvers) ← Tier 4 (`signal-render`, `signal-git-sync`, `signal-cell-wasm`, `signal-pod`, `signal-operator`).
+   - Tier 0 (`signal-core`, `signal-proto`) ← Tier 1 (`signal-graph`, `signal-geom`, `signal-component`, `signal-parts`) ← Tier 2 (`signal-lib-*`, `signal-module-sdk`) ← Tier 3 (physics/EDA/CAD-CAM/PLM solvers: `signal-sim`, `signal-pcb`, `signal-ic`, `signal-mcad`, `signal-cam`, `signal-plm`, etc.) ← Tier 4 (`signal-render`, `signal-git-sync`, `signal-cell-wasm`, `signal-pod`, `signal-operator`).
    - Core/solver crates NEVER depend on `tonic`, `wgpu`, or `signal-pod`.
 3. **Single Protobuf Crate:** Consume generated types exclusively from `signal-proto` — never add duplicate `tonic-build` scripts.
 4. **Secret Hygiene:** Wrap tokens, DEKs, PDKs, and confidential net names in `secrecy::SecretBox<T>` + `zeroize::ZeroizeOnDrop`; implement redacted `Debug`; never emit secrets in `tracing` events.

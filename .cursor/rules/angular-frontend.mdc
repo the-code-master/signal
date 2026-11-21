@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Signal Angular Frontend Rules (`web/**`)
 
-Deep reference: `docs/engineering/ANGULAR_ENGINEERING_GUIDE.md` | Skills: `signal-angular-workbench`, `signal-zero-leak-canvas-and-dlp`.
+Deep reference: `docs/engineering/ANGULAR_ENGINEERING_GUIDE.md` | Skills: `signal-angular-workbench`, `signal-zero-leak-canvas-and-dlp`, `signal-universal-parts-registry`, `signal-cad-cam-plm-ops`, `signal-release-deploy-topology`.
 
 ## 1. Modern Angular Only (Zero Legacy Boilerplate)
 - Standalone Components ONLY (`NgModule` forbidden), `ChangeDetectionStrategy.OnPush`, and **Zoneless** reactivity (`signal`, `computed`, `linkedSignal`, `effect`).

@@ -1,11 +1,11 @@
 ---
 name: signal-nodejs-bff-control-plane
-description: Builds stateless Node.js 22 strict-TypeScript Control Plane and BFF services under services/* (api-gateway, identity-org, project-catalog, vcs-connector, vcs-auditor, session-broker, sftp-egress, audit-service). Use when creating REST routes, RBAC decorators, PostgreSQL RLS queries, Step-Up 2FA flows, or Fail-Closed Tier-0 audit hooks.
+description: Builds stateless Node.js 22 strict-TypeScript Control Plane and BFF services under services/* (api-gateway, identity-org, project-catalog, parts-registry, plm-ops, vcs-connector, vcs-auditor, session-broker, sftp-egress, audit-service). Use when creating REST routes, RBAC decorators, PostgreSQL RLS queries, Step-Up 2FA flows, or Fail-Closed Tier-0 audit hooks.
 ---
 
 # Signal Node.js 22 Control Plane & BFF Builder (`services/**`)
 
-Rules: `.cursor/rules/nodejs-control-plane.mdc` | Specs: `architecture/06-*`, `08-*`, `10-*`, `15-*`.
+Rules: `.cursor/rules/nodejs-control-plane.mdc` | Specs: `architecture/06-*`, `08-*`, `10-*`, `15-*`, `18-*`, `19-*`, `20-*`.
 
 ## Service File Layout (`services/<svc>/src/`)
 - `main.ts` — Fastify/NestJS bootstrap, health checks, fail-closed decorator boot validator.

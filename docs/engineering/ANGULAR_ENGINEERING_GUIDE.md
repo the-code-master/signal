@@ -1,7 +1,7 @@
 # Signal — Angular 19/20+ Frontend & Zero-Leak Engineering Guide (`web/`)
 
 > **Applies To:** `web/apps/signal-web/` and all lazy workbench libraries under `web/libs/*`.  
-> **Governing Specs:** [`architecture/06-frontend-angular-and-nodejs-bff.md`](../../architecture/06-frontend-angular-and-nodejs-bff.md), [`architecture/15-application-security-and-project-isolation.md`](../../architecture/15-application-security-and-project-isolation.md), [`architecture/17-extended-feature-specifications-ui-and-rust.md`](../../architecture/17-extended-feature-specifications-ui-and-rust.md).
+> **Governing Specs:** [`architecture/06-frontend-angular-and-nodejs-bff.md`](../../architecture/06-frontend-angular-and-nodejs-bff.md), [`architecture/15-application-security-and-project-isolation.md`](../../architecture/15-application-security-and-project-isolation.md), [`architecture/17-extended-feature-specifications-ui-and-rust.md`](../../architecture/17-extended-feature-specifications-ui-and-rust.md), [`architecture/18-universal-component-and-datasheet-repository.md`](../../architecture/18-universal-component-and-datasheet-repository.md), [`architecture/19-cad-cam-3d-printing-and-plm-operations.md`](../../architecture/19-cad-cam-3d-printing-and-plm-operations.md), [`architecture/20-versioning-release-monorepo-build-and-k8s-topology.md`](../../architecture/20-versioning-release-monorepo-build-and-k8s-topology.md).
 
 ---
 
@@ -40,8 +40,8 @@ web/libs/<domain>/
 **Hard Boundary Rules (Enforced by ESLint `boundaries` / Nx module tags):**
 1. Cross-library imports MUST target `@signal/<lib>` (`src/index.ts`) — **never** reach into another library's `feature/`, `ui/`, or `data-access/`.
 2. `ui/` dumb components MUST stay pure (`input()` + `output()` only, `<= 200 LOC`) — trivial to read, reuse, and test!
-3. Workbench libraries NEVER import another workbench's internal store directly; cross-pane coordination (e.g., clicking a Schematic net highlights PCB + Waveform + Firmware) flows through `@signal/workspace-bus` typed Signals!
-4. Initial shell bundle (`apps/signal-web`) MUST stay **`< 250 KB` gzipped**; all 19 core + extended workbenches load strictly via lazy `loadChildren` + `@defer`.
+3. Workbench libraries NEVER import another workbench's internal store directly; cross-pane coordination (e.g., clicking a Schematic net highlights PCB + 3D CAD + Waveform + Firmware + BOM) flows through `@signal/workspace-bus` typed Signals!
+4. Initial shell bundle (`apps/signal-web`, deployed in its own `pool-web` K8s pod with `N-3` hashed chunk retention & In-App "What's New" release drawer) MUST stay **`< 250 KB` gzipped**; all 22 core + extended workbenches (including `library-studio`, `mcad-studio`, `cam-print`, `plm-ops`) load strictly via lazy `loadChildren` + `@defer`.
 
 ---
 
