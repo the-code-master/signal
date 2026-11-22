@@ -1,6 +1,6 @@
-// Module: Step-Up 2FA Disposable Write-Only russh SFTP Manufacturing & Regulatory Release
-// Invariants: Zero browser /export or /download; atomic .tmp.part -> SHA-256 read-back -> rename + PQC sig.
-// Spec: architecture/07-security-encryption-dlp-and-sftp.md, architecture/15-application-security-and-project-isolation.md
+// Module: DFM/Panelization, Forensic Constellation Watermarks & Step-Up 2FA Write-Only russh SFTP Release
+// Invariants: Zero browser /export or /download; single-use burned TOTP/WebAuthn; atomic .tmp.part -> SHA-256 -> rename.
+// Spec: architecture/07-security-encryption-dlp-and-sftp.md, architecture/17-extended-feature-specifications-ui-and-rust.md
 
 syntax = "proto3";
 
@@ -27,12 +27,36 @@ enum StepUpMfaMethod {
   STEP_UP_MFA_METHOD_SINGLE_USE_BURNED_TOTP = 2;
 }
 
+message ConstellationWatermarkMetadata {
+  string watermark_epoch_id = 1;
+  uint32 tardos_code_length_bits = 2;
+  uint32 constellation_anchor_count = 3;
+  string session_fingerprint_hmac = 4;
+}
+
 message ReleaseSignoffApproval {
   string actor_pseudo_id = 1;
   string approval_meaning = 2;
   StepUpMfaMethod mfa_method = 3;
   string burned_totp_or_webauthn_nonce = 4;
   HybridPqcSignature signature = 5;
+}
+
+message EvaluateDfmAndPanelizationRequest {
+  string branch_id = 1;
+  uint32 panel_cols = 2;
+  uint32 panel_rows = 3;
+  int64 rail_width_nm = 4 [jstype = JS_STRING];
+  uint32 target_build_qty = 5;
+}
+
+message EvaluateDfmAndPanelizationResponse {
+  bool dfa_and_flex_strain_clean = 1;
+  double board_utilization_pct = 2;
+  int64 unit_should_cost_micro_usd = 3 [jstype = JS_STRING];
+  double ict_jtag_net_coverage_pct = 4;
+  uint32 solder_fatigue_cycles_to_fail = 5;
+  bool msl_reflow_compliant = 6;
 }
 
 message PushSftpReleaseRequest {
@@ -46,6 +70,7 @@ message PushSftpReleaseRequest {
   uint64 release_unit_quantity = 8 [jstype = JS_STRING];
   uint64 quorum_audit_outbox_seq = 9 [jstype = JS_STRING];
   repeated ReleaseSignoffApproval approvals = 10;
+  ConstellationWatermarkMetadata watermark_meta = 11;
 }
 
 message PushSftpReleaseResponse {
@@ -57,5 +82,6 @@ message PushSftpReleaseResponse {
 }
 
 service SftpReleaseService {
+  rpc EvaluateDfmAndPanelization(EvaluateDfmAndPanelizationRequest) returns (EvaluateDfmAndPanelizationResponse);
   rpc PushSftpRelease(PushSftpReleaseRequest) returns (PushSftpReleaseResponse);
 }

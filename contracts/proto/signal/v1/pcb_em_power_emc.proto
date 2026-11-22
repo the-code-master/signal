@@ -1,0 +1,110 @@
+// Module: High-Speed 224G PCB, 3D Full-Wave EM (I-04), Magnetics, Power, EMC, Safety & 15-Yr Aging (I-05)
+// Invariants: All SI lengths (_nm), delays (_ps, _fs), voltages (_uv), and frequencies (_hz) use string-encoded int64.
+// Spec: architecture/03-rust-eda-engine.md, architecture/16-architectural-audit-flaws-and-futuristic-innovations.md
+
+syntax = "proto3";
+
+package signal.v1;
+
+import "signal/v1/common.proto";
+
+option java_multiple_files = true;
+option java_package = "com.signaldesign.v1";
+
+message RoutePnsBusTrunkRequest {
+  FencingAuthority fencing = 1;
+  string branch_id = 2;
+  repeated string member_net_names = 3;
+  repeated Point2dNm trunk_waypoints_nm = 4;
+  int64 trace_width_nm = 5 [jstype = JS_STRING];
+  int64 spacing_nm = 6 [jstype = JS_STRING];
+}
+
+message RoutePnsBusTrunkResponse {
+  bool routed_zero_drc = 1;
+  int64 max_intra_pair_skew_fs = 2 [jstype = JS_STRING];
+  uint32 generated_segment_count = 3;
+}
+
+message AnalyzeFiberWeaveAndBackdrillRequest {
+  string branch_id = 1;
+  string diff_pair_name = 2;
+  int64 data_rate_bps = 3 [jstype = JS_STRING];
+}
+
+message AnalyzeFiberWeaveAndBackdrillResponse {
+  int64 predicted_weave_skew_fs = 1 [jstype = JS_STRING];
+  double recommended_zig_zag_deg = 2;
+  int64 stub_notch_freq_hz = 3 [jstype = JS_STRING];
+  int64 recommended_backdrill_depth_nm = 4 [jstype = JS_STRING];
+}
+
+message RunSerdes224gEm3dRequest {
+  FencingAuthority fencing = 1;
+  string branch_id = 2;
+  string channel_id = 3;
+  int64 baud_rate_hz = 4 [jstype = JS_STRING];
+}
+
+message RunSerdes224gEm3dResponse {
+  bool vector_fit_passive_causal = 1;
+  double channel_operating_margin_db = 2;
+  int64 tdr_min_impedance_mohm = 3 [jstype = JS_STRING];
+  int64 tdr_max_impedance_mohm = 4 [jstype = JS_STRING];
+  ArrowStreamChunk field_and_tdr_chunk = 5;
+}
+
+message DesignPlanarMagneticsRequest {
+  int64 target_inductance_nh = 1 [jstype = JS_STRING];
+  int64 switching_freq_hz = 2 [jstype = JS_STRING];
+  int64 peak_current_na = 3 [jstype = JS_STRING];
+  string core_material = 4;
+}
+
+message DesignPlanarMagneticsResponse {
+  uint32 optimal_turn_count = 1;
+  int64 core_loss_mw = 2 [jstype = JS_STRING];
+  int64 ac_winding_loss_mw = 3 [jstype = JS_STRING];
+  int64 leakage_inductance_nh = 4 [jstype = JS_STRING];
+}
+
+message AnalyzePdnAndCreepageRequest {
+  string branch_id = 1;
+  string power_net = 2;
+  string high_voltage_net = 3;
+  int64 target_impedance_uohm = 4 [jstype = JS_STRING];
+  int64 required_creepage_nm = 5 [jstype = JS_STRING];
+}
+
+message AnalyzePdnAndCreepageResponse {
+  bool pdn_below_target_mask = 1;
+  uint32 decoupling_caps_added = 2;
+  int64 geodesic_3d_creepage_nm = 3 [jstype = JS_STRING];
+  int64 max_busbar_ir_drop_uv = 4 [jstype = JS_STRING];
+  int64 hot_loop_inductance_ph = 5 [jstype = JS_STRING];
+}
+
+message RunEmcPrecomplianceAndSafetyRequest {
+  string branch_id = 1;
+  string limit_standard = 2;
+  string safety_asil_level = 3;
+  int64 mission_years = 4 [jstype = JS_STRING];
+}
+
+message RunEmcPrecomplianceAndSafetyResponse {
+  bool cispr_radiated_conducted_pass = 1;
+  double worst_margin_dbuv = 2;
+  double spfm_pct = 3;
+  double lfm_pct = 4;
+  double pmhf_fit = 5;
+  double end_of_life_survival_prob = 6;
+}
+
+service PcbEmPowerEmcService {
+  rpc RoutePnsBusTrunk(RoutePnsBusTrunkRequest) returns (RoutePnsBusTrunkResponse);
+  rpc AnalyzeFiberWeaveAndBackdrill(AnalyzeFiberWeaveAndBackdrillRequest) returns (AnalyzeFiberWeaveAndBackdrillResponse);
+  rpc RunSerdes224gEm3d(RunSerdes224gEm3dRequest) returns (RunSerdes224gEm3dResponse);
+  rpc DesignPlanarMagnetics(DesignPlanarMagneticsRequest) returns (DesignPlanarMagneticsResponse);
+  rpc AnalyzePdnAndCreepage(AnalyzePdnAndCreepageRequest) returns (AnalyzePdnAndCreepageResponse);
+  rpc RunEmcPrecomplianceAndSafety(RunEmcPrecomplianceAndSafetyRequest) returns (RunEmcPrecomplianceAndSafetyResponse);
+}
