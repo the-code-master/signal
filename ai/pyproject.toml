@@ -1,0 +1,12 @@
+# Module: ai/pyproject.toml — Neuro-Symbolic AI Plane (Quarantine Ingest, Sharded RAG, GBNF Gateway, Orchestrator)
+# Invariants: Zero-Tool Quarantine on untrusted inputs (F-090, F-131); Merge-Time Proof Re-Verification (F-133).
+# Spec: architecture/05-ai-agent-and-datasheet-rag.md
+[project]
+name = "signal-ai-plane"
+version = "0.1.0"
+description = "Signal Neuro-Symbolic AI Quarantine, 3-Tier Sharded RAG, GBNF Gateway & CoW Orchestrator"
+requires-python = ">=3.15"
+dependencies = [
+    "fastapi>=0.165.0",
+    "pydantic>=2.14.0",
+]

@@ -1,0 +1,227 @@
+// Module: Neuro-Symbolic AI, Quarantine AST, 3-Tier Sharded RAG, Formal (I-03), PINN (I-02) & Legacy Import (I-10)
+// Invariants: Zero-Tool Quarantine on untrusted PDFs/images; Merge-Time Proof Re-Verification; bomb-capped <=20:1 import.
+// Spec: architecture/05-ai-agent-and-datasheet-rag.md, architecture/16-architectural-audit-flaws-and-futuristic-innovations.md
+
+syntax = "proto3";
+
+package signal.v1;
+
+import "signal/v1/common.proto";
+
+option java_multiple_files = true;
+option java_package = "com.signaldesign.v1";
+
+enum LegacyCadFormat {
+  LEGACY_CAD_FORMAT_UNSPECIFIED = 0;
+  LEGACY_CAD_FORMAT_ALTIUM_DOC = 1;
+  LEGACY_CAD_FORMAT_KICAD_SEXPR = 2;
+  LEGACY_CAD_FORMAT_ORCAD_ALLEGRO = 3;
+  LEGACY_CAD_FORMAT_EAGLE_XML = 4;
+  LEGACY_CAD_FORMAT_LTSPICE_ASC = 5;
+  LEGACY_CAD_FORMAT_GDSII_STREAM = 6;
+  LEGACY_CAD_FORMAT_LEF_DEF = 7;
+}
+
+message ConditionCurveSet {
+  string mpn = 1;
+  string metric_kind = 2;
+  repeated int64 bias_uv_points = 3 [jstype = JS_STRING];
+  repeated int64 temp_mkelvin_points = 4 [jstype = JS_STRING];
+  repeated int64 freq_hz_points = 5 [jstype = JS_STRING];
+  repeated double normalized_ratios = 6;
+  int64 r_theta_ja_at_100sqmm_mk_per_w = 7 [jstype = JS_STRING];
+  repeated string linked_silicon_errata_ids = 8;
+}
+
+message ProofBundle {
+  string proof_bundle_id = 1;
+  string base_graph_merkle_root = 2;
+  uint32 physics_determinism_epoch = 3;
+  bool spice_assertions_passed = 4;
+  bool formal_properties_unsat = 5;
+  bool drc_erc_clean = 6;
+  HybridPqcSignature verifier_signature = 7;
+}
+
+message FormalEquivalenceReport {
+  string proof_id = 1;
+  bool logically_equivalent = 2;
+  bool fsm_deadlock_free = 3;
+  bool cdc_rdc_safe = 4;
+  uint32 ic3_frames_explored = 5;
+  string counterexample_summary = 6;
+}
+
+message ParetoCandidate {
+  string candidate_branch_id = 1;
+  int64 bom_cost_micro_usd = 2 [jstype = JS_STRING];
+  double efficiency_pct = 3;
+  int64 pcb_area_sq_nm = 4 [jstype = JS_STRING];
+  int64 peak_tj_mkelvin = 5 [jstype = JS_STRING];
+  int64 embodied_carbon_mg_co2e = 6 [jstype = JS_STRING];
+}
+
+message CleanRoomImportReport {
+  LegacyCadFormat source_format = 1;
+  bool decompression_ratio_within_cap = 2;
+  uint32 max_observed_hierarchy_depth = 3;
+  uint32 imported_entity_count = 4;
+  bool netlist_bijection_verified = 5;
+  repeated string quarantine_warnings = 6;
+}
+
+message DiffDatasheetRevisionsRequest {
+  string mpn = 1;
+  string old_doc_blake3 = 2;
+  string new_doc_blake3 = 3;
+}
+
+message DiffDatasheetRevisionsResponse {
+  uint32 changed_pin_count = 1;
+  uint32 tightened_abs_max_count = 2;
+  repeated string parameter_delta_summaries = 3;
+}
+
+message ExplainCircuitStagesRequest {
+  string branch_id = 1;
+  string sheet_id = 2;
+}
+
+message CircuitStageExplanation {
+  string stage_id = 1;
+  string topology_name = 2;
+  string symbolic_transfer_fn = 3;
+  BoundingBox2dNm bounds_nm = 4;
+}
+
+message ExplainCircuitStagesResponse {
+  repeated CircuitStageExplanation stages = 1;
+}
+
+message FindStressBreakingPointRequest {
+  string branch_id = 1;
+  int64 max_ambient_temp_mkelvin = 2 [jstype = JS_STRING];
+  int64 max_supply_surge_uv = 3 [jstype = JS_STRING];
+}
+
+message FindStressBreakingPointResponse {
+  string first_failing_entity_id = 1;
+  string failure_mechanism = 2;
+  double safety_headroom_pct = 3;
+}
+
+message ExploreParetoFrontierRequest {
+  string branch_id = 1;
+  uint32 population_size = 2;
+  uint32 generations = 3;
+}
+
+message ExploreParetoFrontierResponse {
+  repeated ParetoCandidate frontier = 1;
+}
+
+message RedTeamFinding {
+  uint32 check_code = 1;
+  string severity = 2;
+  string entity_id = 3;
+  string diagnosis = 4;
+  string deterministic_autofix_op = 5;
+}
+
+message RunPrincipalRedTeamAuditRequest {
+  string branch_id = 1;
+}
+
+message RunPrincipalRedTeamAuditResponse {
+  uint32 checks_evaluated = 1;
+  repeated RedTeamFinding findings = 2;
+}
+
+message CompileNlConstraintRuleRequest {
+  string natural_language_prompt = 1;
+  string target_domain = 2;
+}
+
+message CompileNlConstraintRuleResponse {
+  bool deterministic_ast_valid = 1;
+  string compiled_rule_dsl = 2;
+}
+
+message AttributeWaveformAnomalyRequest {
+  string simulation_run_id = 1;
+  string target_net_name = 2;
+  int64 window_start_ps = 3 [jstype = JS_STRING];
+  int64 window_end_ps = 4 [jstype = JS_STRING];
+}
+
+message AttributeWaveformAnomalyResponse {
+  string dominant_root_cause = 1;
+  string culprit_entity_id = 2;
+  repeated string ranked_mitigations = 3;
+}
+
+message BuildDatasheetTestbenchRequest {
+  string mpn = 1;
+  string doc_blake3 = 2;
+}
+
+message BuildDatasheetTestbenchResponse {
+  string generated_branch_id = 1;
+  double reference_curve_rms_error_pct = 2;
+  ConditionCurveSet extracted_curves = 3;
+}
+
+message ConsolidateBomFeedersRequest {
+  string branch_id = 1;
+  double max_allowed_metric_shift_pct = 2;
+}
+
+message ConsolidateBomFeedersResponse {
+  uint32 unique_line_items_before = 1;
+  uint32 unique_line_items_after = 2;
+  uint32 smt_feeder_slots_saved = 3;
+  bool adjoint_zero_shift_verified = 4;
+}
+
+message QuarantinedGlossaryTerm {
+  string preserved_identifier = 1;
+  string translated_caption = 2;
+}
+
+message QuarantinedTranslateGlossaryRequest {
+  string source_text = 1;
+  string target_locale = 2;
+}
+
+message QuarantinedTranslateGlossaryResponse {
+  string translated_text = 1;
+  repeated string preserved_refdes_and_si_tokens = 2;
+}
+
+message ImportLegacyCadArchiveRequest {
+  FencingAuthority fencing = 1;
+  LegacyCadFormat format = 2;
+  uint64 compressed_size_bytes = 3 [jstype = JS_STRING];
+  uint64 uncompressed_size_bytes = 4 [jstype = JS_STRING];
+  bytes archive_payload = 5;
+}
+
+message ImportLegacyCadArchiveResponse {
+  CleanRoomImportReport report = 1;
+  FormalEquivalenceReport equivalence = 2;
+  ProofBundle proof_bundle = 3;
+}
+
+service AiNeuroSymbolicService {
+  rpc DiffDatasheetRevisions(DiffDatasheetRevisionsRequest) returns (DiffDatasheetRevisionsResponse);
+  rpc ExplainCircuitStages(ExplainCircuitStagesRequest) returns (ExplainCircuitStagesResponse);
+  rpc FindStressBreakingPoint(FindStressBreakingPointRequest) returns (FindStressBreakingPointResponse);
+  rpc ExploreParetoFrontier(ExploreParetoFrontierRequest) returns (ExploreParetoFrontierResponse);
+  rpc RunPrincipalRedTeamAudit(RunPrincipalRedTeamAuditRequest) returns (RunPrincipalRedTeamAuditResponse);
+  rpc CompileNlConstraintRule(CompileNlConstraintRuleRequest) returns (CompileNlConstraintRuleResponse);
+  rpc AttributeWaveformAnomaly(AttributeWaveformAnomalyRequest) returns (AttributeWaveformAnomalyResponse);
+  rpc BuildDatasheetTestbench(BuildDatasheetTestbenchRequest) returns (BuildDatasheetTestbenchResponse);
+  rpc ConsolidateBomFeeders(ConsolidateBomFeedersRequest) returns (ConsolidateBomFeedersResponse);
+  rpc QuarantinedTranslateGlossary(QuarantinedTranslateGlossaryRequest) returns (QuarantinedTranslateGlossaryResponse);
+  rpc ImportLegacyCadArchive(ImportLegacyCadArchiveRequest) returns (ImportLegacyCadArchiveResponse);
+}

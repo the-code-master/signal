@@ -34,7 +34,7 @@ extend-immutable-calls = ["fastapi.Depends", "fastapi.Header"]
 [tool.pyright]
 pythonVersion = "3.13"
 typeCheckingMode = "strict"
-include = ["services"]
+include = ["services", "ai"]
 extraPaths = [
     ".",
     "services/api-gateway/src",
@@ -48,6 +48,10 @@ extraPaths = [
     "services/session-broker/src",
     "services/sftp-egress/src",
     "services/audit-service/src",
+    "ai/datasheet-ingest/src",
+    "ai/rag-service/src",
+    "ai/llm-gateway/src",
+    "ai/orchestrator/src",
 ]
 
 [tool.pytest.ini_options]
@@ -64,5 +68,9 @@ pythonpath = [
     "services/session-broker/src",
     "services/sftp-egress/src",
     "services/audit-service/src",
+    "ai/datasheet-ingest/src",
+    "ai/rag-service/src",
+    "ai/llm-gateway/src",
+    "ai/orchestrator/src",
 ]
 testpaths = ["services/tests"]

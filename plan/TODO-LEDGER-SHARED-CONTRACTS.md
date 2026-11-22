@@ -25,7 +25,7 @@
 ---
 
 ## Phase 3 — AI Agents, Quarantine, Hybrid RAG, Formal (`I-03`), Surrogate (`I-02`) & Legacy Import (`I-10`) Contracts ([`phase-3`](./phase-3-ai-agents-quarantine-and-hybrid-rag.md))
-- [ ] **`C-P3-01`** | **Branch:** `contract/C-P3-01-ai-rag-formal-import-protos` | **Paths:** `contracts/proto/signal/v1/**`, `contracts/schemas/datasheet-record.schema.json`, `contracts/fixtures/ai_rag_*.json` | **Skills:** `signal-contract-first`, `signal-ai-neuro-symbolic-rag` | **Deliverable:** `ConditionCurveSet` (`C(V,T,f)`, `L(I,T)`, copper $R_{\theta JA}`), `ProofBundle`, `FormalEquivalenceReport` (`I-03`), `ParetoCandidate`, `CleanRoomImportReport` (`I-10`), and `FEAT-078`, `FEAT-101`–`FEAT-110` contracts | **Verify:** `./signal.sh check --target contracts`
+- [x] **`C-P3-01`** | **Branch:** `contract/C-P3-01-ai-rag-formal-import-protos` | **Paths:** `contracts/proto/signal/v1/**`, `contracts/schemas/datasheet-record.schema.json`, `contracts/fixtures/ai_rag_*.json` | **Skills:** `signal-contract-first`, `signal-ai-neuro-symbolic-rag` | **Deliverable:** `ConditionCurveSet` (`C(V,T,f)`, `L(I,T)`, copper $R_{\theta JA}`), `ProofBundle`, `FormalEquivalenceReport` (`I-03`), `ParetoCandidate`, `CleanRoomImportReport` (`I-10`), and `FEAT-078`, `FEAT-101`–`FEAT-110` contracts | **Verify:** `./signal.sh check --target contracts` *(Done: 2026-11-22 | Branch: `contract/C-P3-01-ai-rag-formal-import-protos`)*
 
 ---
 

@@ -1,0 +1,21 @@
+{
+  "fixture_id": "ai_rag_proof_phase3_bigint_v1",
+  "condition_curves": {
+    "mpn": "GRM188R61E106MA73D",
+    "metric_kind": "MLCC_DC_BIAS_CAPACITANCE_RATIO",
+    "bias_uv_points": ["0", "5000000", "12000000", "25000000"],
+    "temp_mkelvin_points": ["298150", "358150"],
+    "freq_hz_points": ["100000", "9007199254740993"],
+    "normalized_ratios": [1.0, 0.72, 0.38, 0.19],
+    "r_theta_ja_at_100sqmm_mk_per_w": "42000",
+    "linked_silicon_errata_ids": []
+  },
+  "pareto_candidate": {
+    "candidate_branch_id": "cow_pareto_opt_07",
+    "bom_cost_micro_usd": "4850000",
+    "efficiency_pct": 96.4,
+    "pcb_area_sq_nm": "9007199254740999",
+    "peak_tj_mkelvin": "364150",
+    "embodied_carbon_mg_co2e": "182000"
+  }
+}
