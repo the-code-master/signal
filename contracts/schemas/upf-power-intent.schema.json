@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.signal.design/schemas/upf-power-intent.schema.json",
+  "title": "UpfPowerIntentManifest",
+  "description": "Module: upf-power-intent.schema.json | Invariants: IEEE 1801 UPF power domains, isolation/level-shifters, retention & 64-bit SI strings (I-07) | Spec: 03, 16, 17",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "top_design",
+    "power_domains",
+    "isolation_rules",
+    "power_state_table"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "top_design": { "type": "string", "minLength": 1 },
+    "power_domains": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["domain_id", "primary_supply_net", "nominal_voltage_uv", "always_on"],
+        "properties": {
+          "domain_id": { "type": "string" },
+          "primary_supply_net": { "type": "string" },
+          "nominal_voltage_uv": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+          "always_on": { "type": "boolean" },
+          "retention_strategy": { "type": "string" }
+        }
+      }
+    },
+    "isolation_rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["from_domain", "to_domain", "clamp_value", "requires_level_shifter"],
+        "properties": {
+          "from_domain": { "type": "string" },
+          "to_domain": { "type": "string" },
+          "clamp_value": { "type": "string", "enum": ["CLAMP_0", "CLAMP_1", "LATCH"] },
+          "requires_level_shifter": { "type": "boolean" }
+        }
+      }
+    },
+    "power_state_table": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["mode_name", "active_domains"],
+        "properties": {
+          "mode_name": { "type": "string" },
+          "active_domains": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

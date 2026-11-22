@@ -1,0 +1,16 @@
+{
+  "fixture_id": "cosim_twin_shmoo_phase6_bigint_v1",
+  "protocol_packet": {
+    "bus_protocol": "I2C_PMBUS",
+    "start_time_ps": "125000000",
+    "end_time_ps": "9007199254740993",
+    "decoded_summary": "START | ADDR 0x48 WR | VOUT_COMMAND 0x03E8 | ACK",
+    "crc_or_ack_valid": true
+  },
+  "shmoo_point": {
+    "supply_voltage_uv": "750000",
+    "clock_freq_hz": "9007199254740997",
+    "temp_mkelvin": "4200",
+    "passed": true
+  }
+}

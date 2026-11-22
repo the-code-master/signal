@@ -42,8 +42,8 @@
 ---
 
 ## Phase 6 — IC/ASIC, UPF (`I-07`), DFT (`I-08`), Photonics/Cryo, HW Security, FPGA, Co-Sim & Digital Twin (`I-06`) Contracts ([`phase-6`](./phase-6-ic-asic-fpga-firmware-bios-and-twin.md))
-- [ ] **`C-P6-01`** | **Branch:** `contract/C-P6-01-ic-photonics-security-protos` | **Paths:** `contracts/proto/signal/v1/**`, `contracts/schemas/upf-power-intent.schema.json` | **Skills:** `signal-contract-first` | **Deliverable:** IC/ASIC, IEEE 1801 UPF (`I-07`), DFT/Scan/ATPG (`I-08`), signed `*.lef.sig`/`*.halo.gds.sig` (`F-125`), Baseband CPO & 4K Cryo (`F-148`), and `FEAT-041`–`FEAT-050` contracts | **Verify:** `./signal.sh check --target contracts`
-- [ ] **`C-P6-02`** | **Branch:** `contract/C-P6-02-fpga-cosim-twin-protos` | **Paths:** `contracts/proto/signal/v1/**`, `contracts/fixtures/cosim_twin_*.json` | **Skills:** `signal-contract-first` | **Deliverable:** FPGA, Firmware/BIOS Co-Sim, Protocol Decoder, Lab Bench Digital Twin (`I-06`), and `FEAT-051`–`FEAT-060`, `FEAT-070`, `FEAT-088` contracts | **Verify:** `./signal.sh check --target contracts`
+- [x] **`C-P6-01`** | **Branch:** `contract/C-P6-01-ic-photonics-security-protos` | **Paths:** `contracts/proto/signal/v1/**`, `contracts/schemas/upf-power-intent.schema.json` | **Skills:** `signal-contract-first` | **Deliverable:** IC/ASIC, IEEE 1801 UPF (`I-07`), DFT/Scan/ATPG (`I-08`), signed `*.lef.sig`/`*.halo.gds.sig` (`F-125`), Baseband CPO & 4K Cryo (`F-148`), and `FEAT-041`–`FEAT-050` contracts | **Verify:** `./signal.sh check --target contracts` *(Done: 2026-11-22 | Branch: `contract/C-P6-01-ic-photonics-security-protos`)*
+- [x] **`C-P6-02`** | **Branch:** `contract/C-P6-02-fpga-cosim-twin-protos` | **Paths:** `contracts/proto/signal/v1/**`, `contracts/fixtures/cosim_twin_*.json` | **Skills:** `signal-contract-first` | **Deliverable:** FPGA, Firmware/BIOS Co-Sim, Protocol Decoder, Lab Bench Digital Twin (`I-06`), and `FEAT-051`–`FEAT-060`, `FEAT-070`, `FEAT-088` contracts | **Verify:** `./signal.sh check --target contracts` *(Done: 2026-11-22 | Branch: `contract/C-P6-02-fpga-cosim-twin-protos`)*
 
 ---
 

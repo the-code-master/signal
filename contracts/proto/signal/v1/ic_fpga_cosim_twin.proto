@@ -1,0 +1,128 @@
+// Module: IC/ASIC, UPF (I-07), DFT (I-08), CPO Photonics/4K Cryo (F-148), HW Security, FPGA, Co-Sim & Twin (I-06)
+// Invariants: Signed *.halo.gds.sig zero-lateral-movement federation (F-125); explicit SI bigint fields (_nm, _ps, _fs, _uv).
+// Spec: architecture/03-rust-eda-engine.md, architecture/16-architectural-audit-flaws-and-futuristic-innovations.md
+
+syntax = "proto3";
+
+package signal.v1;
+
+import "signal/v1/common.proto";
+
+option java_multiple_files = true;
+option java_package = "com.signaldesign.v1";
+
+message SignedChipletHaloManifest {
+  string chiplet_id = 1;
+  int64 halo_ring_width_nm = 2 [jstype = JS_STRING];
+  uint32 ucie_bump_count = 3;
+  string halo_gds_blake3 = 4;
+  HybridPqcSignature broker_signature = 5;
+}
+
+message AnalyzeIcSignoffAndEcoRequest {
+  FencingAuthority fencing = 1;
+  string branch_id = 2;
+  int64 clock_period_fs = 3 [jstype = JS_STRING];
+  bool enable_backside_pdn = 4;
+  bool run_post_mask_metal_eco = 5;
+}
+
+message AnalyzeIcSignoffAndEcoResponse {
+  int64 worst_negative_slack_fs = 1 [jstype = JS_STRING];
+  double pelgrom_sigma_vth_mv = 2;
+  bool upf_isolation_shifters_clean = 3;
+  double scan_atpg_stuck_at_coverage_pct = 4;
+  uint32 spare_cells_rewired = 5;
+  SignedChipletHaloManifest halo_manifest = 6;
+}
+
+message RunPhotonicsAndCryoSimRequest {
+  int64 optical_carrier_wavelength_pm = 1 [jstype = JS_STRING];
+  int64 step_size_ps = 2 [jstype = JS_STRING];
+  int64 stage_temperature_mkelvin = 3 [jstype = JS_STRING];
+}
+
+message RunPhotonicsAndCryoSimResponse {
+  double optical_extinction_ratio_db = 1;
+  int64 cryo_effective_temp_mkelvin = 2 [jstype = JS_STRING];
+  bool fermi_dirac_continuation_converged = 3;
+}
+
+message AuditHardwareSecurityTvlaRequest {
+  string branch_id = 1;
+  uint32 power_trace_count = 2;
+  bool run_gate_level_ift = 3;
+}
+
+message AuditHardwareSecurityTvlaResponse {
+  double max_welch_t_statistic = 1;
+  bool tvla_leakage_detected = 2;
+  bool key_to_unmasked_io_path_free = 3;
+  uint32 glitch_vulnerable_fsm_states = 4;
+}
+
+message PlanFpgaIoAndDspRequest {
+  string device_part = 1;
+  uint32 io_pin_count = 2;
+  uint32 fir_tap_count = 3;
+  uint32 fixed_point_frac_bits = 4;
+}
+
+message PlanFpgaIoAndDspResponse {
+  bool bank_vcco_and_sdc_clean = 1;
+  uint32 pcb_escape_crossings = 2;
+  double quantized_sqnr_db = 3;
+  string generated_rtl_digest = 4;
+}
+
+message ProtocolPacketSpan {
+  string bus_protocol = 1;
+  int64 start_time_ps = 2 [jstype = JS_STRING];
+  int64 end_time_ps = 3 [jstype = JS_STRING];
+  string decoded_summary = 4;
+  bool crc_or_ack_valid = 5;
+}
+
+message RunFirmwareBiosCosimRequest {
+  FencingAuthority fencing = 1;
+  string branch_id = 2;
+  string cpu_arch = 3;
+  int64 sim_duration_ps = 4 [jstype = JS_STRING];
+}
+
+message RunFirmwareBiosCosimResponse {
+  bool cold_boot_post_passed = 1;
+  bool svd_dts_memmap_disjoint = 2;
+  bool sat_pinmux_conflict_free = 3;
+  int64 total_firmware_energy_nj = 4 [jstype = JS_STRING];
+  repeated ProtocolPacketSpan decoded_packets = 5;
+}
+
+message ShmooPointResult {
+  int64 supply_voltage_uv = 1 [jstype = JS_STRING];
+  int64 clock_freq_hz = 2 [jstype = JS_STRING];
+  int64 temp_mkelvin = 3 [jstype = JS_STRING];
+  bool passed = 4;
+}
+
+message CalibrateTwinAndRunShmooRequest {
+  FencingAuthority fencing = 1;
+  string instrument_capture_id = 2;
+  uint32 voltage_steps = 3;
+  uint32 freq_steps = 4;
+}
+
+message CalibrateTwinAndRunShmooResponse {
+  double post_calibration_rms_error_pct = 1;
+  double pass_region_fraction = 2;
+  repeated ShmooPointResult shmoo_points = 3;
+}
+
+service IcFpgaCosimTwinService {
+  rpc AnalyzeIcSignoffAndEco(AnalyzeIcSignoffAndEcoRequest) returns (AnalyzeIcSignoffAndEcoResponse);
+  rpc RunPhotonicsAndCryoSim(RunPhotonicsAndCryoSimRequest) returns (RunPhotonicsAndCryoSimResponse);
+  rpc AuditHardwareSecurityTvla(AuditHardwareSecurityTvlaRequest) returns (AuditHardwareSecurityTvlaResponse);
+  rpc PlanFpgaIoAndDsp(PlanFpgaIoAndDspRequest) returns (PlanFpgaIoAndDspResponse);
+  rpc RunFirmwareBiosCosim(RunFirmwareBiosCosimRequest) returns (RunFirmwareBiosCosimResponse);
+  rpc CalibrateTwinAndRunShmoo(CalibrateTwinAndRunShmooRequest) returns (CalibrateTwinAndRunShmooResponse);
+}
