@@ -27,7 +27,9 @@ OPTIONAL_TOOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
 
 
 def _find_tool(binary: str) -> str | None:
-    search_path = f"{Path.home() / '.local' / 'bin'}:/opt/cargo/bin:{os.environ.get('PATH', '')}"
+    cargo_home = Path.home() / ".cargo" / "bin"
+    local_bin = Path.home() / ".local" / "bin"
+    search_path = f"{local_bin}:{cargo_home}:/opt/homebrew/bin:/opt/cargo/bin:{os.environ.get('PATH', '')}"
     return shutil.which(binary, path=search_path)
 
 

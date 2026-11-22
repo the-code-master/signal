@@ -74,7 +74,7 @@ def run_argv(
     if dry_run:
         return subprocess.CompletedProcess(cmd_list, 0, stdout=f"[DRY-RUN] {' '.join(cmd_list)}\n", stderr="")
     env = os.environ.copy()
-    extra = f"{Path.home() / '.local' / 'bin'}:/opt/cargo/bin"
+    extra = f"{Path.home() / '.local' / 'bin'}:{Path.home() / '.cargo' / 'bin'}:/opt/homebrew/bin:/opt/cargo/bin"
     env["PATH"] = f"{extra}:{env.get('PATH', '')}"
     try:
         return subprocess.run(

@@ -5,7 +5,7 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export PATH="${HOME}/.local/bin:/opt/cargo/bin:${PATH}"
+export PATH="${HOME}/.local/bin:${HOME}/.cargo/bin:/opt/homebrew/bin:/opt/cargo/bin:${PATH}"
 
 if command -v python3.15 >/dev/null 2>&1; then
   exec python3.15 "${REPO_ROOT}/scripts/signal_ops.py" "$@"
