@@ -1,0 +1,7 @@
+# Module: rust-toolchain.toml — Canonical Rust 1.100+ Toolchain Pin
+# Invariants: Pins Rust 1.100.0 (2024 Edition) with rustfmt and clippy across Local Mac Dev and CI.
+# Spec: architecture/03-rust-eda-engine.md, docs/engineering/RUST_ENGINEERING_GUIDE.md
+[toolchain]
+channel = "1.100.0"
+components = ["rustfmt", "clippy"]
+profile = "minimal"

@@ -1,0 +1,17 @@
+# Module: engine/crates/workspace-hack/Cargo.toml — cargo-hakari Unified Feature Set
+# Invariants: Eliminates duplicate dependency recompilations across workspace crates (F-143).
+# Spec: architecture/09-local-development-environment.md, docs/engineering/RUST_ENGINEERING_GUIDE.md
+[package]
+name = "workspace-hack"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+serde = { workspace = true }
+prost = { workspace = true }

@@ -200,3 +200,9 @@
 - **Touched Paths:** `contracts/fixtures/*.fixture.json` (6 files), `contracts/transcripts/session_hydrate_and_edit.jsonl`, `coordination/handoffs/20261121-P0-01-ag-to-cursor.md`, `coordination/TASK_BOARD.md`, `plan/TODO-LEDGER-SHARED-CONTRACTS.md`, `coordination/agents/antigravity.md`
 - **Verification:** Validated all 6 fixtures against Draft 2020-12 schemas & exact `9007199254740993` / `-9007199254740995` string precision (`F-144`), plus 6-step JSONL stateful session/idempotency/Super-Commit/412-fencing transcript (`F-145`, exit `0`).
 - **Handoff Notes for Cursor:** See [`coordination/handoffs/20261121-P0-01-ag-to-cursor.md`](../handoffs/20261121-P0-01-ag-to-cursor.md). `CU-P0-01`..`CU-P0-05` are now 100% unblocked on disjoint Lane B paths.
+
+### [AG-P0-01] Rust `1.100.0` Workspace, Single-Build `signal-proto` Codegen & `workspace-hack`
+- **Status:** `COMPLETED`
+- **Branch:** `ag/AG-P0-01-rust-workspace-and-proto` → `main`
+- **Touched Paths:** `rust-toolchain.toml`, `engine/.cargo/config.toml`, `engine/Cargo.toml`, `engine/Cargo.lock`, `engine/crates/workspace-hack/**`, `engine/crates/signal-proto/**`, `plan/TODO-LEDGER-ANTIGRAVITY-LANE-A.md`, `coordination/agents/antigravity.md`
+- **Verification:** `cargo fmt --all -- --check`, `cargo clippy --workspace --all-targets -- -D warnings` (`0` warnings), and `cargo test --workspace` (`2/2` `> 2^53 - 1` `bigint` fixture round-trip tests passing; zero generated `.rs` stubs in source tree).

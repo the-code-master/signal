@@ -1,0 +1,9 @@
+# Module: engine/.cargo/config.toml — Fast Incremental Builds & Supply-Chain Hygiene
+# Invariants: Preserves cross-ISA determinism; avoids ambient host-specific FMA flags in physics crates (F-033, F-143).
+# Spec: architecture/03-rust-eda-engine.md, architecture/09-local-development-environment.md
+[build]
+incremental = true
+
+[net]
+retry = 3
+git-fetch-with-cli = true
