@@ -1,0 +1,30 @@
+{
+  "fencing": {
+    "org_id": "11111111-2222-4333-8444-555555555555",
+    "project_id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+    "fencing_epoch": "9007199254740993",
+    "lease_holder_pod_id": "signal-pod-core-01-x9k2",
+    "issued_at_utc_ms": "1795324800000",
+    "expires_at_utc_ms": "1795324815000"
+  },
+  "idempotency_key": "7f9c2b10-6e44-4a80-9b11-001122334455",
+  "actor_pseudo_id": "actor_hmac_8c4e19a0f2b3",
+  "branch_id": "main",
+  "expected_base_revision": "9007199254740999",
+  "operations": [
+    {
+      "op_id": "op_0001",
+      "kind": 4,
+      "entity_id": "trace_pcie6_tx0_p",
+      "domain": 5,
+      "position_nm": {
+        "x_nm": "9007199254740993",
+        "y_nm": "-9007199254740995"
+      },
+      "trace_width_nm": "85000",
+      "net_name": "PCIE6_TX0_P",
+      "param_key": "propagation_delay_fs",
+      "param_si_value": "9007199254741001"
+    }
+  ]
+}

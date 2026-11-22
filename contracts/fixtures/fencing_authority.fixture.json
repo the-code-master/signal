@@ -1,0 +1,8 @@
+{
+  "org_id": "11111111-2222-4333-8444-555555555555",
+  "project_id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+  "fencing_epoch": "9007199254740993",
+  "lease_holder_pod_id": "signal-pod-core-01-x9k2",
+  "issued_at_utc_ms": "1795324800000",
+  "expires_at_utc_ms": "1795324815000"
+}

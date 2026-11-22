@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0.0",
+  "super_commit_id": "c011ab00-1234-4abc-8def-0123456789ab",
+  "project_id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+  "fencing_epoch": "9007199254740993",
+  "committed_at_ms": "1795324805123",
+  "encryption_mode": "ENCRYPTED_VAULT",
+  "vault_merkle_root": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "repos": [
+    {
+      "subproject_type": "META",
+      "provider_repo_id": "gh_repo_987654321",
+      "git_commit_oid": "0123456789abcdef0123456789abcdef01234567",
+      "kek_id": "kms:pqc-hybrid:org-1111:v1",
+      "dek_version": 3
+    },
+    {
+      "subproject_type": "SCHEMATIC",
+      "provider_repo_id": "gh_repo_987654322",
+      "git_commit_oid": "89abcdef0123456789abcdef0123456789abcdef",
+      "kek_id": "kms:pqc-hybrid:org-1111:v1",
+      "dek_version": 3
+    }
+  ]
+}

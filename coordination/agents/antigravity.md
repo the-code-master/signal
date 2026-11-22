@@ -193,3 +193,10 @@
 - **Branch:** `contract/C-P0-02-openapi-and-schemas` → `main`
 - **Touched Paths:** `contracts/openapi/control-plane.v1.yaml`, `contracts/schemas/*.schema.json` (11 files), `plan/TODO-LEDGER-SHARED-CONTRACTS.md`, `coordination/agents/antigravity.md`
 - **Verification:** OpenAPI `3.1.0` structural/DLP/uniform-`404`/`Idempotency-Key` check (`0` issues) + `Draft202012Validator.check_schema` across all 11 schemas (`0` issues, all files `<= 236 LOC`).
+
+### [C-P0-03] Golden `> 2^53 - 1` `bigint` Fixtures, Stateful JSONL Transcript & Cursor Handoff (`P0-01` Complete)
+- **Status:** `COMPLETED`
+- **Branch:** `contract/C-P0-03-fixtures-and-transcripts` → `main`
+- **Touched Paths:** `contracts/fixtures/*.fixture.json` (6 files), `contracts/transcripts/session_hydrate_and_edit.jsonl`, `coordination/handoffs/20261121-P0-01-ag-to-cursor.md`, `coordination/TASK_BOARD.md`, `plan/TODO-LEDGER-SHARED-CONTRACTS.md`, `coordination/agents/antigravity.md`
+- **Verification:** Validated all 6 fixtures against Draft 2020-12 schemas & exact `9007199254740993` / `-9007199254740995` string precision (`F-144`), plus 6-step JSONL stateful session/idempotency/Super-Commit/412-fencing transcript (`F-145`, exit `0`).
+- **Handoff Notes for Cursor:** See [`coordination/handoffs/20261121-P0-01-ag-to-cursor.md`](../handoffs/20261121-P0-01-ag-to-cursor.md). `CU-P0-01`..`CU-P0-05` are now 100% unblocked on disjoint Lane B paths.
