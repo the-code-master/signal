@@ -1,12 +1,41 @@
-// Module: engine/crates/signal-graph/src/lib.rs — Multi-Domain Design Graph Fencing & Idempotent Transaction Ledger
-// Invariants: Rejects stale fencing epochs with 412; deduplicates Idempotency-Key retries deterministically (F-102, F-119).
-// Spec: architecture/03-rust-eda-engine.md, architecture/10-api-and-data-contracts.md
+// Module: engine/crates/signal-graph/src/lib.rs — Multi-Domain ECS Design Graph, Topological CRDT & Schematic Ops
+// Invariants: Rejects stale fencing epochs with 412; enforces Topological CRDT & Causal Selective Undo (F-040..044, F-119).
+// Spec: architecture/03-rust-eda-engine.md, architecture/10-api-and-data-contracts.md, architecture/17-extended-feature-specifications-ui-and-rust.md
 #![forbid(unsafe_code)]
 
-use signal_geom as _;
 use signal_proto::v1::{ApplyTransactionRequest, ApplyTransactionResponse};
 use std::collections::HashMap;
 use thiserror::Error;
+
+pub mod beautify;
+pub mod bus_bundle;
+pub mod command_query_a11y;
+pub mod cow_arena;
+pub mod crdt_validator;
+pub mod ecs_crdt;
+pub mod hierarchy_ops;
+pub mod pin_swap_reannotate;
+
+pub use beautify::{
+    SchematicBlock, beautify_schematic_layout, count_two_layer_crossings,
+    route_orthogonal_wire_astar,
+};
+pub use bus_bundle::{expand_protocol_bundle, parse_bus_slice};
+pub use command_query_a11y::{
+    QueryableEntity, build_wcag_accessibility_tree, evaluate_selection_query,
+    execute_omni_command_dsl, route_keyboard_a11y_wire,
+};
+pub use ecs_crdt::{
+    CoWGraphSnapshot, DesignGraphEngine, EcsEntity, ElectricalPinRole, GenEntityId,
+    TopologicalConflictCard, TopologicalConflictKind,
+};
+pub use hierarchy_ops::{
+    ChannelExpandedInstance, ResolvedBomVariantItem, SheetNetPort, build_cross_sheet_portal_index,
+    expand_multi_channel_block, resolve_assembly_variant,
+};
+pub use pin_swap_reannotate::{
+    AnnotatableInstance, SwappablePinAnchor, propose_optimal_pin_swaps, reannotate_sheet_instances,
+};
 
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum GraphError {
@@ -16,6 +45,10 @@ pub enum GraphError {
     StaleFencingEpoch { provided: u64, active: u64 },
     #[error("revision conflict: expected {expected}, current {current}")]
     RevisionConflict { expected: u64, current: u64 },
+    #[error("unknown graph branch `{0}`")]
+    UnknownBranch(String),
+    #[error("invalid schematic command, query, or bus slice: {0}")]
+    InvalidCommandOrSlice(String),
 }
 
 #[derive(Debug)]

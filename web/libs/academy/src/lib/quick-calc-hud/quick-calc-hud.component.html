@@ -1,0 +1,55 @@
+<sig-panel
+  title="Engineering Quick-Calculator HUD"
+  subtitle="FEAT-114 4/5/6-Band Resistor • EIA-96 SMD (`01C` -> 10 kΩ) • Divider & LED Calc"
+  badge="eng_calculators"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <label class="sig-subtitle" for="sig-bands-input">4/5/6 Color Bands:</label>
+        <input
+          id="sig-bands-input"
+          class="sig-input"
+          type="text"
+          [value]="bandsCsv()"
+          (input)="onBandsInput($event)"
+        />
+      </div>
+      <sig-status-pill [label]="vm().bandResult.formattedSummary" [tone]="vm().bandResult.tone" />
+    </div>
+
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <label class="sig-subtitle" for="sig-eia96-input">EIA-96 SMD Code:</label>
+        <input
+          id="sig-eia96-input"
+          class="sig-input"
+          type="text"
+          [value]="smdCode()"
+          (input)="onSmdInput($event)"
+        />
+        <sig-status-pill [label]="vm().smdResult.formattedSummary" [tone]="vm().smdResult.tone" />
+      </div>
+      <button class="sig-btn sig-btn-primary" type="button" (click)="insertSmdIntoSchematic()">
+        Insert into Schematic
+      </button>
+    </div>
+
+    <div class="sig-toolbar">
+      <sig-si-input
+        label="Divider V_in (30 kΩ / 10 kΩ):"
+        unitSymbol="V"
+        initialText="12V"
+        (valueCommitted)="onDividerVinCommitted($event)"
+      />
+      <span class="sig-code">{{ vm().dividerResult.formattedSummary }}</span>
+    </div>
+
+    <div class="sig-toolbar">
+      <span class="sig-code">5V LED (Vf=2V, If=20mA): {{ vm().ledResult.formattedSummary }}</span>
+      <button class="sig-btn sig-btn-primary" type="button" (click)="insertLedLimiterIntoSchematic()">
+        Insert into Schematic
+      </button>
+    </div>
+  </div>
+</sig-panel>

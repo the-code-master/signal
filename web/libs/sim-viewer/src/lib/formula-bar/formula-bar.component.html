@@ -1,0 +1,30 @@
+<sig-panel
+  title="Waveform Math Formula Bar"
+  subtitle="FEAT-082 Rayon SIMD Trace Calculator • Autocomplete DSL"
+  badge="wave_expr"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <label class="sig-subtitle" for="sig-wave-formula">f(t) =</label>
+        <input
+          id="sig-wave-formula"
+          class="sig-input"
+          type="text"
+          [value]="vm().expression"
+          (input)="onFormulaInput($event)"
+        />
+        <span class="sig-code">{{ vm().tokenized.tokens.length }} tokens</span>
+      </div>
+      <sig-status-pill [label]="vm().evaluatedSummary" [tone]="vm().statusTone" />
+    </div>
+
+    <div class="sig-row">
+      @for (sug of vm().suggestions; track sug) {
+        <button class="sig-btn" type="button" (click)="applySuggestion(sug)">
+          {{ sug }}
+        </button>
+      }
+    </div>
+  </div>
+</sig-panel>

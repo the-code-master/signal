@@ -1,0 +1,41 @@
+@if (vm().open) {
+  <div class="sig-modal-backdrop" role="dialog" aria-modal="true" aria-label="Omni-Palette Command Bar">
+    <div class="sig-modal-dialog sig-stack">
+      <div class="sig-row-between">
+        <strong class="sig-title">Omni-Palette CLI & Workbench Jump (Cmd+K)</strong>
+        <button class="sig-btn" type="button" (click)="closed.emit()">Close (Esc)</button>
+      </div>
+
+      <div class="sig-toolbar">
+        <input
+          class="sig-input"
+          type="text"
+          aria-label="Command DSL Input"
+          [value]="vm().rawInput"
+          (input)="onInput($event)"
+          (keydown.enter)="runCurrentCommand()"
+        />
+        <button class="sig-btn sig-btn-primary" type="button" (click)="runCurrentCommand()">
+          Execute
+        </button>
+      </div>
+
+      <sig-status-pill [label]="vm().parsed.normalizedAction" [tone]="vm().statusTone" />
+
+      <div class="sig-row">
+        @for (ex of vm().quickExamples; track ex) {
+          <button class="sig-btn" type="button" (click)="selectExample(ex)">{{ ex }}</button>
+        }
+      </div>
+
+      <div class="sig-stack">
+        @for (cand of vm().jumpCandidates; track cand.slug) {
+          <button class="sig-nav-item" type="button" (click)="jumpTo(cand.slug)">
+            <span>{{ cand.label }}</span>
+            <span class="sig-code">/{{ cand.slug }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}

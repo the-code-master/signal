@@ -1,0 +1,24 @@
+<sig-panel
+  title="Multi-Monitor Zero-Leak Viewport Sync"
+  subtitle="FEAT-092 BroadcastChannel Pop-Out Manager • 500 ms Blackout & Instant SESSION_WIPE"
+  badge="Zero-Leak DLP"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <sig-status-pill [label]="vm().summaryBadge" [tone]="vm().tone" />
+      <div class="sig-row">
+        <button class="sig-btn" type="button" (click)="spawnSecondaryPane()">Attach Monitor Pane</button>
+        <button class="sig-btn sig-btn-primary" type="button" (click)="broadcastSessionWipe()">
+          Broadcast SESSION_WIPE
+        </button>
+      </div>
+    </div>
+
+    <div class="sig-row">
+      <span class="sig-code">Channel: {{ vm().channelName }}</span>
+      @for (label of vm().paneLabels; track label) {
+        <span class="sig-badge sig-mono">{{ label }}</span>
+      }
+    </div>
+  </div>
+</sig-panel>

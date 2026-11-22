@@ -1,0 +1,37 @@
+<sig-panel
+  title="WCAG 2.2 AA Keyboard-Only CAD & ARIA Netlist Reader"
+  subtitle="FEAT-100 KiCad / Altium / Virtuoso / Vim Presets • A* Orthogonal Stepping"
+  badge="WCAG 2.2 AA"
+>
+  <div class="sig-stack" tabindex="0" (keydown)="onSurfaceKeydown($event)">
+    <div class="sig-row">
+      @for (preset of vm().presets; track preset) {
+        <button
+          class="sig-btn"
+          [class.sig-btn-primary]="vm().state.preset === preset"
+          type="button"
+          (click)="selectPreset(preset)"
+        >
+          {{ preset }}
+        </button>
+      }
+    </div>
+
+    <div class="sig-toolbar">
+      <span class="sig-code">{{ vm().positionBadge }}</span>
+      <sig-status-pill [label]="vm().modeBadge" tone="ok" />
+    </div>
+
+    <div class="sig-row">
+      <button class="sig-btn" type="button" (click)="triggerKey('ArrowLeft')">Step W</button>
+      <button class="sig-btn" type="button" (click)="triggerKey('ArrowUp')">Step N</button>
+      <button class="sig-btn" type="button" (click)="triggerKey('ArrowDown')">Step S</button>
+      <button class="sig-btn" type="button" (click)="triggerKey('ArrowRight')">Step E</button>
+      <button class="sig-btn sig-btn-primary" type="button" (click)="triggerKey('w')">Wire</button>
+      <button class="sig-btn" type="button" (click)="triggerKey('r')">Rotate 90°</button>
+    </div>
+
+    <p class="sig-subtitle">{{ vm().keyHintBadge }}</p>
+    <div class="sig-surface" aria-live="polite">{{ vm().state.ariaAnnouncement }}</div>
+  </div>
+</sig-panel>

@@ -18,6 +18,7 @@ workspace = true
 
 [dependencies]
 signal-core = { workspace = true }
+signal-geom = { workspace = true }
 signal-graph = { workspace = true }
 signal-git-sync = { workspace = true }
 signal-proto = { workspace = true }

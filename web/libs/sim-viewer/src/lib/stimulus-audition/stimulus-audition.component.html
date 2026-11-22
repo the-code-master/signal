@@ -1,0 +1,56 @@
+<sig-panel
+  title="Volatile WebAudio Stimulus & A/B Filter Audition"
+  subtitle="FEAT-090 In-Memory AudioContext PCM Synthesizer • Zero-Download DLP Guarded"
+  badge="stimulus_gen"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <sig-status-pill [label]="vm().dlpBadge" [tone]="vm().statusTone" />
+        <span class="sig-code">{{ vm().bufferSummaryBadge }}</span>
+        <span class="sig-code">{{ vm().abAttenuationBadge }}</span>
+      </div>
+      <button class="sig-btn sig-btn-primary" type="button" (click)="auditionInVolatileWebAudio()">
+        Play Volatile A/B Buffer ({{ playbackNote() }})
+      </button>
+    </div>
+
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (preset of presets; track preset) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().preset === preset"
+            type="button"
+            (click)="selectPreset(preset)"
+          >
+            {{ preset }}
+          </button>
+        }
+      </div>
+      <div class="sig-row">
+        @for (ch of channels; track ch) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().activeChannel === ch"
+            type="button"
+            (click)="selectChannel(ch)"
+          >
+            {{ ch }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="sig-canvas-frame">
+      <svg class="sig-svg-plot" viewBox="0 0 800 160" aria-label="Volatile PCM Stimulus Preview">
+        <polyline
+          fill="none"
+          stroke="var(--sig-status-ok)"
+          stroke-width="1.8"
+          [attr.points]="vm().svgPreviewPoints"
+        />
+      </svg>
+    </div>
+  </div>
+</sig-panel>

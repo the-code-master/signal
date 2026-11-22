@@ -14,3 +14,4 @@ workspace = true
 
 [dependencies]
 signal-core = { workspace = true }
+thiserror = { workspace = true }

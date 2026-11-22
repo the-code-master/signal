@@ -1,0 +1,30 @@
+<div class="sig-stack">
+  <sig-panel
+    [title]="vm().descriptor.title"
+    [subtitle]="vm().descriptor.subtitle"
+    [badge]="vm().engineBadge"
+  >
+    <div class="sig-stack">
+      <div class="sig-grid-cards">
+        @for (kpi of vm().descriptor.kpis; track kpi.id) {
+          <div class="sig-panel sig-row-between">
+            <span class="sig-subtitle">{{ kpi.label }}</span>
+            <sig-status-pill [label]="kpi.value" [tone]="kpi.tone" />
+          </div>
+        }
+      </div>
+      <div class="sig-toolbar">
+        <span class="sig-subtitle">Latest Sandbox Action:</span>
+        <span class="sig-code">{{ vm().activityBanner }}</span>
+      </div>
+    </div>
+  </sig-panel>
+
+  <sig-dual-plane-viewport
+    [domainTitle]="vm().descriptor.title"
+    [hudSignals]="vm().descriptor.hudSignals"
+  />
+
+  <sig-visual-failure-fx (ratingAutoFixed)="onAutoFixed($event)" />
+  <sig-quick-calc-hud (insertedIntoSchematic)="onInserted($event)" />
+</div>

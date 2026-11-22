@@ -1,12 +1,23 @@
-<div class="sig-app-shell">
+<div class="sig-app-shell" (window:keydown)="onShellKeydown($event)">
   <header class="sig-topbar">
     <div class="sig-row">
       <strong class="sig-title">SIGNAL</strong>
       <span class="sig-badge sig-mono">{{ vm().orgSlug }} / {{ vm().projectSlug }}</span>
       <sig-status-pill [label]="vm().sessionBadge" tone="ok" />
+      <span class="sig-badge sig-mono">{{ vm().multiMonitorBadge }}</span>
+      <span class="sig-badge sig-mono">{{ vm().keymapBadge }}</span>
     </div>
 
     <div class="sig-row">
+      <button class="sig-btn sig-btn-primary" type="button" (click)="omniPaletteOpen.set(true)">
+        Cmd+K CLI
+      </button>
+      <button class="sig-btn" [class.sig-btn-primary]="queryBarOpen()" type="button" (click)="queryBarOpen.set(!queryBarOpen())">
+        Selection Query
+      </button>
+      <button class="sig-btn" type="button" (click)="powerDrawerOpen.set(true)">
+        6-DOF / Monitors / A11y
+      </button>
       @for (prof of profiles; track prof) {
         <button
           class="sig-btn"
@@ -27,7 +38,7 @@
           {{ th.label }}
         </button>
       }
-      <button class="sig-btn sig-btn-primary" type="button" (click)="toggleWhatsNew(true)">
+      <button class="sig-btn" type="button" (click)="whatsNewOpen.set(true)">
         What's New {{ vm().releaseBadge }}
       </button>
     </div>
@@ -48,6 +59,9 @@
     </nav>
 
     <main class="sig-main-stage">
+      @if (queryBarOpen()) {
+        <sig-selection-query-toolbar />
+      }
       <router-outlet />
     </main>
 
@@ -55,6 +69,7 @@
       <sig-panel title="Project Status Tower" subtitle="5-Team Live Health (21-*)" badge="DVT">
         <div class="sig-stack">
           <sig-status-pill [label]="reviewSummary()" tone="ok" />
+          <span class="sig-code">{{ lastCliSummary() }}</span>
           <p class="sig-subtitle">
             Guest @ Signal Design, Inc. (`local-guest-0001`) • Padmé AES-256-GCM-SIV Vault • Hybrid ML-KEM-768 DEK
           </p>
@@ -76,7 +91,23 @@
     <span class="sig-mono">{{ vm().releaseBadge }}</span>
   </footer>
 
-  <sig-drawer [open]="whatsNewOpen()" title="What's New in Signal Platform" (closed)="toggleWhatsNew(false)">
+  <sig-omni-palette
+    [open]="omniPaletteOpen()"
+    [navLinks]="vm().visibleNavLinks"
+    (commandExecuted)="lastCliSummary.set($event)"
+    (workbenchSelected)="navigateWorkbench($event)"
+    (closed)="omniPaletteOpen.set(false)"
+  />
+
+  <sig-drawer [open]="powerDrawerOpen()" title="Multi-Monitor, 6-DOF SpaceMouse & WCAG 2.2 AA CAD" (closed)="powerDrawerOpen.set(false)">
+    <div class="sig-stack">
+      <sig-multi-monitor-manager (paneCountChanged)="secondaryPaneCount.set($event)" />
+      <sig-spacemouse-control (pieActionTriggered)="lastCliSummary.set($event)" />
+      <sig-accessibility-cad (presetSelected)="keymapPreset.set($event)" />
+    </div>
+  </sig-drawer>
+
+  <sig-drawer [open]="whatsNewOpen()" title="What's New in Signal Platform" (closed)="whatsNewOpen.set(false)">
     <div class="sig-stack">
       <sig-status-pill [label]="vm().releaseBadge" tone="ok" />
       @for (hl of vm().latestHighlights; track hl) {

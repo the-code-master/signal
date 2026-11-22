@@ -1,0 +1,44 @@
+<sig-panel
+  title="Live Saltation-Adjoint What-If Scrubber"
+  subtitle="FEAT-085 < 15 ms Taylor/Adjoint Ghost Curves • Revolve Checkpointing"
+  badge="signal-diff-sim"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <sig-status-pill [label]="vm().latencyBadge" [tone]="vm().latencyTone" />
+        <span class="sig-code">{{ vm().adjointGradientBadge }}</span>
+      </div>
+      <div class="sig-row">
+        <label class="sig-subtitle" for="sig-whatif-slider">Scrub L1 ({{ vm().activeParamNh }} nH):</label>
+        <input
+          id="sig-whatif-slider"
+          type="range"
+          min="-30"
+          max="30"
+          [value]="vm().scrubPercent"
+          (input)="onScrubInput($event)"
+        />
+      </div>
+    </div>
+
+    <div class="sig-canvas-frame">
+      <svg class="sig-svg-plot" viewBox="0 0 800 160" aria-label="Saltation-Adjoint Ghost Family Curves">
+        @for (curve of vm().ghostCurves; track curve.id) {
+          <polyline
+            fill="none"
+            [attr.stroke]="curve.isActiveCurve ? 'var(--sig-accent-primary)' : 'var(--sig-border-strong)'"
+            [attr.stroke-width]="curve.isActiveCurve ? 2.5 : 1"
+            [attr.points]="curve.svgPoints"
+          />
+        }
+      </svg>
+    </div>
+
+    <div class="sig-row">
+      @for (curve of vm().ghostCurves; track curve.id) {
+        <span class="sig-badge sig-mono">{{ curve.deltaLabel }}</span>
+      }
+    </div>
+  </div>
+</sig-panel>

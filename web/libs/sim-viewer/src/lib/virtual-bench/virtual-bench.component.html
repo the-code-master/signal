@@ -1,0 +1,31 @@
+<sig-panel
+  title="Virtual Bench Instrument Deck"
+  subtitle="FEAT-081 4-Ch DSO • 32-Ch Logic Analyzer • FFT Spectrum • 2-Port VNA Smith Chart"
+  badge="signal-sim"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (mode of vm().modes; track mode.id) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().activeMode === mode.id"
+            type="button"
+            (click)="selectMode(mode.id)"
+          >
+            {{ mode.label }}
+          </button>
+        }
+      </div>
+      <span class="sig-subtitle">{{ vm().instrumentTitle }}</span>
+    </div>
+
+    <div class="sig-row">
+      @for (metric of vm().metrics; track metric.id) {
+        <sig-status-pill [label]="metric.label" [tone]="metric.tone" />
+      }
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

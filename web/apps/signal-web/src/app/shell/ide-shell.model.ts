@@ -2,6 +2,7 @@
 // Invariants: Preserves string-serialized 64-bit fencing epochs; zero Angular imports.
 // Spec: architecture/06-frontend-angular-and-fastapi-control-plane.md, architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
 import type { SigThemeId, SigUiProfile } from "@signal/design-system";
+import type { CadKeymapPreset } from "../accessibility/accessibility.model";
 
 export interface WorkbenchNavLink {
   readonly slug: string;
@@ -35,5 +36,9 @@ export interface IdeShellVm {
   readonly visibleNavLinks: readonly WorkbenchNavLink[];
   readonly sessionBadge: string;
   readonly releaseBadge: string;
+  readonly multiMonitorBadge: string;
+  readonly keymapBadge: string;
   readonly latestHighlights: readonly string[];
 }
+
+export type { CadKeymapPreset };

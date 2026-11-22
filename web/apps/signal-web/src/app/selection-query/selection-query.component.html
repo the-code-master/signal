@@ -1,0 +1,20 @@
+<div class="sig-toolbar" role="search" aria-label="Topological Selection Query Bar">
+  <div class="sig-row">
+    <label class="sig-subtitle" for="sig-sel-query">Selection Query:</label>
+    <input
+      id="sig-sel-query"
+      class="sig-input"
+      type="text"
+      [value]="vm().queryText"
+      (input)="onQueryInput($event)"
+    />
+    <sig-status-pill [label]="vm().summaryBadge" [tone]="vm().tone" />
+  </div>
+  <div class="sig-row">
+    @for (preset of vm().presets; track preset) {
+      <button class="sig-btn" type="button" (click)="applyPreset(preset)">
+        {{ preset }}
+      </button>
+    }
+  </div>
+</div>

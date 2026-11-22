@@ -1,0 +1,17 @@
+# Module: engine/crates/signal-lib-semiconductor/Cargo.toml — Pure-Rust Semiconductor & Behavioral Power IC Models
+# Invariants: Uses C^2 limexp_c2 & Dual64 AD for smooth subthreshold-to-saturation convergence (F-024, F-025).
+# Spec: architecture/03-rust-eda-engine.md
+[package]
+name = "signal-lib-semiconductor"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-core = { workspace = true }
+signal-component = { workspace = true }

@@ -758,7 +758,10 @@ dependencies = [
 name = "signal-diff-sim"
 version = "0.1.0"
 dependencies = [
+ "signal-core",
+ "signal-proto",
  "signal-sim",
+ "thiserror",
 ]
 
 [[package]]
@@ -773,6 +776,7 @@ name = "signal-geom"
 version = "0.1.0"
 dependencies = [
  "signal-core",
+ "thiserror",
 ]
 
 [[package]]
@@ -788,9 +792,26 @@ dependencies = [
 name = "signal-graph"
 version = "0.1.0"
 dependencies = [
+ "signal-core",
  "signal-geom",
  "signal-proto",
  "thiserror",
+]
+
+[[package]]
+name = "signal-lib-passive"
+version = "0.1.0"
+dependencies = [
+ "signal-component",
+ "signal-core",
+]
+
+[[package]]
+name = "signal-lib-semiconductor"
+version = "0.1.0"
+dependencies = [
+ "signal-component",
+ "signal-core",
 ]
 
 [[package]]
@@ -799,6 +820,15 @@ version = "0.1.0"
 dependencies = [
  "signal-geom",
  "signal-proto",
+ "thiserror",
+]
+
+[[package]]
+name = "signal-module-sdk"
+version = "0.1.0"
+dependencies = [
+ "signal-component",
+ "signal-core",
  "thiserror",
 ]
 
@@ -832,6 +862,7 @@ dependencies = [
  "serde",
  "serde_json",
  "signal-core",
+ "signal-geom",
  "signal-git-sync",
  "signal-graph",
  "signal-proto",
@@ -863,7 +894,15 @@ dependencies = [
 name = "signal-sim"
 version = "0.1.0"
 dependencies = [
+ "serde",
+ "serde_json",
  "signal-component",
+ "signal-core",
+ "signal-lib-passive",
+ "signal-lib-semiconductor",
+ "signal-module-sdk",
+ "signal-proto",
+ "thiserror",
 ]
 
 [[package]]

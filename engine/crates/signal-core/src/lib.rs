@@ -1,4 +1,4 @@
-// Module: engine/crates/signal-core/src/lib.rs — SI Units, SecretBox<T> & Release Dev-Auth Hard Gate
+// Module: engine/crates/signal-core/src/lib.rs — SI Units, 0.5-ULP Math, Hybrid PQC, SecretBox<T> & Quick Calculators
 // Invariants: Redacts SecretBox Debug/Display (F-088); disambiguates m (1e-3) vs M/Meg (1e6) (F-075); blocks release dev-guest-auth (F-095).
 // Spec: architecture/03-rust-eda-engine.md, architecture/15-application-security-and-project-isolation.md
 #![forbid(unsafe_code)]
@@ -8,9 +8,32 @@ compile_error!(
     "FATAL SECURITY VIOLATION (F-095): `dev-guest-auth` is strictly forbidden in release builds!"
 );
 
-use std::fmt;
 use thiserror::Error;
-use zeroize::{Zeroize, ZeroizeOnDrop};
+
+pub mod core_math;
+pub mod crypto_pqc;
+pub mod eng_calculators;
+pub mod expr_solver;
+pub mod resistor_codes;
+pub mod secret_box;
+pub mod sha512_hkdf;
+pub mod units;
+
+pub use core_math::{det_cos, det_exp, det_ln, det_sin, det_tanh, limexp_c2};
+pub use crypto_pqc::{
+    HybridKemEnvelope, HybridSignature, hkdf_sha512, hmac_sha512, sha512, sha512_256_hex,
+};
+pub use eng_calculators::{
+    DecodedResistor, Ipc2152TraceResult, LedResistorResult, VoltageDividerResult,
+    calc_ipc2152_trace, calc_led_resistor, calc_voltage_divider, decode_eia96_smd,
+    decode_resistor_color_bands, nearest_e_series_mohm,
+};
+pub use expr_solver::{SolvedEquation, evaluate_parametric_equation};
+pub use secret_box::{SecretBox, ct_eq_bytes};
+pub use units::{
+    Femtoseconds, Microvolts, Millikelvin, Milliohms, Nanoamps, Nanometers, Picoseconds,
+    parse_spice_si, si_prefix_exponent_milli_steps,
+};
 
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum CoreError {
@@ -18,52 +41,14 @@ pub enum CoreError {
     InvalidSiPrefix(String),
     #[error("64-bit SI value overflow during scaling")]
     SiOverflow,
-}
-
-#[derive(Zeroize, ZeroizeOnDrop)]
-pub struct SecretBox<T: Zeroize> {
-    inner: T,
-}
-
-impl<T: Zeroize> SecretBox<T> {
-    pub const fn new(inner: T) -> Self {
-        Self { inner }
-    }
-
-    pub fn expose_secret(&self) -> &T {
-        &self.inner
-    }
-}
-
-impl<T: Zeroize> fmt::Debug for SecretBox<T> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str("SecretBox([REDACTED])")
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct Nanometers(pub i64);
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct Picoseconds(pub i64);
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct Microvolts(pub i64);
-
-pub fn si_prefix_exponent_milli_steps(prefix: &str) -> Result<i32, CoreError> {
-    match prefix {
-        "f" => Ok(-15),
-        "p" => Ok(-12),
-        "n" => Ok(-9),
-        "u" | "µ" => Ok(-6),
-        "m" => Ok(-3),
-        "" => Ok(0),
-        "k" => Ok(3),
-        "M" | "Meg" | "MEG" => Ok(6),
-        "G" => Ok(9),
-        "T" => Ok(12),
-        other => Err(CoreError::InvalidSiPrefix(other.to_string())),
-    }
+    #[error("invalid numeric engineering literal `{0}`")]
+    InvalidNumber(String),
+    #[error("parametric expression error: {0}")]
+    ExpressionError(String),
+    #[error("engineering calculator error: {0}")]
+    CalculatorError(String),
+    #[error("cryptographic envelope error: {0}")]
+    CryptoError(String),
 }
 
 #[cfg(test)]
@@ -71,9 +56,10 @@ mod tests {
     use super::{CoreError, SecretBox, si_prefix_exponent_milli_steps};
 
     #[test]
-    fn secret_box_never_leaks_plaintext_in_debug() {
+    fn secret_box_never_leaks_plaintext_in_debug_or_display() {
         let dek = SecretBox::new(vec![0xAA_u8, 0xBB, 0xCC]);
-        assert_eq!(format!("{dek:?}"), "SecretBox([REDACTED])");
+        assert_eq!(format!("{dek:?}"), "SecretBox([REDACTED SECRET])");
+        assert_eq!(format!("{dek}"), "[REDACTED SECRET]");
         assert_eq!(dek.expose_secret().len(), 3);
     }
 

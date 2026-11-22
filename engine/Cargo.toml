@@ -10,6 +10,9 @@ members = [
     "crates/signal-geom",
     "crates/signal-graph",
     "crates/signal-component",
+    "crates/signal-lib-passive",
+    "crates/signal-lib-semiconductor",
+    "crates/signal-module-sdk",
     "crates/signal-parts",
     "crates/signal-sim",
     "crates/signal-diff-sim",
@@ -47,6 +50,9 @@ signal-core = { path = "crates/signal-core" }
 signal-geom = { path = "crates/signal-geom" }
 signal-graph = { path = "crates/signal-graph" }
 signal-component = { path = "crates/signal-component" }
+signal-lib-passive = { path = "crates/signal-lib-passive" }
+signal-lib-semiconductor = { path = "crates/signal-lib-semiconductor" }
+signal-module-sdk = { path = "crates/signal-module-sdk" }
 signal-parts = { path = "crates/signal-parts" }
 signal-sim = { path = "crates/signal-sim" }
 signal-git-sync = { path = "crates/signal-git-sync" }

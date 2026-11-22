@@ -1,5 +1,5 @@
-# Module: engine/crates/signal-sim/Cargo.toml — Ruiz-Equilibrated MNA SPICE & CPU/GPU Dispatcher
-# Invariants: Dispatches <25k nodes to CPU KLU and >=25k nodes to GPU cuDSS; pins physics_determinism_epoch (F-023, F-116).
+# Module: engine/crates/signal-sim/Cargo.toml — Ruiz-Equilibrated MNA SPICE, TR-BDF2, PSS/HB & Virtual Bench
+# Invariants: Dispatches <25k nodes to CPU KLU and >=25k nodes to GPU cuDSS; pins physics_determinism_epoch (F-023..028, F-116).
 # Spec: architecture/03-rust-eda-engine.md, architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
 [package]
 name = "signal-sim"
@@ -13,4 +13,14 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
+signal-core = { workspace = true }
 signal-component = { workspace = true }
+signal-lib-passive = { workspace = true }
+signal-lib-semiconductor = { workspace = true }
+signal-module-sdk = { workspace = true }
+signal-proto = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }

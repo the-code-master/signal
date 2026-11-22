@@ -1,0 +1,28 @@
+<sig-panel
+  title="Radial 8-Slice Pie-Menu & WebHID 6-DOF SpaceMouse"
+  subtitle="FEAT-093 Gesture Sector Selector • Deadzone + Exponential 6-DOF Curve"
+  badge="signal-geom"
+>
+  <div class="sig-stack">
+    <div class="sig-row">
+      @for (slice of vm().slices; track slice.index) {
+        <button
+          class="sig-btn"
+          [class.sig-btn-primary]="vm().activeSlice?.index === slice.index"
+          type="button"
+          (click)="selectSlice(slice.index, slice.commandId)"
+        >
+          {{ slice.label }}
+        </button>
+      }
+    </div>
+
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <label class="sig-subtitle" for="sig-6dof-puck">6-DOF Puck Deflection:</label>
+        <input id="sig-6dof-puck" type="range" min="-100" max="100" value="45" (input)="onPuckSlider($event)" />
+      </div>
+      <sig-status-pill [label]="vm().deltaBadge" tone="ok" />
+    </div>
+  </div>
+</sig-panel>

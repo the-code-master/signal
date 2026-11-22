@@ -13,6 +13,10 @@ export default defineConfig({
       "@signal/contracts": resolve(root, "../contracts/gen/ts/signal_v1.ts"),
       "@signal/design-system": resolve(root, "libs/design-system/src/index.ts"),
       "@signal/ui-kit": resolve(root, "libs/ui-kit/src/index.ts"),
+      "@signal/canvas-core": resolve(root, "libs/canvas-core/src/index.ts"),
+      "@signal/schematic": resolve(root, "libs/schematic/src/index.ts"),
+      "@signal/sim-viewer": resolve(root, "libs/sim-viewer/src/index.ts"),
+      "@signal/academy": resolve(root, "libs/academy/src/index.ts"),
     },
   },
   test: {

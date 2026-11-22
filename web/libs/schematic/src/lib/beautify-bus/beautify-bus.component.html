@@ -1,0 +1,52 @@
+<sig-panel
+  title="Auto-Beautify & Typed Bus Inspector"
+  subtitle="FEAT-001 Sugiyama + A* Untangler • FEAT-002 Vector & Protocol Fanout"
+  badge="signal-graph"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <sig-status-pill [label]="vm().crossingBadge" [tone]="vm().crossingTone" />
+        <span class="sig-badge sig-mono">{{ vm().wirelengthBadge }}</span>
+        <span class="sig-badge sig-mono">{{ vm().gridPitchLabel }}</span>
+      </div>
+      <button class="sig-btn sig-btn-primary" type="button" (click)="toggleBeautifyApply()">
+        {{ vm().applyButtonLabel }}
+      </button>
+    </div>
+
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <label class="sig-subtitle" for="sig-bus-slice-input">Bus Slice:</label>
+        <input
+          id="sig-bus-slice-input"
+          class="sig-input"
+          type="text"
+          [value]="sliceExpression()"
+          (input)="onSliceInput($event)"
+        />
+        <span class="sig-code">Width: {{ vm().busExpansion.bitWidth }} lanes</span>
+      </div>
+      <div class="sig-row">
+        @for (proto of protocols; track proto) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="activeProtocol() === proto"
+            type="button"
+            (click)="selectProtocol(proto)"
+          >
+            {{ proto }}
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (vm().busExpansion.valid) {
+      <sig-data-grid [columns]="vm().netColumns" [rows]="vm().netRows" />
+    } @else {
+      <div class="sig-surface">
+        <span class="sig-subtitle">{{ vm().busExpansion.errorHint }}</span>
+      </div>
+    }
+  </div>
+</sig-panel>

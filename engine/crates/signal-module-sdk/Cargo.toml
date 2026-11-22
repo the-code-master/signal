@@ -1,0 +1,18 @@
+# Module: engine/crates/signal-module-sdk/Cargo.toml — Multi-Dialect SPICE Parser, LLVM-Free Verilog-A AOT & MicroVM OSDI IPC
+# Invariants: Zero LLVM / zero dlopen in signal-pod (F-114, F-115); hierarchy depth <= 64 (F-029).
+# Spec: architecture/03-rust-eda-engine.md, architecture/15-application-security-and-project-isolation.md
+[package]
+name = "signal-module-sdk"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-core = { workspace = true }
+signal-component = { workspace = true }
+thiserror = { workspace = true }

@@ -2,21 +2,34 @@
   <div class="sig-row-between">
     <div class="sig-row">
       <sig-status-pill [label]="vm().planeModeLabel" tone="ok" />
+      <sig-status-pill [label]="vm().settlingBadge" tone="neutral" />
       <sig-status-pill [label]="vm().watermarkBadge" tone="neutral" />
     </div>
-    <button class="sig-btn" type="button" (click)="togglePlaneMode()">Switch Plane 1 / Plane 2</button>
+    <div class="sig-row">
+      <button class="sig-btn" type="button" (click)="settleLosslessNow()">Settle 80ms QOI</button>
+      <button class="sig-btn" type="button" (click)="sealSelectionToCloudClipboard()">Seal Cloud Clip</button>
+      <button class="sig-btn" type="button" (click)="togglePlaneMode()">Switch Plane 1 / Plane 2</button>
+    </div>
   </div>
 
   <div class="sig-panel sig-stack">
     <div class="sig-row-between">
       <strong class="sig-title">{{ vm().domainTitle }} — Server-Rendered GPU Atlas Stream</strong>
-      <span class="sig-mono sig-subtitle">{{ vm().traceWidthText }}</span>
+      <span class="sig-code">{{ vm().streamSessionBadge }}</span>
     </div>
     <div class="sig-row">
       <span class="sig-badge sig-mono">{{ vm().cursorXText }}</span>
       <span class="sig-badge sig-mono">{{ vm().cursorYText }}</span>
+      <span class="sig-badge sig-mono">{{ vm().traceWidthText }}</span>
+      <span class="sig-badge sig-mono">{{ vm().volatileBufferBadge }}</span>
+      <span class="sig-badge sig-mono">{{ vm().clipboardBadge }}</span>
       @for (sig of vm().hudSignals; track sig) {
         <span class="sig-badge sig-mono">{{ sig }}</span>
+      }
+    </div>
+    <div class="sig-row">
+      @for (hud of vm().projectedHudPrimitives; track hud.id) {
+        <sig-status-pill [label]="hud.badgeText" [tone]="hud.tone" />
       }
     </div>
     <sig-si-input

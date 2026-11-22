@@ -1,0 +1,42 @@
+<sig-panel
+  title="Monte Carlo Yield & Spearman Tornado Studio"
+  subtitle="FEAT-083 Sobol/LHS Yield Cpk • Histogram & Rank Sensitivity"
+  badge="yield_analytics"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <sig-status-pill [label]="vm().cpkBadge" [tone]="vm().cpkTone" />
+        <sig-status-pill [label]="vm().yieldBadge" tone="ok" />
+      </div>
+      <div class="sig-row">
+        @for (runs of runCounts; track runs) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="selectedRuns() === runs"
+            type="button"
+            (click)="selectRunCount(runs)"
+          >
+            {{ runs }} LHS Runs
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="sig-canvas-frame">
+      <svg class="sig-svg-plot" viewBox="0 0 800 160" aria-label="Monte Carlo Yield Histogram">
+        @for (bin of vm().bins; track bin.binIndex) {
+          <rect
+            [attr.x]="bin.barRectX"
+            [attr.y]="bin.barRectY"
+            [attr.width]="bin.barWidth"
+            [attr.height]="bin.barHeight"
+            fill="var(--sig-accent-primary)"
+          />
+        }
+      </svg>
+    </div>
+
+    <sig-data-grid [columns]="vm().tornadoColumns" [rows]="vm().tornadoRows" />
+  </div>
+</sig-panel>

@@ -1,0 +1,57 @@
+<div class="sig-stack">
+  <sig-panel
+    [title]="vm().descriptor.title"
+    [subtitle]="vm().descriptor.subtitle"
+    [badge]="vm().engineBadge"
+  >
+    <div class="sig-stack">
+      <div class="sig-grid-cards">
+        @for (kpi of vm().descriptor.kpis; track kpi.id) {
+          <div class="sig-panel sig-row-between">
+            <span class="sig-subtitle">{{ kpi.label }}</span>
+            <sig-status-pill [label]="kpi.value" [tone]="kpi.tone" />
+          </div>
+        }
+      </div>
+      <div class="sig-toolbar">
+        <div class="sig-row">
+          @for (tab of vm().tabs; track tab.id) {
+            <button
+              class="sig-btn"
+              [class.sig-btn-primary]="vm().activeTab === tab.id"
+              type="button"
+              (click)="selectTab(tab.id)"
+            >
+              {{ tab.label }}
+            </button>
+          }
+        </div>
+        <span class="sig-code">{{ vm().crossProbeBadge }}</span>
+      </div>
+    </div>
+  </sig-panel>
+
+  <sig-waveform-canvas (netCrossProbed)="onNetCrossProbed($event)" />
+  <sig-waveform-formula-bar (formulaCommitted)="onFormulaCommitted($event)" />
+
+  @switch (vm().activeTab) {
+    @case ("VIRTUAL_BENCH") {
+      <sig-virtual-bench-deck />
+    }
+    @case ("MONTE_CARLO") {
+      <sig-monte-carlo-studio />
+    }
+    @case ("JITTER_STUDIO") {
+      <sig-jitter-studio />
+    }
+    @case ("WHAT_IF_ADJOINT") {
+      <sig-what-if-scrubber />
+    }
+    @case ("REGRESSION_SUITE") {
+      <sig-regression-suite />
+    }
+    @case ("STIMULUS_AUDITION") {
+      <sig-stimulus-audition />
+    }
+  }
+</div>

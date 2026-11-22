@@ -1,0 +1,59 @@
+<sig-panel
+  title="Cross-Sheet Portals, Repeat(N) Hierarchy & Assembly Variants"
+  subtitle="FEAT-005 Portal Minimap • FEAT-006 Repeat(N) Matrix • FEAT-007 DNP & Alternate MPNs"
+  badge="signal-graph"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (portal of vm().portals; track portal.id) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="selectedPortalId() === portal.id"
+            type="button"
+            (click)="selectPortal(portal.id)"
+          >
+            {{ portal.netName }}
+          </button>
+        }
+      </div>
+      <span class="sig-code">{{ vm().selectedPortalSummary }}</span>
+    </div>
+
+    <div class="sig-toolbar">
+      <sig-status-pill [label]="vm().channelBadge" tone="ok" />
+      <div class="sig-row">
+        @for (cnt of repeatOptions; track cnt) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="repeatCount() === cnt"
+            type="button"
+            (click)="selectRepeatCount(cnt)"
+          >
+            Repeat({{ cnt }})
+          </button>
+        }
+      </div>
+    </div>
+
+    <sig-data-grid [columns]="vm().channelColumns" [rows]="vm().channelRows" />
+
+    <div class="sig-toolbar">
+      <sig-status-pill [label]="vm().variantSummaryBadge" tone="neutral" />
+      <div class="sig-row">
+        @for (v of variants; track v) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="activeVariant() === v"
+            type="button"
+            (click)="selectVariant(v)"
+          >
+            {{ v }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <sig-data-grid [columns]="vm().variantColumns" [rows]="vm().variantRows" />
+  </div>
+</sig-panel>

@@ -1,0 +1,17 @@
+# Module: engine/crates/signal-lib-passive/Cargo.toml — Charge/Flux-Conserving Passive Component Library
+# Invariants: Exact q(v) MLCC capacitance and Phi(i) saturating inductance (F-024); #![forbid(unsafe_code)].
+# Spec: architecture/03-rust-eda-engine.md
+[package]
+name = "signal-lib-passive"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-core = { workspace = true }
+signal-component = { workspace = true }

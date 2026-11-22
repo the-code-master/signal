@@ -11,6 +11,8 @@ compile_error!(
 use signal_core as _;
 use signal_git_sync::{GitSyncError, verify_super_commit_fencing};
 use signal_graph::{GraphError, GraphLedger};
+
+pub mod render;
 use signal_proto::v1::{
     ApplyTransactionRequest, ApplyTransactionResponse, AttachCollaboratorRequest,
     AttachCollaboratorResponse, FencingAuthority, HydrateProjectRequest, HydrateProjectResponse,

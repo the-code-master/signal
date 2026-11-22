@@ -1,0 +1,25 @@
+<sig-panel
+  title="Automated Spec-Assertion Regression Console"
+  subtitle="FEAT-086 Executable Design Margin Gate • Headless CI Parity"
+  badge="regression_runner"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <sig-status-pill [label]="vm().gateBadge" [tone]="vm().gateTone" />
+      <div class="sig-row">
+        <input
+          class="sig-input"
+          type="text"
+          aria-label="New Spec Assertion"
+          [value]="customRule()"
+          (input)="onRuleInput($event)"
+        />
+        <button class="sig-btn sig-btn-primary" type="button" (click)="appendRule()">
+          Add Spec Assertion
+        </button>
+      </div>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

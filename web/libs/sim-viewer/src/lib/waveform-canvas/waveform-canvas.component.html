@@ -1,0 +1,64 @@
+<sig-panel
+  title="Arrow IPC Decimated Waveform Canvas"
+  subtitle="F-069 <= 4,096-Pixel Envelope Stream • Dual-Cursor Slew & Schematic Cross-Probe"
+  badge="signal-sim"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <sig-status-pill [label]="vm().bucketCapBadge" [tone]="vm().bucketCapTone" />
+        <span class="sig-code">{{ vm().cursor.readoutBadge }}</span>
+      </div>
+      <div class="sig-row">
+        @for (net of vm().probeNets; track net) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().activeProbeNet === net"
+            type="button"
+            (click)="crossProbeNet(net)"
+          >
+            Probe {{ net }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="sig-canvas-frame">
+      <svg class="sig-svg-plot" viewBox="0 0 800 160" aria-label="Decimated SPICE Waveform Plot">
+        <polyline
+          fill="none"
+          stroke="var(--sig-accent-primary)"
+          stroke-width="2"
+          [attr.points]="vm().frame.svgPolylinePoints"
+        />
+        <line
+          [attr.x1]="vm().cursorAPxX"
+          y1="8"
+          [attr.x2]="vm().cursorAPxX"
+          y2="152"
+          stroke="var(--sig-status-ok)"
+          stroke-dasharray="4 3"
+        />
+        <line
+          [attr.x1]="vm().cursorBPxX"
+          y1="8"
+          [attr.x2]="vm().cursorBPxX"
+          y2="152"
+          stroke="var(--sig-status-warn)"
+          stroke-dasharray="4 3"
+        />
+      </svg>
+    </div>
+
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <label class="sig-subtitle" for="sig-cur-a">Cursor A:</label>
+        <input id="sig-cur-a" type="range" min="0" max="63" [value]="cursorAIdx()" (input)="onCursorAInput($event)" />
+      </div>
+      <div class="sig-row">
+        <label class="sig-subtitle" for="sig-cur-b">Cursor B:</label>
+        <input id="sig-cur-b" type="range" min="0" max="63" [value]="cursorBIdx()" (input)="onCursorBInput($event)" />
+      </div>
+    </div>
+  </div>
+</sig-panel>

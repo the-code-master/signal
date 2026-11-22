@@ -1,0 +1,45 @@
+<sig-panel
+  title="Visual SOA Smoke & Thermal Failure Sandbox"
+  subtitle="FEAT-113 EXPLORER / MAKER Root-Cause Physics • 1-Click Auto-Fix Component Rating"
+  badge="signal-component"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (sc of scenarios; track sc.id) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().scenario.id === sc.id"
+            type="button"
+            (click)="selectScenario(sc.id)"
+          >
+            {{ sc.entityId }}
+          </button>
+        }
+        @for (mode of modes; track mode) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().profile === mode"
+            type="button"
+            (click)="selectMode(mode)"
+          >
+            {{ mode }}
+          </button>
+        }
+      </div>
+      <button class="sig-btn sig-btn-primary" type="button" (click)="toggleAutoFix()">
+        {{ vm().actionButtonLabel }}
+      </button>
+    </div>
+
+    <div class="sig-surface sig-stack">
+      <sig-status-pill [label]="vm().fxBadge" [tone]="vm().fxTone" />
+      <p class="sig-subtitle">{{ vm().diagnosticExplanation }}</p>
+      <div class="sig-row">
+        @for (pill of vm().telemetryPills; track pill) {
+          <span class="sig-badge sig-mono">{{ pill }}</span>
+        }
+      </div>
+    </div>
+  </div>
+</sig-panel>

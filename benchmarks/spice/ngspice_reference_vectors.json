@@ -1,0 +1,42 @@
+{
+  "suite_version": "0.1.0",
+  "physics_determinism_epoch": 1,
+  "max_relative_error": 0.001,
+  "cases": {
+    "rc_step_1khz": {
+      "r_ohms": 1000.0,
+      "c_farads": 1.0e-7,
+      "v_step_volts": 3.3,
+      "v_at_100us_volts": 2.085997844134,
+      "v_settling_volts": 3.299998990522
+    },
+    "rlc_bandpass_ac": {
+      "r_ohms": 50.0,
+      "l_henries": 1.0e-5,
+      "c_farads": 1.0e-9,
+      "f_res_hz": 1591549.4309189535,
+      "mag_at_1mhz": 0.460714298662,
+      "mag_at_f_res": 1.0,
+      "mag_at_2p5mhz": 0.471890118051
+    },
+    "diode_halfwave_rectifier": {
+      "vin_peak_volts": 5.0,
+      "r_load_ohms": 1000.0,
+      "dc_vout_volts": 4.349215038287
+    },
+    "mosfet_common_source_amp": {
+      "vdd_volts": 5.0,
+      "vgs_bias_volts": 1.5,
+      "r_drain_ohms": 2000.0
+    },
+    "sync_buck_48v_to_1v8": {
+      "vin_volts": 48.0,
+      "duty_cycle": 0.0375,
+      "l_henries": 1.0e-5,
+      "c_farads": 4.7e-5,
+      "r_load_ohms": 1.8,
+      "f_sw_hz": 500000.0,
+      "expected_vout_ss_volts": 1.79980002222
+    }
+  }
+}

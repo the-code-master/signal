@@ -2,7 +2,13 @@
 // Invariants: Filters EXPLORER/MAKER/PRO workbenches in TypeScript (never HTML @if chains); <=250 LOC.
 // Spec: architecture/14-universal-scale-accessibility-and-expandability.md, docs/engineering/ANGULAR_UI_STYLE_GUIDE.md
 import type { SigThemeId, SigUiProfile } from "@signal/design-system";
-import type { IdeShellVm, PlatformReleaseDto, SessionLeaseDto, WorkbenchNavLink } from "./ide-shell.model";
+import type {
+  CadKeymapPreset,
+  IdeShellVm,
+  PlatformReleaseDto,
+  SessionLeaseDto,
+  WorkbenchNavLink,
+} from "./ide-shell.model";
 
 const PROFILE_RANK: Readonly<Record<SigUiProfile, number>> = {
   EXPLORER: 1,
@@ -50,29 +56,37 @@ export function filterNavLinksForProfile(
   }));
 }
 
-export function buildIdeShellVm(
-  orgSlug: string,
-  projectSlug: string,
-  profile: SigUiProfile,
-  theme: SigThemeId,
-  releases: readonly PlatformReleaseDto[],
-  lease: SessionLeaseDto | null,
-): IdeShellVm {
-  const latest = releases[0];
-  const sessionBadge = lease
-    ? `Cell: ${lease.cell_id} • Epoch #${lease.active_fencing_epoch}`
+export interface IdeShellStateInput {
+  readonly orgSlug: string;
+  readonly projectSlug: string;
+  readonly profile: SigUiProfile;
+  readonly theme: SigThemeId;
+  readonly releases: readonly PlatformReleaseDto[];
+  readonly lease: SessionLeaseDto | null;
+  readonly secondaryPaneCount?: number;
+  readonly keymapPreset?: CadKeymapPreset;
+}
+
+export function buildIdeShellVm(input: IdeShellStateInput): IdeShellVm {
+  const latest = input.releases[0];
+  const sessionBadge = input.lease
+    ? `Cell: ${input.lease.cell_id} • Epoch #${input.lease.active_fencing_epoch}`
     : "Cell: Connecting Tier-3 Rust Security Cell…";
   const releaseBadge = latest
     ? `v${latest.version} (${latest.channel} • Epoch ${latest.physics_determinism_epoch})`
     : "v0.1.0 (STABLE)";
+  const panes = input.secondaryPaneCount ?? 0;
+  const preset = input.keymapPreset ?? "KiCad";
   return {
-    orgSlug,
-    projectSlug,
-    activeProfile: profile,
-    activeTheme: theme,
-    visibleNavLinks: filterNavLinksForProfile(orgSlug, projectSlug, profile),
+    orgSlug: input.orgSlug,
+    projectSlug: input.projectSlug,
+    activeProfile: input.profile,
+    activeTheme: input.theme,
+    visibleNavLinks: filterNavLinksForProfile(input.orgSlug, input.projectSlug, input.profile),
     sessionBadge,
     releaseBadge,
+    multiMonitorBadge: `Monitors: ${1 + panes}x`,
+    keymapBadge: `Keymap: ${preset}`,
     latestHighlights: latest?.highlights ?? [
       "3-Tier Isolated Architecture: Angular v22.3 + FastAPI 3.15 + Pure-Rust 1.100 Security Cell.",
     ],

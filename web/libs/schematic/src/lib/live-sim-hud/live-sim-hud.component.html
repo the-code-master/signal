@@ -1,0 +1,52 @@
+<sig-panel
+  title="Live Schematic Controls & Current-River HUD"
+  subtitle="FEAT-003 Warm-Factorization Pot/Switch/Fault • FEAT-004 Particle Flux & SOA Thermal"
+  badge="signal-sim"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <label class="sig-subtitle" for="sig-pot-wiper">Rotary Pot RV1 (10 kΩ):</label>
+        <input
+          id="sig-pot-wiper"
+          type="range"
+          min="0"
+          max="100"
+          [value]="wiperPercent()"
+          (input)="onWiperInput($event)"
+        />
+        <span class="sig-code">{{ vm().wiperResistanceText }}</span>
+      </div>
+      <button class="sig-btn" type="button" (click)="toggleSwitch()">
+        {{ vm().switchBadge }}
+      </button>
+    </div>
+
+    <div class="sig-toolbar">
+      <sig-status-pill [label]="vm().faultBadge" [tone]="vm().faultTone" />
+      <div class="sig-row">
+        @for (mode of faultModes; track mode) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="faultMode() === mode"
+            type="button"
+            (click)="selectFault(mode)"
+          >
+            {{ mode }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <span class="sig-badge sig-mono">{{ vm().riverDensityBadge }}</span>
+        <sig-status-pill [label]="vm().soaThermalBadge" [tone]="vm().soaTone" />
+      </div>
+      <div class="sig-row">
+        <button class="sig-btn" type="button" (click)="toggleCurrentRiver()">Toggle Current-River</button>
+        <button class="sig-btn" type="button" (click)="toggleSoaBadge()">Toggle SOA Thermal</button>
+      </div>
+    </div>
+  </div>
+</sig-panel>
