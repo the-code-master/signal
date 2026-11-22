@@ -1,5 +1,5 @@
 # Module: scripts/ops/build.py — Declarative Multi-Component Monorepo Builder
-# Invariants: Builds components from scripts/components.toml; enforces --no-default-features on Rust release binaries (F-095).
+# Invariants: Builds components from scripts/components.toml; forbids dev-guest-auth in release (F-095).
 # Spec: architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
 from __future__ import annotations
 
@@ -22,9 +22,7 @@ def run_build(
     for spec in specs:
         req_file = reg.repo_root / spec.required_path
         if not req_file.exists():
-            details.append(
-                f"{spec.name}: SKIPPED_NOT_YET_SCAFFOLDED (`{spec.required_path}` absent)"
-            )
+            details.append(f"{spec.name}: SKIPPED_NOT_YET_SCAFFOLDED (`{spec.required_path}` absent)")
             continue
         if not spec.build_commands:
             details.append(f"{spec.name}: NO_OP_BUILD")

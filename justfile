@@ -8,7 +8,16 @@ default:
 doctor *ARGS:
     ./signal.sh doctor {{ARGS}}
 
-dev MODE="lite" *ARGS:
+bootstrap *ARGS:
+    ./signal.sh bootstrap {{ARGS}}
+
+worktree *ARGS:
+    ./signal.sh worktree {{ARGS}}
+
+next LANE="cursor" *ARGS:
+    ./signal.sh next --lane {{LANE}} {{ARGS}}
+
+dev MODE="run" *ARGS:
     ./signal.sh dev {{MODE}} {{ARGS}}
 
 build *ARGS:

@@ -17,20 +17,14 @@ def run_image(
     dry_run: bool = False,
     as_json: bool = False,
 ) -> int:
-    specs = [
-        s
-        for s in select_components(reg, target=target)
-        if s.dockerfile and s.image_name
-    ]
+    specs = [s for s in select_components(reg, target=target) if s.dockerfile and s.image_name]
     details: list[str] = []
 
     for spec in specs:
         assert spec.dockerfile is not None and spec.image_name is not None
         df_path = reg.repo_root / spec.dockerfile
         if not df_path.exists():
-            details.append(
-                f"{spec.name}: SKIPPED_MISSING_DOCKERFILE (`{spec.dockerfile}`)"
-            )
+            details.append(f"{spec.name}: SKIPPED_MISSING_DOCKERFILE (`{spec.dockerfile}`)")
             continue
         image_ref = f"{reg.default_registry}/{spec.image_name}:v{reg.version}"
         build_cmd = [

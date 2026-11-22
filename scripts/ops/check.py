@@ -22,32 +22,23 @@ def _check_governance_invariants(repo_root: Path) -> list[str]:
     errors: list[str] = []
     agents_md = repo_root / "AGENTS.md"
     if agents_md.exists() and agents_md.stat().st_size >= AGENTS_MD_MAX_BYTES:
-        errors.append(
-            f"AGENTS.md size {agents_md.stat().st_size} B >= {AGENTS_MD_MAX_BYTES} B limit"
-        )
+        errors.append(f"AGENTS.md size {agents_md.stat().st_size} B >= {AGENTS_MD_MAX_BYTES} B limit")
 
     cursor_rule = repo_root / ".cursor" / "rules" / "signal-architecture.mdc"
-    if (
-        cursor_rule.exists()
-        and cursor_rule.stat().st_size >= CURSOR_CORE_RULE_MAX_BYTES
-    ):
+    if cursor_rule.exists() and cursor_rule.stat().st_size >= CURSOR_CORE_RULE_MAX_BYTES:
         errors.append(
             f".cursor/rules/signal-architecture.mdc size {cursor_rule.stat().st_size} B >= {CURSOR_CORE_RULE_MAX_BYTES} B"
         )
 
     openapi_file = repo_root / "contracts" / "openapi" / "control-plane.v1.yaml"
     if openapi_file.exists():
-        for idx, line in enumerate(
-            openapi_file.read_text(encoding="utf-8").splitlines(), 1
-        ):
+        for idx, line in enumerate(openapi_file.read_text(encoding="utf-8").splitlines(), 1):
             stripped = line.strip()
             if stripped.startswith("#") or not stripped.startswith("/"):
                 continue
             for bad in FORBIDDEN_OPENAPI_SUBSTRINGS:
                 if bad in stripped.lower():
-                    errors.append(
-                        f"DLP violation in control-plane.v1.yaml:{idx} -> `{stripped}`"
-                    )
+                    errors.append(f"DLP violation in control-plane.v1.yaml:{idx} -> `{stripped}`")
     return errors
 
 
@@ -78,9 +69,7 @@ def run_check(
     for spec in specs:
         req_file = reg.repo_root / spec.required_path
         if not req_file.exists():
-            details.append(
-                f"{spec.name}: SKIPPED_NOT_YET_SCAFFOLDED (`{spec.required_path}` absent)"
-            )
+            details.append(f"{spec.name}: SKIPPED_NOT_YET_SCAFFOLDED (`{spec.required_path}` absent)")
             continue
         for cmd in spec.check_commands:
             res = run_argv(cmd, reg.repo_root, dry_run=dry_run)

@@ -47,9 +47,7 @@ def run_rollback(
         return 2
 
     clean_ver = m.group(1)
-    compat = json.loads(
-        (reg.repo_root / "releases" / "compatibility.json").read_text(encoding="utf-8")
-    )
+    compat = json.loads((reg.repo_root / "releases" / "compatibility.json").read_text(encoding="utf-8"))
     db_policy = str(compat.get("db_migration_policy", ""))
     if db_policy != "EXPAND_AND_CONTRACT_ZERO_DOWNTIME":
         emit_output(

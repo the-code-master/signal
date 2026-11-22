@@ -13,9 +13,7 @@ from scripts.ops.registry import RepoRegistry, emit_output, run_argv
 SEMVER_RE = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
 
 
-def compute_next_semver(
-    current: str, commits: list[str], override_bump: str | None = None
-) -> str:
+def compute_next_semver(current: str, commits: list[str], override_bump: str | None = None) -> str:
     m = SEMVER_RE.match(current)
     if not m:
         raise ValueError(f"Invalid current SemVer `{current}`")
@@ -23,10 +21,7 @@ def compute_next_semver(
 
     bump = override_bump
     if bump is None:
-        if any(
-            "BREAKING CHANGE" in c or (":" in c and c.split(":", 1)[0].endswith("!"))
-            for c in commits
-        ):
+        if any("BREAKING CHANGE" in c or (":" in c and c.split(":", 1)[0].endswith("!")) for c in commits):
             bump = "major"
         elif any(c.startswith("feat") for c in commits):
             bump = "minor"
@@ -43,9 +38,7 @@ def compute_next_semver(
 
 
 def _recent_commits(reg: RepoRegistry) -> list[str]:
-    res = run_argv(
-        ["git", "log", "-n", "20", "--pretty=format:%s"], reg.repo_root, capture=True
-    )
+    res = run_argv(["git", "log", "-n", "20", "--pretty=format:%s"], reg.repo_root, capture=True)
     if res.returncode != 0:
         return []
     return [line.strip() for line in res.stdout.splitlines() if line.strip()]
@@ -74,9 +67,7 @@ def run_release(
 
     commits = _recent_commits(reg)
     next_ver = compute_next_semver(reg.version, commits, override_bump=bump)
-    compat = json.loads(
-        (reg.repo_root / "releases" / "compatibility.json").read_text(encoding="utf-8")
-    )
+    compat = json.loads((reg.repo_root / "releases" / "compatibility.json").read_text(encoding="utf-8"))
     epoch = int(compat["physics_determinism_epoch"])
     wire_min = str(compat["wire_min_version"])
     now = datetime.now(tz=UTC)
@@ -103,24 +94,14 @@ def run_release(
         (reg.repo_root / "VERSION").write_text(f"{next_ver}\n", encoding="utf-8")
         notes_dir = reg.repo_root / "releases" / "notes"
         notes_dir.mkdir(parents=True, exist_ok=True)
-        (notes_dir / f"v{next_ver}.json").write_text(
-            json.dumps(note_json, indent=2) + "\n", encoding="utf-8"
-        )
+        (notes_dir / f"v{next_ver}.json").write_text(json.dumps(note_json, indent=2) + "\n", encoding="utf-8")
         (notes_dir / f"v{next_ver}.md").write_text(note_md, encoding="utf-8")
         changelog_path = reg.repo_root / "CHANGELOG.md"
         existing = changelog_path.read_text(encoding="utf-8")
-        section = (
-            f"## [{next_ver}] - {now.strftime('%Y-%m-%d')}\n\n"
-            + "\n".join(f"- {h}" for h in highlights)
-            + "\n\n"
-        )
+        section = f"## [{next_ver}] - {now.strftime('%Y-%m-%d')}\n\n" + "\n".join(f"- {h}" for h in highlights) + "\n\n"
         marker = "## ["
         idx = existing.find(marker)
-        updated = (
-            (existing[:idx] + section + existing[idx:])
-            if idx != -1
-            else (existing + "\n" + section)
-        )
+        updated = (existing[:idx] + section + existing[idx:]) if idx != -1 else (existing + "\n" + section)
         changelog_path.write_text(updated, encoding="utf-8")
         wrote_files = [
             "VERSION",

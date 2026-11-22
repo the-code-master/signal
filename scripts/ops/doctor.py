@@ -1,6 +1,6 @@
 # Module: scripts/ops/doctor.py — Toolchain & Monorepo Readiness Diagnostic
 # Invariants: Verifies Rust 1.100+, Python 3.15+/3.12+, Buf, Helm, Git, and rule size caps without network side effects.
-# Spec: architecture/09-local-development-environment.md, architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+# Spec: architecture/09-local-development-environment.md, architecture/20-*.md
 from __future__ import annotations
 
 import os
@@ -27,9 +27,7 @@ OPTIONAL_TOOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
 
 
 def _find_tool(binary: str) -> str | None:
-    search_path = (
-        f"{Path.home() / '.local' / 'bin'}:/opt/cargo/bin:{os.environ.get('PATH', '')}"
-    )
+    search_path = f"{Path.home() / '.local' / 'bin'}:/opt/cargo/bin:{os.environ.get('PATH', '')}"
     return shutil.which(binary, path=search_path)
 
 
@@ -50,11 +48,7 @@ def run_doctor(reg: RepoRegistry, *, as_json: bool = False) -> int:
             details.append(f"REQUIRED `{label}`: MISSING")
             continue
         res = run_argv(cmd, reg.repo_root, capture=True)
-        ver = (
-            (res.stdout.strip() or res.stderr.strip()).splitlines()[0]
-            if res.returncode == 0
-            else "ERROR"
-        )
+        ver = (res.stdout.strip() or res.stderr.strip()).splitlines()[0] if res.returncode == 0 else "ERROR"
         tool_report[label] = {
             "present": res.returncode == 0,
             "version": ver,
@@ -75,11 +69,7 @@ def run_doctor(reg: RepoRegistry, *, as_json: bool = False) -> int:
             details.append(f"OPTIONAL `{label}`: not-installed")
             continue
         res = run_argv(cmd, reg.repo_root, capture=True)
-        ver = (
-            (res.stdout.strip() or res.stderr.strip()).splitlines()[0]
-            if res.returncode == 0
-            else "unavailable"
-        )
+        ver = (res.stdout.strip() or res.stderr.strip()).splitlines()[0] if res.returncode == 0 else "unavailable"
         tool_report[label] = {
             "present": res.returncode == 0,
             "version": ver,

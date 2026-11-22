@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Module: scripts/signal_ops.py — Canonical Stdlib-Only CLI Dispatcher for Build, Check, Image, Release, Deploy & Rollback
+# Module: scripts/signal_ops.py — Canonical Stdlib-Only CLI Dispatcher for Build, Check, Release & Dual-IDE Ops
 # Invariants: Zero third-party pip bootstrap dependencies; identical behavior across macOS dev and GitHub Actions CI (20-*).
 # Spec: architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
 from __future__ import annotations
@@ -12,30 +12,41 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.ops.build import run_build
-from scripts.ops.check import run_check
-from scripts.ops.deploy import run_deploy
-from scripts.ops.dev import run_dev
-from scripts.ops.doctor import run_doctor
-from scripts.ops.image import run_image
-from scripts.ops.registry import load_registry
-from scripts.ops.release import run_release
-from scripts.ops.rollback import run_rollback
+from scripts.ops.build import run_build  # noqa: E402
+from scripts.ops.check import run_check  # noqa: E402
+from scripts.ops.deploy import run_deploy  # noqa: E402
+from scripts.ops.dev import run_dev  # noqa: E402
+from scripts.ops.doctor import run_doctor  # noqa: E402
+from scripts.ops.image import run_image  # noqa: E402
+from scripts.ops.mac import run_bootstrap, run_worktree_setup  # noqa: E402
+from scripts.ops.next_task import run_next_task  # noqa: E402
+from scripts.ops.registry import load_registry  # noqa: E402
+from scripts.ops.release import run_release  # noqa: E402
+from scripts.ops.rollback import run_rollback  # noqa: E402
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        prog="signal.sh", description="Signal Unified Monorepo Operations CLI"
-    )
+    parser = argparse.ArgumentParser(prog="signal.sh", description="Signal Unified Monorepo Operations CLI")
     sub = parser.add_subparsers(dest="verb", required=True)
 
     p_doc = sub.add_parser("doctor", help="Verify local/CI toolchain readiness")
     p_doc.add_argument("--json", action="store_true", dest="as_json")
 
+    p_boot = sub.add_parser("bootstrap", help="Install & build local 3-tier dependencies on macOS/Linux")
+    p_boot.add_argument("--dry-run", action="store_true")
+    p_boot.add_argument("--json", action="store_true", dest="as_json")
+
+    p_wt = sub.add_parser("worktree", help="Create isolated git worktree for Cursor + Antigravity on one Mac")
+    p_wt.add_argument("--peer-dir", default="../signal-ag")
+    p_wt.add_argument("--dry-run", action="store_true")
+    p_wt.add_argument("--json", action="store_true", dest="as_json")
+
+    p_nxt = sub.add_parser("next", help="Resolve next ready task & contract gate for Antigravity or Cursor")
+    p_nxt.add_argument("--lane", default="cursor", choices=["contracts", "ag", "cursor"])
+    p_nxt.add_argument("--json", action="store_true", dest="as_json")
+
     p_dev = sub.add_parser("dev", help="Launch macOS/Linux local dev environment")
-    p_dev.add_argument(
-        "mode", nargs="?", default="lite", choices=["lite", "full", "k8s", "down"]
-    )
+    p_dev.add_argument("mode", nargs="?", default="run", choices=["run", "lite", "full", "k8s", "down"])
     p_dev.add_argument("--dry-run", action="store_true")
     p_dev.add_argument("--json", action="store_true", dest="as_json")
 
@@ -58,16 +69,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_img.add_argument("--dry-run", action="store_true")
     p_img.add_argument("--json", action="store_true", dest="as_json")
 
-    p_rel = sub.add_parser(
-        "release", help="Preview or cut SemVer release + automated release notes"
-    )
-    p_rel.add_argument(
-        "action", nargs="?", default="preview", choices=["preview", "cut"]
-    )
+    p_rel = sub.add_parser("release", help="Preview or cut SemVer release + automated release notes")
+    p_rel.add_argument("action", nargs="?", default="preview", choices=["preview", "cut"])
     p_rel.add_argument("--bump", default=None, choices=["major", "minor", "patch"])
-    p_rel.add_argument(
-        "--channel", default="STABLE", choices=["STABLE", "LTS", "CANARY"]
-    )
+    p_rel.add_argument("--channel", default="STABLE", choices=["STABLE", "LTS", "CANARY"])
     p_rel.add_argument("--dry-run", action="store_true")
     p_rel.add_argument("--json", action="store_true", dest="as_json")
 
@@ -77,9 +82,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_dep.add_argument("--dry-run", action="store_true")
     p_dep.add_argument("--json", action="store_true", dest="as_json")
 
-    p_rb = sub.add_parser(
-        "rollback", help="Roll back 3-Tier K8s deployment to a prior SemVer"
-    )
+    p_rb = sub.add_parser("rollback", help="Roll back 3-Tier K8s deployment to a prior SemVer")
     p_rb.add_argument("--env", required=True, dest="env_name")
     p_rb.add_argument("--to", required=True, dest="target_version")
     p_rb.add_argument("--dry-run", action="store_true")
@@ -94,41 +97,23 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.verb == "doctor":
         return run_doctor(reg, as_json=args.as_json)
+    if args.verb == "bootstrap":
+        return run_bootstrap(reg, dry_run=args.dry_run, as_json=args.as_json)
+    if args.verb == "worktree":
+        return run_worktree_setup(reg, peer_dir=args.peer_dir, dry_run=args.dry_run, as_json=args.as_json)
+    if args.verb == "next":
+        return run_next_task(reg, lane=args.lane, as_json=args.as_json)
     if args.verb == "dev":
         return run_dev(reg, mode=args.mode, dry_run=args.dry_run, as_json=args.as_json)
     if args.verb == "build":
-        return run_build(
-            reg,
-            target=args.target,
-            changed_only=args.changed,
-            dry_run=args.dry_run,
-            as_json=args.as_json,
-        )
+        return run_build(reg, target=args.target, changed_only=args.changed, dry_run=args.dry_run, as_json=args.as_json)
     if args.verb == "check":
-        return run_check(
-            reg,
-            target=args.target,
-            changed_only=args.changed,
-            dry_run=args.dry_run,
-            as_json=args.as_json,
-        )
+        return run_check(reg, target=args.target, changed_only=args.changed, dry_run=args.dry_run, as_json=args.as_json)
     if args.verb == "image":
-        return run_image(
-            reg,
-            target=args.target,
-            push=args.push,
-            sign=args.sign,
-            dry_run=args.dry_run,
-            as_json=args.as_json,
-        )
+        return run_image(reg, target=args.target, push=args.push, sign=args.sign, dry_run=args.dry_run, as_json=args.as_json)
     if args.verb == "release":
         return run_release(
-            reg,
-            action=args.action,
-            bump=args.bump,
-            channel=args.channel,
-            dry_run=args.dry_run,
-            as_json=args.as_json,
+            reg, action=args.action, bump=args.bump, channel=args.channel, dry_run=args.dry_run, as_json=args.as_json
         )
     if args.verb == "deploy":
         return run_deploy(
@@ -140,11 +125,7 @@ def main(argv: list[str] | None = None) -> int:
         )
     if args.verb == "rollback":
         return run_rollback(
-            reg,
-            env_name=args.env_name,
-            target_version=args.target_version,
-            dry_run=args.dry_run,
-            as_json=args.as_json,
+            reg, env_name=args.env_name, target_version=args.target_version, dry_run=args.dry_run, as_json=args.as_json
         )
     return 2
 

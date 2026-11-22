@@ -41,9 +41,7 @@ def resolve_repo_root() -> Path:
 def load_registry(repo_root: Path | None = None) -> RepoRegistry:
     root = repo_root or resolve_repo_root()
     version = (root / "VERSION").read_text(encoding="utf-8").strip()
-    raw = tomllib.loads(
-        (root / "scripts" / "components.toml").read_text(encoding="utf-8")
-    )
+    raw = tomllib.loads((root / "scripts" / "components.toml").read_text(encoding="utf-8"))
     comps: dict[str, ComponentSpec] = {}
     for name, cfg in raw.get("components", {}).items():
         comps[name] = ComponentSpec(
@@ -51,12 +49,8 @@ def load_registry(repo_root: Path | None = None) -> RepoRegistry:
             tier=str(cfg["tier"]),
             required_path=str(cfg["required_path"]),
             watched_paths=tuple(str(p) for p in cfg.get("watched_paths", [])),
-            check_commands=tuple(
-                tuple(str(x) for x in cmd) for cmd in cfg.get("check_commands", [])
-            ),
-            build_commands=tuple(
-                tuple(str(x) for x in cmd) for cmd in cfg.get("build_commands", [])
-            ),
+            check_commands=tuple(tuple(str(x) for x in cmd) for cmd in cfg.get("check_commands", [])),
+            build_commands=tuple(tuple(str(x) for x in cmd) for cmd in cfg.get("build_commands", [])),
             dockerfile=str(cfg["dockerfile"]) if "dockerfile" in cfg else None,
             image_name=str(cfg["image_name"]) if "image_name" in cfg else None,
             forbid_features=tuple(str(f) for f in cfg.get("forbid_features", [])),
@@ -64,9 +58,7 @@ def load_registry(repo_root: Path | None = None) -> RepoRegistry:
     return RepoRegistry(
         repo_root=root,
         version=version,
-        default_registry=str(
-            raw.get("default_registry", "ghcr.io/the-code-master/signal")
-        ),
+        default_registry=str(raw.get("default_registry", "ghcr.io/the-code-master/signal")),
         components=comps,
     )
 
@@ -80,9 +72,7 @@ def run_argv(
 ) -> subprocess.CompletedProcess[str]:
     cmd_list = list(argv)
     if dry_run:
-        return subprocess.CompletedProcess(
-            cmd_list, 0, stdout=f"[DRY-RUN] {' '.join(cmd_list)}\n", stderr=""
-        )
+        return subprocess.CompletedProcess(cmd_list, 0, stdout=f"[DRY-RUN] {' '.join(cmd_list)}\n", stderr="")
     env = os.environ.copy()
     extra = f"{Path.home() / '.local' / 'bin'}:/opt/cargo/bin"
     env["PATH"] = f"{extra}:{env.get('PATH', '')}"
@@ -104,9 +94,7 @@ def detect_changed_files(repo_root: Path, base_ref: str = "origin/main") -> list
     res = run_argv(["git", "diff", "--name-only", base_ref], repo_root, capture=True)
     tracked = res.stdout.splitlines() if res.returncode == 0 else []
     status = run_argv(["git", "status", "--porcelain"], repo_root, capture=True)
-    untracked = [
-        line[3:].strip() for line in status.stdout.splitlines() if len(line) > 3
-    ]
+    untracked = [line[3:].strip() for line in status.stdout.splitlines() if len(line) > 3]
     merged = sorted({p for p in (tracked + untracked) if p})
     return merged
 
@@ -132,11 +120,7 @@ def select_components(
 
     selected: list[ComponentSpec] = []
     for spec in reg.components.values():
-        if any(
-            ch == wp.rstrip("/") or ch.startswith(wp)
-            for ch in changed
-            for wp in spec.watched_paths
-        ):
+        if any(ch == wp.rstrip("/") or ch.startswith(wp) for ch in changed for wp in spec.watched_paths):
             selected.append(spec)
     return selected or [reg.components["ops-cli"]]
 
