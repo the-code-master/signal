@@ -1,6 +1,6 @@
-// Module: Zero-Leak 5-Team Collaboration Space, Project Status Tower & Automated Reviews
-// Invariants: Enforces per-repo required_repo_scopes RBAC masking and deterministic KPI review generation.
-// Spec: architecture/21-collaboration-space-project-status-and-automated-reviews.md
+// Module: Zero-Leak 5-Team Collaboration Space, Project Status Control Tower & Automated Reviews (21-*)
+// Invariants: Enforces per-repo required_repo_scopes RBAC masking and 100% deterministic KPI review generation.
+// Spec: architecture/21-collaboration-space-project-status-and-automated-reviews.md, architecture/17-extended-feature-specifications-ui-and-rust.md
 
 syntax = "proto3";
 
@@ -43,6 +43,41 @@ message EntityAnchorRef {
   string required_provider_repo_id = 5;
 }
 
+message StageGateMilestone {
+  string gate_id = 1;
+  string gate_name = 2;
+  int64 target_date_utc_ms = 3 [jstype = JS_STRING];
+  RagHealthStatus health = 4;
+  uint32 open_blocker_count = 5;
+}
+
+message CrossTeamDependency {
+  string dependency_id = 1;
+  TeamWorkspaceKind producer_team = 2;
+  TeamWorkspaceKind consumer_team = 3;
+  string deliverable_title = 4;
+  int64 due_at_utc_ms = 5 [jstype = JS_STRING];
+  string handshake_status = 6;
+}
+
+message ActionItem {
+  string action_id = 1;
+  string owner_pseudo_id = 2;
+  TeamWorkspaceKind team = 3;
+  string summary = 4;
+  int64 due_at_utc_ms = 5 [jstype = JS_STRING];
+  bool completed = 6;
+}
+
+message DecisionRecord {
+  string decision_id = 1;
+  string record_kind = 2;
+  string title = 3;
+  string rationale = 4;
+  int64 decided_at_utc_ms = 5 [jstype = JS_STRING];
+  HybridPqcSignature lead_signature = 6;
+}
+
 message PostAnchoredMessageRequest {
   string org_id = 1;
   string project_id = 2;
@@ -55,6 +90,46 @@ message PostAnchoredMessageRequest {
 message PostAnchoredMessageResponse {
   string message_id = 1;
   int64 created_at_utc_ms = 2 [jstype = JS_STRING];
+  uint32 redacted_anchor_count = 3;
+}
+
+message IssueHuddleTicketRequest {
+  string org_id = 1;
+  string project_id = 2;
+  string channel_id = 3;
+  string actor_pseudo_id = 4;
+}
+
+message IssueHuddleTicketResponse {
+  string huddle_room_id = 1;
+  string sfu_turns_endpoint = 2;
+  string ed25519_huddle_ticket = 3;
+  int64 expires_at_utc_ms = 4 [jstype = JS_STRING];
+}
+
+message GetProjectStatusTowerRequest {
+  string org_id = 1;
+  string project_id = 2;
+}
+
+message GetProjectStatusTowerResponse {
+  RagHealthStatus overall_health = 1;
+  repeated StageGateMilestone milestones = 2;
+  repeated CrossTeamDependency dependencies = 3;
+  repeated ActionItem action_items = 4;
+  repeated DecisionRecord decisions = 5;
+}
+
+message ExportEntityReviewSnapshotRequest {
+  string project_id = 1;
+  repeated string anchor_entity_ids = 2;
+}
+
+message ExportEntityReviewSnapshotResponse {
+  uint32 drc_erc_lvs_violations = 1;
+  double worst_spice_soa_margin_pct = 2;
+  int64 worst_sta_slack_fs = 3 [jstype = JS_STRING];
+  uint32 mcad_collision_count = 4;
 }
 
 message GeneratePeriodicReviewRequest {
@@ -74,9 +149,35 @@ message GeneratePeriodicReviewResponse {
   uint32 clear_to_build_units = 5;
   string archived_ops_repo_path = 6;
   HybridPqcSignature review_signature = 7;
+  string gbnf_verified_narrative_md = 8;
 }
 
-service CollabReviewService {
+message SignOffStageGateReviewRequest {
+  string org_id = 1;
+  string project_id = 2;
+  string review_id = 3;
+  string burned_stepup_2fa_nonce = 4;
+  uint64 quorum_audit_outbox_seq = 5 [jstype = JS_STRING];
+  HybridPqcSignature approver_signature = 6;
+}
+
+message SignOffStageGateReviewResponse {
+  bool gate_approved = 1;
+  string ops_repo_commit_sha = 2;
+  int64 signed_at_utc_ms = 3 [jstype = JS_STRING];
+}
+
+service CollabChannelService {
   rpc PostAnchoredMessage(PostAnchoredMessageRequest) returns (PostAnchoredMessageResponse);
+  rpc IssueHuddleTicket(IssueHuddleTicketRequest) returns (IssueHuddleTicketResponse);
+}
+
+service ProjectStatusService {
+  rpc GetProjectStatusTower(GetProjectStatusTowerRequest) returns (GetProjectStatusTowerResponse);
+  rpc ExportEntityReviewSnapshot(ExportEntityReviewSnapshotRequest) returns (ExportEntityReviewSnapshotResponse);
+}
+
+service AutomatedReviewService {
   rpc GeneratePeriodicReview(GeneratePeriodicReviewRequest) returns (GeneratePeriodicReviewResponse);
+  rpc SignOffStageGateReview(SignOffStageGateReviewRequest) returns (SignOffStageGateReviewResponse);
 }

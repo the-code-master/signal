@@ -48,7 +48,7 @@
 ---
 
 ## Phase 7 — 5-Team Collaboration Space, Project Status Control Tower & Automated Review Engine Contracts ([`phase-7`](./phase-7-collab-space-status-and-auto-reviews.md))
-- [ ] **`C-P7-01`** | **Branch:** `contract/C-P7-01-collab-and-reviews-protos` | **Paths:** `contracts/proto/signal/v1/collab_review.proto`, `contracts/schemas/{project-status-review,collab-channel-policy}.schema.json`, `contracts/transcripts/weekly_and_stage_gate_review.jsonl` | **Skills:** `signal-contract-first`, `signal-collab-and-status-reviews` | **Deliverable:** `collab_review.proto` (`CollabChannelService`, `ProjectStatusService`, `AutomatedReviewService` for Weekly, Monthly Executive & Stage-Gate Reviews, `21-*`, `FEAT-109`) | **Verify:** `./signal.sh check --target contracts`
+- [x] **`C-P7-01`** | **Branch:** `contract/C-P7-01-collab-and-reviews-protos` | **Paths:** `contracts/proto/signal/v1/collab_review.proto`, `contracts/schemas/{project-status-review,collab-channel-policy}.schema.json`, `contracts/transcripts/weekly_and_stage_gate_review.jsonl` | **Skills:** `signal-contract-first`, `signal-collab-and-status-reviews` | **Deliverable:** `collab_review.proto` (`CollabChannelService`, `ProjectStatusService`, `AutomatedReviewService` for Weekly, Monthly Executive & Stage-Gate Reviews, `21-*`, `FEAT-109`) | **Verify:** `./signal.sh check --target contracts` *(Done: 2026-11-22 | Branch: `contract/C-P7-01-collab-and-reviews-protos`)*
 
 ---
 
