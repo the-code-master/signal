@@ -1,0 +1,54 @@
+<sig-panel
+  title="Guided Interactive Circuit Lab & Headless LTI 1.3 Auto-Grader (FEAT-112)"
+  subtitle="Randomized-seed SPICE fault rubric evaluator with Canvas / Moodle / Blackboard gradebook passback"
+  [badge]="vm().scoreBadge"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (lms of vm().lmsPlatforms; track lms) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().result.lmsPlatform === lms"
+            type="button"
+            (click)="selectLms(lms)"
+          >
+            {{ lms }}
+          </button>
+        }
+      </div>
+      <div class="sig-row">
+        <button class="sig-btn" type="button" (click)="tuneType3Compensation()">
+          Tune 85C Type-III Loop
+        </button>
+        <button class="sig-btn sig-btn-primary" type="button" (click)="runHeadlessAutoGrader()">
+          Run Headless Auto-Grader
+        </button>
+      </div>
+    </div>
+
+    <div class="sig-row">
+      @for (fault of vm().faultModes; track fault) {
+        <button
+          class="sig-btn"
+          [class.sig-btn-primary]="vm().activeFault === fault"
+          type="button"
+          (click)="injectFault(fault)"
+        >
+          Fault: {{ fault }}
+        </button>
+      }
+    </div>
+
+    <sig-data-grid
+      title="Headless Randomized-Seed SPICE Fault Rubric"
+      [columns]="vm().rubricColumns"
+      [rows]="vm().rubricRows"
+    />
+
+    <div class="sig-toolbar">
+      <sig-status-pill [label]="vm().result.lti13GradePassbackReceipt" [tone]="vm().scoreTone" />
+      <code class="sig-mono">{{ vm().result.graderMlDsa65Signature }}</code>
+    </div>
+  </div>
+</sig-panel>

@@ -107,10 +107,16 @@ def select_components(
     base_ref: str = "origin/main",
 ) -> list[ComponentSpec]:
     if target and target != "all":
-        if target not in reg.components:
-            valid = ", ".join(sorted(reg.components))
-            raise ValueError(f"Unknown component target `{target}` (valid: {valid})")
-        return [reg.components[target]]
+        resolved: list[ComponentSpec] = []
+        for raw_part in target.split(","):
+            name = "web" if raw_part.strip() == "ui" else raw_part.strip()
+            if not name:
+                continue
+            if name not in reg.components:
+                valid = ", ".join(sorted(reg.components))
+                raise ValueError(f"Unknown component target `{name}` (valid: {valid})")
+            resolved.append(reg.components[name])
+        return resolved
     if not changed_only:
         return list(reg.components.values())
 

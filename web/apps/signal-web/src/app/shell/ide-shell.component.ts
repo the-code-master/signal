@@ -8,6 +8,7 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from "@angular/rou
 import { SIG_PROFILES, SIG_THEMES, type SigThemeId, type SigUiProfile } from "@signal/design-system";
 import { SigDrawerComponent, SigPanelComponent, SigStatusPillComponent } from "@signal/ui-kit";
 import { AccessibilityCadComponent } from "../accessibility/accessibility.component";
+import { CampusEdgeBannerComponent } from "../campus-edge-banner/campus-edge-banner.component";
 import { InlineTranslateComponent } from "../inline-translate/inline-translate.component";
 import { MultiMonitorManagerComponent } from "../multi-monitor/multi-monitor.component";
 import { NlConstraintComposerComponent } from "../nl-constraint-composer/nl-constraint-composer.component";
@@ -27,6 +28,7 @@ import type { CadKeymapPreset, PlatformReleaseDto, SessionLeaseDto } from "./ide
     SigDrawerComponent,
     SigPanelComponent,
     SigStatusPillComponent,
+    CampusEdgeBannerComponent,
     OmniPaletteComponent,
     SelectionQueryToolbarComponent,
     MultiMonitorManagerComponent,

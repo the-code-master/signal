@@ -20,9 +20,17 @@ class FailClosedQuorumOutbox:
         self._seq = 0
         self._tip_hash = "0" * 64
 
+    @property
+    def seq(self) -> int:
+        return self._seq
+
+    @property
+    def tip_hash(self) -> str:
+        return self._tip_hash
+
     async def commit_tier0_event(self, event: Tier0AuditEvent) -> QuorumCommitReceipt:
         payload = f"{self._tip_hash}|{event.org_id}|{event.actor_hmac}|{event.action_kind}|{event.occurred_at_ms}"
-        entry_hash = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+        entry_hash = hashlib.sha256(payload.encode()).hexdigest()
 
         acks = 0
         for writer in self._replicas:

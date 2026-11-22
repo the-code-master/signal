@@ -1,0 +1,16 @@
+<div class="sig-toolbar" role="region" aria-label="Campus Edge & Release Telemetry">
+  <div class="sig-row">
+    <sig-status-pill [label]="vm().connectivityBadge" [tone]="vm().connectivityTone" />
+    <span class="sig-badge sig-mono">{{ vm().cacheBadge }}</span>
+    <span class="sig-badge sig-mono">{{ vm().queueBadge }}</span>
+  </div>
+  <div class="sig-row">
+    <sig-status-pill [label]="vm().skewBadge" [tone]="vm().skewTone" />
+    <button class="sig-btn" type="button" (click)="toggleCampusLanMode()">
+      {{ vm().telemetry.connectivity === "CLOUD_CONNECTED" ? "Simulate Campus LAN Outage" : "Sync Queued Super-Commits" }}
+    </button>
+    <button class="sig-btn sig-btn-primary" type="button" (click)="triggerWhatsNew()">
+      Release Notes (Epoch {{ vm().telemetry.physicsDeterminismEpoch }})
+    </button>
+  </div>
+</div>

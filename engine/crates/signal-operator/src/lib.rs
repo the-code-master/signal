@@ -7,11 +7,16 @@ use signal_proto::v1::CellComputeTier;
 use thiserror::Error;
 
 pub mod lease_and_migration;
+pub mod metering;
 pub mod pool_scheduler;
 
 pub use lease_and_migration::{
     AggregatedNodeLeasePayload, DEFAULT_MAX_CUTOVER_FREEZE_PS, HostNodeLeaseAggregator,
     LiveMigrationPhase, PodCellHeartbeat, ThreePhaseMigrationController,
+};
+pub use metering::{
+    FinOpsEvaluationOutcome, FinOpsRateCard, PodComputeMeterSample,
+    evaluate_enterprise_finops_window,
 };
 pub use pool_scheduler::{
     ClusterTopologyPolicy, HardwareGpuSku, PredictiveWarmPool, reconcile_project_cell_spec,

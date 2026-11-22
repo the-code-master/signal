@@ -16,6 +16,7 @@ for svc_src in sorted((REPO_ROOT / "services").glob("*/src")):
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from audit_service.router import router as audit_router  # noqa: E402
 from collab_hub.router import router as collab_router  # noqa: E402
 from fastapi import FastAPI  # noqa: E402
 from identity_org.router import router as identity_router  # noqa: E402
@@ -27,6 +28,7 @@ from sftp_egress.router import router as sftp_router  # noqa: E402
 from vcs_auditor.router import router as auditor_router  # noqa: E402
 from vcs_connector.router import router as vcs_router  # noqa: E402
 
+from api_gateway.releases import router as releases_router  # noqa: E402
 from api_gateway.router import router as gateway_router  # noqa: E402
 from services.common.errors import register_uniform_error_handlers  # noqa: E402
 from services.common.security import assert_all_routes_guarded  # noqa: E402
@@ -47,6 +49,7 @@ def create_app() -> FastAPI:
     register_uniform_error_handlers(application)
     for rtr in (
         gateway_router,
+        releases_router,
         identity_router,
         catalog_router,
         parts_router,
@@ -56,6 +59,7 @@ def create_app() -> FastAPI:
         auditor_router,
         session_router,
         sftp_router,
+        audit_router,
     ):
         application.include_router(rtr)
     assert_all_routes_guarded(application)

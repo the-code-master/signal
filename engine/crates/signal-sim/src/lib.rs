@@ -12,6 +12,7 @@ pub mod elements;
 pub mod equilibrate_solver;
 pub mod instruments;
 pub mod instruments_analytics;
+pub mod lab_autograder;
 pub mod mna_engine;
 pub mod pss_hb;
 pub mod spice_loader;
@@ -24,6 +25,9 @@ pub use equilibrate_solver::{
     neumaier_dot, ruiz_equilibrate, solve_complex_lu, solve_equilibrated_lu,
 };
 pub use instruments_analytics::*;
+pub use lab_autograder::{
+    StudentCircuitSubmission, derive_seeded_target_divider_ratio, grade_academy_circuit_lab,
+};
 pub use mna_engine::{
     AcPointResult, TransientTrajectory, solve_ac_sweep, solve_dc_op, solve_transient_tr_bdf2,
     step_tr_bdf2,

@@ -1,0 +1,26 @@
+# Module: infra/campus-edge/values.yaml — Default Values for Single-Node k3s Signal Campus Edge Appliance (FEAT-120)
+# Invariants: Bundles < 8 MB signal-cell-wasm isolates, offline Universal Datasheet/Open-PDK cache & store-and-forward sync.
+# Spec: architecture/14-universal-scale-accessibility-and-expandability.md, architecture/17-extended-feature-specifications-ui-and-rust.md
+appliance:
+  id: "campus-edge-univ-01"
+  imageRegistry: "ghcr.io/the-code-master/signal"
+  platformVersion: "0.1.0"
+  offlineDatasheetPvcSize: "64Gi"
+  openSiliconPdks:
+    - "SKYWATER_SKY130"
+    - "GF180MCU"
+    - "IHP_SG13G2"
+
+cellWasmHost:
+  image: "signal-cell-wasm"
+  port: 8090
+  maxConcurrentStudentIsolates: 250
+
+localAiQuarantine:
+  image: "ollama/ollama:0.5.7"
+  quantizedModel: "qwen2.5-coder:7b-q4_K_M"
+  port: 11434
+
+storeForwardSync:
+  upstreamEndpoint: "https://api.signal.design/v1/campus-edge/sync"
+  flushIntervalSeconds: 60

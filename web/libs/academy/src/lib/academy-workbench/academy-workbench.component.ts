@@ -1,10 +1,12 @@
 // Module: web/libs/academy/src/lib/academy-workbench/academy-workbench.component.ts — Academy Workbench Host Component
-// Invariants: <=120 LOC; Zoneless OnPush; templateUrl ONLY; zero local CSS; wires FEAT-111, FEAT-113 & FEAT-114.
+// Invariants: <=120 LOC; Zoneless OnPush; templateUrl ONLY; zero local CSS; wires FEAT-111..FEAT-115.
 // Spec: architecture/01-product-vision-and-features.md, docs/engineering/ANGULAR_UI_STYLE_GUIDE.md
 import { ChangeDetectionStrategy, Component, computed, input, signal } from "@angular/core";
 import { DualPlaneViewportComponent, type WorkbenchDescriptor } from "@signal/canvas-core";
 import { SigPanelComponent, SigStatusPillComponent } from "@signal/ui-kit";
 import { BreadboardTwinComponent } from "../breadboard-twin/breadboard-twin.component";
+import { LabRunnerComponent } from "../lab-runner/lab-runner.component";
+import { OpenSiliconWizardComponent } from "../open-silicon-wizard/open-silicon-wizard.component";
 import { QuickCalcHudComponent } from "../quick-calc-hud/quick-calc-hud.component";
 import type { SchematicInsertPayload } from "../quick-calc-hud/quick-calc-hud.model";
 import { VisualFailureFxComponent } from "../visual-failure-fx/visual-failure-fx.component";
@@ -18,6 +20,8 @@ import { buildAcademyWorkbenchVm } from "./academy-workbench.logic";
     SigPanelComponent,
     SigStatusPillComponent,
     DualPlaneViewportComponent,
+    LabRunnerComponent,
+    OpenSiliconWizardComponent,
     BreadboardTwinComponent,
     VisualFailureFxComponent,
     QuickCalcHudComponent,
@@ -41,5 +45,13 @@ export class AcademyWorkbenchComponent {
 
   onInserted(payload: SchematicInsertPayload): void {
     this.lastAction.set(`Inserted ${payload.calculatorKind}: ${payload.description}`);
+  }
+
+  onLtiPassback(receipt: string): void {
+    this.lastAction.set(`LTI 1.3 Grade Passback: ${receipt}`);
+  }
+
+  onShuttleValidated(digest: string): void {
+    this.lastAction.set(`MPW Shuttle Staged: ${digest}`);
   }
 }

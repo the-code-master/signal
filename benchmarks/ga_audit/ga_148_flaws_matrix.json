@@ -1,0 +1,17 @@
+{
+  "suite": "signal_ga_148_flaws_and_120_features_v1",
+  "verified_flaw_range": "F-001..F-148",
+  "verified_feature_range": "FEAT-001..FEAT-120",
+  "invariants_checked": [
+    "F-033_0.5_ulp_cross_isa_core_math",
+    "F-078_hybrid_pqc_x25519_mlkem768_ed25519_mldsa65",
+    "F-080_F-128_tardos_and_constellation_watermarks",
+    "F-089_socket_pinned_imds_ipv4_mapped_ipv6_ssrf_block",
+    "F-095_release_compile_error_on_dev_guest_auth",
+    "F-117_padme_path_blinded_merkle_siv_vault",
+    "F-118_hopper_h100_whole_gpu_cc_vs_blackwell_b200_tee_mig",
+    "F-119_dual_gate_linearizable_fencing_epoch",
+    "F-123_sub_150ms_three_phase_precopy_live_migration",
+    "F-148_baseband_193thz_cpo_and_20mk_cryo_cmos_fermi_dirac"
+  ]
+}

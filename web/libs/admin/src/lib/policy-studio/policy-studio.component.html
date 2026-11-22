@@ -1,0 +1,34 @@
+<sig-panel
+  title="Organization Policy-as-Code & Signed WASM Plugin Studio (FEAT-117)"
+  subtitle="Deterministic fuel-capped Wasmtime rule-packs signed with Org-Admin ML-DSA-65"
+  [badge]="vm().statusBadge"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (pack of vm().packs; track pack.policyPackId) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().activePack.domain === pack.domain"
+            type="button"
+            (click)="selectDomain(pack.domain)"
+          >
+            {{ pack.domain }}
+          </button>
+        }
+      </div>
+      <div class="sig-row">
+        <button class="sig-btn sig-btn-primary" type="button" (click)="runFixturesAndSign()">
+          Run Fixtures &amp; Sign ML-DSA-65
+        </button>
+        <sig-status-pill [label]="vm().statusBadge" [tone]="vm().statusTone" />
+      </div>
+    </div>
+
+    <sig-data-grid
+      title="Enforced Wasmtime Multi-Physics & Governance Rule-Packs"
+      [columns]="vm().packColumns"
+      [rows]="vm().packRows"
+    />
+  </div>
+</sig-panel>

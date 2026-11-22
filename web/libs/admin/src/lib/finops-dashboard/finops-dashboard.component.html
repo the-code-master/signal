@@ -1,0 +1,20 @@
+<sig-panel
+  title="Enterprise Compute FinOps, Token Metering & Budget-Cap Console (FEAT-116)"
+  subtitle="Per-team CPU-core-ms, Exclusive H100/B200 GPU-ms, AI token burn & 80%/100% quota gates (F-098)"
+  [badge]="vm().alertBadge"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <sig-status-pill [label]="vm().alertBadge" [tone]="vm().alertTone" />
+      <button class="sig-btn sig-btn-primary" type="button" (click)="simulate3dEmGpuBurst()">
+        {{ vm().rollup.hardBudgetCapTripped ? "Reset Burst Quota Window" : "Simulate 3D-EM GPU Burst (Test 100% Cap)" }}
+      </button>
+    </div>
+
+    <sig-data-grid
+      title="Team Compute, AI Token & Engineering Velocity Ledger"
+      [columns]="vm().ledgerColumns"
+      [rows]="vm().ledgerRows"
+    />
+  </div>
+</sig-panel>

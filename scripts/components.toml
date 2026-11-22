@@ -138,12 +138,13 @@ build_commands = []
 [components.k8s]
 tier = "INFRA_K8S"
 required_path = "infra/k8s/helm/signal/Chart.yaml"
-watched_paths = ["infra/k8s/", "infra/docker/"]
+watched_paths = ["infra/k8s/", "infra/campus-edge/", "infra/docker/"]
 check_commands = [
   ["helm", "lint", "infra/k8s/helm/signal", "-f", "infra/k8s/helm/signal/values.yaml"],
   ["helm", "lint", "infra/k8s/helm/signal", "-f", "infra/k8s/helm/signal/values-local.yaml"],
   ["helm", "lint", "infra/k8s/helm/signal", "-f", "infra/k8s/helm/signal/values-starter.yaml"],
   ["helm", "lint", "infra/k8s/helm/signal", "-f", "infra/k8s/helm/signal/values-enterprise.yaml"],
+  ["helm", "lint", "infra/campus-edge", "-f", "infra/campus-edge/values.yaml"],
 ]
 build_commands = [
   ["helm", "template", "signal", "infra/k8s/helm/signal", "-f", "infra/k8s/helm/signal/values-enterprise.yaml"],

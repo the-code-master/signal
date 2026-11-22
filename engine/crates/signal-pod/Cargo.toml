@@ -27,3 +27,7 @@ thiserror = { workspace = true }
 [dev-dependencies]
 serde = { workspace = true }
 serde_json = { workspace = true }
+signal-egress-proxy = { workspace = true }
+signal-ic = { workspace = true }
+signal-operator = { workspace = true }
+signal-sim = { workspace = true }

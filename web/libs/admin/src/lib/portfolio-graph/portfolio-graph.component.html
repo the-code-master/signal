@@ -1,0 +1,29 @@
+<sig-panel
+  title="Cross-Project Portfolio Shared-IP & MPN Blast-Radius Graph (FEAT-118)"
+  subtitle="Transitive .signal/repos.lock.json + parts.lock.json EOL/CVE impact propagation"
+  [badge]="vm().riskBadge"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (art of vm().artifacts; track art) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().summary.selectedArtifact === art"
+            type="button"
+            (click)="selectArtifact(art)"
+          >
+            {{ art }}
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().riskBadge" [tone]="vm().riskTone" />
+    </div>
+
+    <sig-data-grid
+      title="Downstream Portfolio Dependency DAG"
+      [columns]="vm().edgeColumns"
+      [rows]="vm().edgeRows"
+    />
+  </div>
+</sig-panel>

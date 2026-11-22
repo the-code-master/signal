@@ -994,10 +994,14 @@ dependencies = [
  "serde",
  "serde_json",
  "signal-core",
+ "signal-egress-proxy",
  "signal-geom",
  "signal-git-sync",
  "signal-graph",
+ "signal-ic",
+ "signal-operator",
  "signal-proto",
+ "signal-sim",
  "thiserror",
 ]
 

@@ -1,0 +1,9 @@
+# Module: infra/campus-edge/Chart.yaml — Developing-Nation Offline-Resilient Signal Campus Edge Helm Chart (FEAT-120)
+# Invariants: Runs offline on a single-node k3s university lab box with signal-cell-wasm, Open PDKs & quantized Ollama.
+# Spec: architecture/14-universal-scale-accessibility-and-expandability.md, architecture/17-extended-feature-specifications-ui-and-rust.md
+apiVersion: v2
+name: signal-campus-edge
+description: Offline-resilient single-node k3s Signal Campus Edge university appliance bundle (FEAT-120)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

@@ -8,6 +8,7 @@ use thiserror::Error;
 pub mod analog_char_bspdn;
 pub mod cryo_cmos;
 pub mod digital_sta_eco_ucie;
+pub mod mpw_shuttle;
 pub mod photonics_cpo;
 pub mod upf_dft_pdk;
 
@@ -25,6 +26,7 @@ pub use digital_sta_eco_ucie::{
     compute_dme_zero_skew_tap_nm, evaluate_hopkins_litho_and_cmp_fill,
     evaluate_sta_and_post_mask_metal_eco, route_xy_dor_noc_hops,
 };
+pub use mpw_shuttle::{ShuttleSubmissionMetrics, validate_mpw_shuttle_tile};
 pub use photonics_cpo::{
     ComplexEnvelope, CpoLinkStepSummary, eval_microring_resonator_transfer,
     scatter_directional_coupler_2x2, simulate_cpo_mzm_link_baseband,
@@ -49,4 +51,6 @@ pub enum IcError {
     InvalidCryoTemperature(i64),
     #[error("Cryo-CMOS Fermi-Dirac continuation diverged")]
     CryoContinuationDiverged,
+    #[error("Open-Silicon MPW shuttle requires SKY130, GF180MCU, or IHP_SG13G2 PDK")]
+    UnsupportedOpenSiliconPdk,
 }

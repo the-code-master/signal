@@ -25,6 +25,8 @@
     [hudSignals]="vm().descriptor.hudSignals"
   />
 
+  <sig-lab-runner (gradePassbackSubmitted)="onLtiPassback($event)" />
+  <sig-open-silicon-wizard (shuttleValidated)="onShuttleValidated($event)" />
   <sig-breadboard-twin (shortStateChanged)="onBreadboardShortChanged($event)" />
   <sig-visual-failure-fx (ratingAutoFixed)="onAutoFixed($event)" />
   <sig-quick-calc-hud (insertedIntoSchematic)="onInserted($event)" />

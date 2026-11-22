@@ -1,0 +1,52 @@
+<sig-panel
+  title="Open-Silicon TinyTapeout / ChipIgnite MPW Shuttle Wizard (FEAT-115)"
+  subtitle="SkyWater Sky130, GF180MCU & IHP SG13G2 tile bounds, pin-ring harness & OASIS precheck"
+  [badge]="vm().statusBadge"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (pdk of vm().pdks; track pdk) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().report.pdk === pdk"
+            type="button"
+            (click)="selectPdk(pdk)"
+          >
+            {{ pdk }}
+          </button>
+        }
+      </div>
+      <div class="sig-row">
+        @for (slot of vm().tileSlots; track slot) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().report.tileSlot === slot"
+            type="button"
+            (click)="selectSlot(slot)"
+          >
+            {{ slot }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <sig-data-grid
+      title="Foundry GDSII / OASIS Precheck Matrix"
+      [columns]="vm().checkColumns"
+      [rows]="vm().checkRows"
+    />
+
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <button class="sig-btn" type="button" (click)="toggleMetalFill()">
+          {{ vm().report.metalDensityPct >= 30 ? "Strip Dummy Fill (Test Gate)" : "Insert Dummy Metal Fill" }}
+        </button>
+        <button class="sig-btn sig-btn-primary" type="button" (click)="stageMpwShuttleBundle()">
+          Stage Signed MPW Tile
+        </button>
+      </div>
+      <sig-status-pill [label]="vm().report.shuttleSubmissionDigest" [tone]="vm().statusTone" />
+    </div>
+  </div>
+</sig-panel>

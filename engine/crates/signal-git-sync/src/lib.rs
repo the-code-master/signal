@@ -5,17 +5,21 @@
 
 use thiserror::Error;
 
+pub mod campus_edge_sync;
 pub mod history_scrubber;
 pub mod padme_vault;
+pub mod portfolio_dag;
 pub mod provider_lfs;
 pub mod super_commit;
 
+pub use campus_edge_sync::{QueuedOfflineSuperCommit, sync_campus_edge_store_forward};
 pub use history_scrubber::{CommitGraphSnapshot, scrub_history_timeline};
 pub use padme_vault::{
     SealedPadmeBlob, VaultMerkleManifest, blind_vault_entity_path, compute_vault_merkle_root,
     enforce_must_encrypt_taint, open_padme_vault_blob, padme_padded_len, seal_padme_vault_blob,
     sign_vault_merkle_manifest, verify_vault_merkle_manifest,
 };
+pub use portfolio_dag::{PortfolioProjectNode, analyze_portfolio_blast_radius};
 pub use provider_lfs::{
     BloblessClonePlan, LFS_STREAM_CHUNK_BYTES, LfsChunkFrame, MAX_LAZY_REPO_CREATIONS_PER_MIN,
     chunk_lfs_stream_64kb, plan_blobless_clone, reassemble_lfs_chunks,

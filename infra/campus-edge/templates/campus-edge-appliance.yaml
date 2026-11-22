@@ -1,0 +1,108 @@
+# Module: infra/campus-edge/templates/campus-edge-appliance.yaml — Hardened Single-Node k3s Campus Edge Deployment & PVC
+# Invariants: Non-root (65532), readOnlyRootFilesystem, offline Open-PDK/Datasheet PVC, and store-and-forward sync queue.
+# Spec: architecture/14-universal-scale-accessibility-and-expandability.md, architecture/17-extended-feature-specifications-ui-and-rust.md
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: signal-campus-offline-cache
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.appliance.offlineDatasheetPvcSize | quote }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: signal-campus-edge
+  labels:
+    app.kubernetes.io/name: signal-campus-edge
+    app.kubernetes.io/version: {{ .Values.appliance.platformVersion | quote }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: signal-campus-edge
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: signal-campus-edge
+    spec:
+      automountServiceAccountToken: false
+      volumes:
+        - name: offline-pdk-datasheet-cache
+          persistentVolumeClaim:
+            claimName: signal-campus-offline-cache
+        - name: sync-wal-scratch
+          emptyDir:
+            sizeLimit: 2Gi
+      containers:
+        - name: signal-cell-wasm-host
+          image: "{{ .Values.appliance.imageRegistry }}/{{ .Values.cellWasmHost.image }}:v{{ .Values.appliance.platformVersion }}"
+          ports:
+            - name: http-wasm
+              containerPort: {{ .Values.cellWasmHost.port }}
+          env:
+            - name: SIGNAL_CAMPUS_APPLIANCE_ID
+              value: {{ .Values.appliance.id | quote }}
+            - name: SIGNAL_MAX_STUDENT_ISOLATES
+              value: {{ .Values.cellWasmHost.maxConcurrentStudentIsolates | quote }}
+            - name: SIGNAL_STORE_FORWARD_UPSTREAM
+              value: {{ .Values.storeForwardSync.upstreamEndpoint | quote }}
+            - name: SIGNAL_OPEN_PDKS
+              value: {{ join "," .Values.appliance.openSiliconPdks | quote }}
+          volumeMounts:
+            - name: offline-pdk-datasheet-cache
+              mountPath: /var/lib/signal/offline-cache
+              readOnly: true
+            - name: sync-wal-scratch
+              mountPath: /var/lib/signal/store-forward-queue
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
+        - name: local-ollama-gbnf
+          image: {{ .Values.localAiQuarantine.image | quote }}
+          ports:
+            - name: ollama-http
+              containerPort: {{ .Values.localAiQuarantine.port }}
+          env:
+            - name: OLLAMA_MODELS
+              value: "/var/lib/signal/offline-cache/ollama"
+            - name: SIGNAL_QUANTIZED_MODEL
+              value: {{ .Values.localAiQuarantine.quantizedModel | quote }}
+          volumeMounts:
+            - name: offline-pdk-datasheet-cache
+              mountPath: /var/lib/signal/offline-cache
+              readOnly: true
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: signal-campus-edge
+spec:
+  selector:
+    app.kubernetes.io/name: signal-campus-edge
+  ports:
+    - name: http-wasm
+      port: {{ .Values.cellWasmHost.port }}
+      targetPort: http-wasm

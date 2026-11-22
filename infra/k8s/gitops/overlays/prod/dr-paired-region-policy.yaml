@@ -1,0 +1,19 @@
+# Module: infra/k8s/gitops/overlays/prod/dr-paired-region-policy.yaml — In-Jurisdiction Paired-Region DR Topology
+# Invariants: Never replicates Sovereign/ITAR/GDPR encrypted WALs or backups across national/jurisdictional borders (15-*, 16-*).
+# Spec: architecture/15-application-security-and-project-isolation.md, architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: signal-in-jurisdiction-dr-pairings
+  namespace: signal-prod
+data:
+  enforceInJurisdictionOnly: "true"
+  rpoTargetSeconds: "60"
+  rtoTargetSeconds: "300"
+  pairedJurisdictionsJson: |
+    [
+      {"jurisdiction": "EU_GDPR", "primary": "eu-central-1-frankfurt", "standby": "eu-west-3-paris", "cross_border_forbidden": true},
+      {"jurisdiction": "US_ITAR_GOVCLOUD", "primary": "us-gov-west-1", "standby": "us-gov-east-1", "cross_border_forbidden": true},
+      {"jurisdiction": "IN_DPDP", "primary": "ap-south-1-mumbai", "standby": "ap-south-2-hyderabad", "cross_border_forbidden": true},
+      {"jurisdiction": "US_COMMERCIAL", "primary": "us-east-1", "standby": "us-west-2", "cross_border_forbidden": false}
+    ]

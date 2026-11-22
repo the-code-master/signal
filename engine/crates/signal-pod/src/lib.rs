@@ -18,6 +18,7 @@ pub mod render;
 pub mod render_mask;
 pub mod review_snapshot;
 pub mod stage_gate;
+pub mod wasm_policy_runner;
 pub mod watermark;
 use signal_proto::v1::{
     ApplyTransactionRequest, ApplyTransactionResponse, AttachCollaboratorRequest,

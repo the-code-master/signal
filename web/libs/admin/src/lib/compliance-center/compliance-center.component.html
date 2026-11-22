@@ -1,0 +1,20 @@
+<sig-panel
+  title="Enterprise Compliance Evidence & GDPR Pseudonymous WORM Inspector (CU-P8-04)"
+  subtitle="SOC2 Type II • ISO 27001 • ITAR/EAR • GDPR Art. 17 Crypto-Shredding (F-100) • FDA 21 CFR Part 11"
+  [badge]="vm().overallBadge"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <sig-status-pill [label]="vm().shredBadge" [tone]="vm().overallTone" />
+      <button class="sig-btn sig-btn-primary" type="button" (click)="executeGdprSaltShred()">
+        Shred Subject user_pii_salt (Verify WORM Intact)
+      </button>
+    </div>
+
+    <sig-data-grid
+      title="Automated Enterprise Security & Regulatory Attestation Matrix"
+      [columns]="vm().matrixColumns"
+      [rows]="vm().matrixRows"
+    />
+  </div>
+</sig-panel>
