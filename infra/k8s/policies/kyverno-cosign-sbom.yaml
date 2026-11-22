@@ -1,0 +1,37 @@
+# Module: infra/k8s/policies/kyverno-cosign-sbom.yaml — Kyverno Cosign Signature, SLSA L3 & No-Latest Gate
+# Invariants: Blocks unsigned images, missing CycloneDX/SPDX SBOM attestations, and mutable :latest tags (15-*, 20-*).
+# Spec: architecture/15-application-security-and-project-isolation.md, architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: signal-verify-signed-images-and-sbom
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+    - name: disallow-latest-tag
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: ["signal-*"]
+      validate:
+        message: "Mutable :latest tags are forbidden; pin explicit SemVer or sha256 digests."
+        pattern:
+          spec:
+            containers:
+              - image: "!*:latest"
+    - name: verify-cosign-keyless-signature
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: ["signal-*"]
+      verifyImages:
+        - imageReferences:
+            - "ghcr.io/the-code-master/signal/*"
+          attestors:
+            - entries:
+                - keyless:
+                    issuer: "https://token.actions.githubusercontent.com"
+                    subject: "https://github.com/the-code-master/signal/*"

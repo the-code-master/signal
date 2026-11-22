@@ -1,0 +1,24 @@
+# Module: infra/docker/Dockerfile.api — Tier-2A Stateless Python 3.15+ FastAPI / Granian Control-Plane Container
+# Invariants: Multi-arch; non-root UID 65532; refuses SIGNAL_FORBID_DEV_AUTH=0; zero physics/CAD dependencies (06-*, 20-*).
+# Spec: architecture/06-frontend-angular-and-fastapi-control-plane.md, docs/engineering/FASTAPI_ENGINEERING_GUIDE.md
+FROM ghcr.io/astral-sh/uv:python3.15-bookworm-slim AS build
+ARG SIGNAL_VERSION=0.1.0
+ARG SIGNAL_FORBID_DEV_AUTH=1
+RUN test "${SIGNAL_FORBID_DEV_AUTH}" = "1"
+WORKDIR /workspace
+COPY VERSION pyproject.toml uv.lock ./
+COPY contracts ./contracts
+COPY releases ./releases
+COPY services ./services
+RUN uv sync --frozen --no-dev
+
+FROM ghcr.io/astral-sh/uv:python3.15-bookworm-slim AS runtime
+ARG SIGNAL_VERSION=0.1.0
+ENV SIGNAL_ENV=production \
+    SIGNAL_VERSION=${SIGNAL_VERSION} \
+    PATH="/app/.venv/bin:${PATH}"
+WORKDIR /app
+COPY --from=build /workspace /app
+USER 65532:65532
+EXPOSE 8080
+CMD ["granian", "--interface", "asgi", "--host", "0.0.0.0", "--port", "8080", "services.api_gateway.main:app"]

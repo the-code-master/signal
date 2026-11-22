@@ -1,0 +1,9 @@
+# Module: infra/docker/Dockerfile.bridge — Tier-2B Envoy HTTP/3 WebTransport & gRPC-Web Engine Bridge
+# Invariants: Zero-copy binary streaming between browser and Tier-3 signal-pod over SPIFFE mTLS; non-root UID 65532 (20-*).
+# Spec: architecture/04-kubernetes-runtime-and-collaboration.md, architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+FROM envoyproxy/envoy:v1.33-latest
+ARG SIGNAL_VERSION=0.1.0
+LABEL org.opencontainers.image.version="${SIGNAL_VERSION}"
+USER 65532:65532
+EXPOSE 8443 9901
+CMD ["-c", "/etc/envoy/envoy.yaml", "--concurrency", "4"]

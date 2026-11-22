@@ -1,0 +1,19 @@
+# Module: infra/k8s/gitops/overlays/dev/application.yaml — ArgoCD GitOps Dev Environment Overlay
+# Invariants: Deploys infra/k8s/helm/signal with values-starter.yaml (1-4 Rust worker nodes, 20-*).
+# Spec: architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: signal-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/the-code-master/signal.git
+    targetRevision: main
+    path: infra/k8s/helm/signal
+    helm:
+      valueFiles: [values.yaml, values-starter.yaml]
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: signal-dev

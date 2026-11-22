@@ -1,0 +1,53 @@
+# Module: infra/k8s/helm/signal/values.yaml — Canonical Default Values for 3-Tier K8s 1.37+ Topology
+# Invariants: Never mixes Tier 1/2/3 node pools in multi-node clusters; enforces non-root & read-only rootfs (20-*).
+# Spec: architecture/04-kubernetes-runtime-and-collaboration.md, architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+global:
+  platformVersion: "0.1.0"
+  imageRegistry: "ghcr.io/the-code-master/signal"
+  physicsDeterminismEpoch: 1
+  adaptiveSingleNodeFallback: false
+
+tier1Web:
+  replicas: 2
+  nodePool: "pool-web"
+  image: "signal-web"
+  port: 4200
+  angularChunkRetentionReleases: 3
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "512Mi"
+    limits:
+      cpu: "1000m"
+      memory: "1Gi"
+
+tier2ApiBridge:
+  replicas: 2
+  nodePool: "pool-api"
+  apiImage: "signal-api"
+  apiPort: 8080
+  bridgeImage: "signal-engine-bridge"
+  bridgePort: 8443
+  spiffeMtlsEnabled: true
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "2000m"
+      memory: "2Gi"
+
+tier3RustEngine:
+  operatorImage: "signal-operator"
+  podImage: "signal-pod"
+  nodePool: "pool-rust-engine"
+  baselineWorkerNodes: 4
+  maxExtensibleWorkerNodes: 32
+  runtimeClassName: "kata-qemu"
+  gpuIsolationPolicy: "HOPPER_WHOLE_GPU_OR_BLACKWELL_TEE_MIG"
+  supportedLtsVersions:
+    - "0.1.0"
+
+security:
+  ciliumZeroLateralPolicy: true
+  forbidDevGuestAuth: true

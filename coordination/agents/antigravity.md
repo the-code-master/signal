@@ -218,3 +218,9 @@
 - **Branch:** `ag/AG-P0-03-unified-signal-ops-cli` → `main`
 - **Touched Paths:** `VERSION`, `CHANGELOG.md`, `signal.sh`, `justfile`, `scripts/**`, `releases/**`, `.github/workflows/{pr-gate,release,deploy-gitops}.yml`, `plan/TODO-LEDGER-ANTIGRAVITY-LANE-A.md`, `coordination/agents/antigravity.md`
 - **Verification:** `bash -n signal.sh`, `./signal.sh doctor`, `./signal.sh release preview --dry-run`, `./signal.sh check --target ops-cli`, `ruff check scripts/` (`0` issues), `pyright scripts/` (`0` errors, `0` warnings), `pytest scripts/tests/ -q` (`4/4` passed), and `releases/manifest.json` Draft 2020-12 schema check (`exit 0`).
+
+### [AG-P0-04] Multi-Arch Dockerfiles, 3-Tier K8s `1.37+` Umbrella Helm Chart, Karpenter, Cilium & Kyverno Gates
+- **Status:** `COMPLETED`
+- **Branch:** `ag/AG-P0-04-k8s-helm-and-docker` → `main`
+- **Touched Paths:** `infra/docker/Dockerfile.{web,api,bridge,rust-pod,operator,ai}`, `infra/k8s/helm/signal/**`, `infra/k8s/karpenter/nodepools.yaml`, `infra/k8s/policies/kyverno-cosign-sbom.yaml`, `infra/k8s/gitops/overlays/{dev,staging,prod}/application.yaml`, `plan/TODO-LEDGER-ANTIGRAVITY-LANE-A.md`, `coordination/agents/antigravity.md`
+- **Verification:** `./signal.sh check --target k8s` (`helm lint` across `values`, `values-local`, `values-starter`, `values-enterprise` with `0` failures), `helm template` topology/security assertion (`pool-web`, `pool-api`, `CiliumNetworkPolicy` 100% lateral drop, `readOnlyRootFilesystem: true`, `runAsUser: 65532`, 1-node adaptive fallback), and `./signal.sh image --dry-run` (`exit 0`).

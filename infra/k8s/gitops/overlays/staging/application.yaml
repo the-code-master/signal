@@ -1,0 +1,19 @@
+# Module: infra/k8s/gitops/overlays/staging/application.yaml — ArgoCD GitOps Staging Environment Overlay
+# Invariants: Deploys infra/k8s/helm/signal with values-enterprise.yaml (Confidential MicroVMs, 4->64 nodes, 20-*).
+# Spec: architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: signal-staging
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/the-code-master/signal.git
+    targetRevision: main
+    path: infra/k8s/helm/signal
+    helm:
+      valueFiles: [values.yaml, values-enterprise.yaml]
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: signal-staging

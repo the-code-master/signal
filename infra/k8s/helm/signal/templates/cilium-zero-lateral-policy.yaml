@@ -1,0 +1,31 @@
+{{- if .Values.security.ciliumZeroLateralPolicy }}
+# Module: infra/k8s/helm/signal/templates/cilium-zero-lateral-policy.yaml — Cilium eBPF 100% Lateral-Drop Cell Policy
+# Invariants: Drops 100% of lateral signal-pod <-> signal-pod packets; allows ingress ONLY from Tier-2 Envoy Bridge (15-*, 20-*).
+# Spec: architecture/15-application-security-and-project-isolation.md
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: signal-cell-zero-lateral
+  labels:
+    {{- include "signal.labels" . | nindent 4 }}
+spec:
+  endpointSelector:
+    matchLabels:
+      signal.design/tier: tier3-project-cell
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            signal.design/tier: tier2-api-bridge
+      toPorts:
+        - ports:
+            - port: "50051"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: signal-egress-proxy
+      toPorts:
+        - ports:
+            - port: "8444"
+              protocol: TCP
+{{- end }}

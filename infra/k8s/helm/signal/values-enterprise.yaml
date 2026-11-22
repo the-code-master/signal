@@ -1,0 +1,16 @@
+# Module: infra/k8s/helm/signal/values-enterprise.yaml — Enterprise HA & Confidential Silicon Profile (4 -> N Nodes)
+# Invariants: Enforces kata-qemu-sev-snp Confidential MicroVMs and scales pool-rust-engine from 4 baseline to 64 nodes.
+# Spec: architecture/04-kubernetes-runtime-and-collaboration.md, architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+global:
+  adaptiveSingleNodeFallback: false
+
+tier1Web:
+  replicas: 3
+
+tier2ApiBridge:
+  replicas: 3
+
+tier3RustEngine:
+  baselineWorkerNodes: 4
+  maxExtensibleWorkerNodes: 64
+  runtimeClassName: "kata-qemu-sev-snp"

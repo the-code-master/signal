@@ -1,0 +1,56 @@
+# Module: infra/k8s/helm/signal/templates/tier1-web-deployment.yaml — Tier-1 Separate Angular v22+ + Node.js 26 LTS+ Pod
+# Invariants: Scheduled onto dedicated pool-web; zero Rust/DB network reachability; automountServiceAccountToken=false.
+# Spec: architecture/06-frontend-angular-and-fastapi-control-plane.md, architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: signal-web
+  labels:
+    {{- include "signal.labels" . | nindent 4 }}
+    signal.design/tier: tier1-web
+spec:
+  replicas: {{ .Values.tier1Web.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: signal-web
+  template:
+    metadata:
+      labels:
+        {{- include "signal.labels" . | nindent 8 }}
+        app.kubernetes.io/name: signal-web
+        signal.design/tier: tier1-web
+    spec:
+      automountServiceAccountToken: false
+      {{- if not .Values.global.adaptiveSingleNodeFallback }}
+      nodeSelector:
+        signal.design/node-pool: {{ .Values.tier1Web.nodePool | quote }}
+      {{- end }}
+      containers:
+        - name: signal-web
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.tier1Web.image }}:v{{ .Values.global.platformVersion }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.tier1Web.port }}
+          env:
+            - name: SIGNAL_WEB_VERSION
+              value: {{ .Values.global.platformVersion | quote }}
+            - name: SIGNAL_ROUTE_PARTITIONED_COOP_COEP
+              value: "true"
+          securityContext:
+            {{- include "signal.containerSecurityContext" . | nindent 12 }}
+          resources:
+            {{- toYaml .Values.tier1Web.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: signal-web
+  labels:
+    {{- include "signal.labels" . | nindent 4 }}
+spec:
+  selector:
+    app.kubernetes.io/name: signal-web
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

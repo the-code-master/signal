@@ -1,0 +1,11 @@
+# Module: infra/docker/Dockerfile.ai — Zero-Tool Quarantine VLM & 3-Tier Datasheet Hybrid RAG Container
+# Invariants: Untrusted datasheet VLMs run with zero tool-calling schemas + GBNF grammar constraints (F-085, F-131).
+# Spec: architecture/05-ai-agent-and-datasheet-rag.md
+FROM ghcr.io/astral-sh/uv:python3.15-bookworm-slim
+ARG SIGNAL_VERSION=0.1.0
+ENV SIGNAL_ENV=production \
+    SIGNAL_VERSION=${SIGNAL_VERSION} \
+    SIGNAL_QUARANTINE_ZERO_TOOLS=1
+WORKDIR /app
+USER 65532:65532
+EXPOSE 8090

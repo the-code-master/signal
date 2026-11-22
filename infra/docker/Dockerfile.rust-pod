@@ -1,0 +1,19 @@
+# Module: infra/docker/Dockerfile.rust-pod — Tier-3 Isolated Per-Project Rust 1.100+ Security Cell
+# Invariants: --no-default-features forbids dev-guest-auth (F-095); LLVM-free runtime (F-115); distroless UID 65532.
+# Spec: architecture/03-rust-eda-engine.md, architecture/15-application-security-and-project-isolation.md
+FROM rust:1.100-bookworm AS build
+ARG SIGNAL_VERSION=0.1.0
+ARG SIGNAL_FORBID_DEV_AUTH=1
+RUN test "${SIGNAL_FORBID_DEV_AUTH}" = "1" && apt-get update && apt-get install -y --no-install-recommends protobuf-compiler && rm -rf /var/lib/apt/lists/*
+WORKDIR /workspace
+COPY rust-toolchain.toml VERSION ./
+COPY contracts ./contracts
+COPY engine ./engine
+RUN cargo build --manifest-path engine/Cargo.toml --release --no-default-features -p signal-pod -p signal-egress-proxy -p signal-sftp-egress
+
+FROM gcr.io/distroless/cc-debian12:nonroot AS runtime
+ARG SIGNAL_VERSION=0.1.0
+ENV SIGNAL_VERSION=${SIGNAL_VERSION}
+COPY --from=build /workspace/engine/target/release/libsignal_pod.rlib* /opt/signal/
+USER 65532:65532
+EXPOSE 50051

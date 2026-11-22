@@ -1,0 +1,16 @@
+# Module: infra/k8s/helm/signal/values-local.yaml — Single-Node Local K8s (OrbStack/Kind) Adaptive Fallback
+# Invariants: Enables adaptiveSingleNodeFallback while preserving Cilium Lateral-Drop & RBAC/PQC invariants (09-*, 20-*).
+# Spec: architecture/09-local-development-environment.md, architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+global:
+  adaptiveSingleNodeFallback: true
+
+tier1Web:
+  replicas: 1
+
+tier2ApiBridge:
+  replicas: 1
+
+tier3RustEngine:
+  baselineWorkerNodes: 1
+  maxExtensibleWorkerNodes: 4
+  runtimeClassName: "runc"

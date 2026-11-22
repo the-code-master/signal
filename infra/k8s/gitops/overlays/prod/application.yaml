@@ -1,0 +1,19 @@
+# Module: infra/k8s/gitops/overlays/prod/application.yaml — ArgoCD GitOps Production Environment Overlay
+# Invariants: Manual sync gate on production; deploys signed digests via values-enterprise.yaml (20-*).
+# Spec: architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: signal-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/the-code-master/signal.git
+    targetRevision: v0.1.0
+    path: infra/k8s/helm/signal
+    helm:
+      valueFiles: [values.yaml, values-enterprise.yaml]
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: signal-prod

@@ -1,0 +1,21 @@
+# Module: infra/docker/Dockerfile.web — Tier-1 Angular v22+ & Node.js 26 LTS+ Edge Container
+# Invariants: Multi-arch (amd64/arm64); non-root UID 65532; zero Rust/DB network credentials; serves Route COOP/COEP (F-127).
+# Spec: architecture/06-frontend-angular-and-fastapi-control-plane.md, architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+ARG NODE_IMAGE=node:26-bookworm-slim
+FROM --platform=$BUILDPLATFORM ${NODE_IMAGE} AS build
+ARG SIGNAL_VERSION=0.1.0
+WORKDIR /workspace
+COPY VERSION ./VERSION
+COPY contracts ./contracts
+COPY web ./web
+RUN corepack enable && cd web && pnpm install --frozen-lockfile && pnpm codegen && pnpm build
+
+FROM ${NODE_IMAGE} AS runtime
+ARG SIGNAL_VERSION=0.1.0
+ENV NODE_ENV=production \
+    SIGNAL_WEB_VERSION=${SIGNAL_VERSION}
+WORKDIR /app
+COPY --from=build /workspace/web/dist ./dist
+USER 65532:65532
+EXPOSE 4200
+CMD ["node", "dist/signal-web/server/server.mjs"]

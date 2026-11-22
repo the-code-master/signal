@@ -1,0 +1,16 @@
+# Module: infra/k8s/helm/signal/values-starter.yaml — Small-Team Production Starter Profile (1-4 Rust Worker Nodes)
+# Invariants: Dedicated pool-web, pool-api, and 2->4 extensible pool-rust-engine worker nodes (20-*).
+# Spec: architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+global:
+  adaptiveSingleNodeFallback: false
+
+tier1Web:
+  replicas: 2
+
+tier2ApiBridge:
+  replicas: 2
+
+tier3RustEngine:
+  baselineWorkerNodes: 2
+  maxExtensibleWorkerNodes: 4
+  runtimeClassName: "kata-qemu"

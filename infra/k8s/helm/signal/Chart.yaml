@@ -1,0 +1,9 @@
+# Module: infra/k8s/helm/signal/Chart.yaml — Signal 3-Tier K8s 1.37+ Umbrella Helm Chart
+# Invariants: Enforces separate pool-web, pool-api (FastAPI + Envoy Bridge), and 1-4 -> N pool-rust-engine worker nodes.
+# Spec: architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+apiVersion: v2
+name: signal
+description: Signal AI-Native EDA, CAD/CAM/PLM & Zero-Leak Collaboration Platform (3-Tier K8s Topology)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

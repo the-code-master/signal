@@ -1,0 +1,66 @@
+# Module: infra/k8s/helm/signal/templates/tier2-api-and-bridge.yaml — Tier-2 Dedicated FastAPI/Granian + Envoy Engine Bridge
+# Invariants: Scheduled onto dedicated pool-api; Envoy streams binary frames directly to Tier-3 Rust cells over SPIFFE mTLS.
+# Spec: architecture/06-frontend-angular-and-fastapi-control-plane.md, architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: signal-api-bridge
+  labels:
+    {{- include "signal.labels" . | nindent 4 }}
+    signal.design/tier: tier2-api-bridge
+spec:
+  replicas: {{ .Values.tier2ApiBridge.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: signal-api-bridge
+  template:
+    metadata:
+      labels:
+        {{- include "signal.labels" . | nindent 8 }}
+        app.kubernetes.io/name: signal-api-bridge
+        signal.design/tier: tier2-api-bridge
+    spec:
+      automountServiceAccountToken: false
+      {{- if not .Values.global.adaptiveSingleNodeFallback }}
+      nodeSelector:
+        signal.design/node-pool: {{ .Values.tier2ApiBridge.nodePool | quote }}
+      {{- end }}
+      containers:
+        - name: signal-api
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.tier2ApiBridge.apiImage }}:v{{ .Values.global.platformVersion }}"
+          ports:
+            - name: http-api
+              containerPort: {{ .Values.tier2ApiBridge.apiPort }}
+          env:
+            - name: SIGNAL_ENV
+              value: "production"
+            - name: SIGNAL_FORBID_DEV_AUTH
+              value: "1"
+          securityContext:
+            {{- include "signal.containerSecurityContext" . | nindent 12 }}
+          resources:
+            {{- toYaml .Values.tier2ApiBridge.resources | nindent 12 }}
+        - name: signal-engine-bridge
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.tier2ApiBridge.bridgeImage }}:v{{ .Values.global.platformVersion }}"
+          ports:
+            - name: h3-bridge
+              containerPort: {{ .Values.tier2ApiBridge.bridgePort }}
+          securityContext:
+            {{- include "signal.containerSecurityContext" . | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: signal-api-bridge
+  labels:
+    {{- include "signal.labels" . | nindent 4 }}
+spec:
+  selector:
+    app.kubernetes.io/name: signal-api-bridge
+  ports:
+    - name: http-api
+      port: {{ .Values.tier2ApiBridge.apiPort }}
+      targetPort: http-api
+    - name: h3-bridge
+      port: {{ .Values.tier2ApiBridge.bridgePort }}
+      targetPort: h3-bridge

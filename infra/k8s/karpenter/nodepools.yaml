@@ -1,0 +1,66 @@
+# Module: infra/k8s/karpenter/nodepools.yaml — Karpenter v1 NodePools for 3-Tier K8s 1.37+ Topology
+# Invariants: Separate pool-web, pool-api, and 1-4 -> N extensible pool-rust-engine + GPU/Confidential pools (F-118, 20-*).
+# Spec: architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: pool-web
+spec:
+  template:
+    metadata:
+      labels:
+        signal.design/node-pool: pool-web
+    spec:
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: signal-linux
+      requirements:
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["arm64", "amd64"]
+---
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: pool-api
+spec:
+  template:
+    metadata:
+      labels:
+        signal.design/node-pool: pool-api
+    spec:
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: signal-linux
+      requirements:
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["arm64", "amd64"]
+---
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: pool-rust-engine
+spec:
+  disruption:
+    consolidationPolicy: WhenEmpty
+    consolidateAfter: 300s
+  template:
+    metadata:
+      labels:
+        signal.design/node-pool: pool-rust-engine
+    spec:
+      taints:
+        - key: signal.design/rust-cell-only
+          value: "true"
+          effect: NoSchedule
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: signal-kata-metal
+      requirements:
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["arm64", "amd64"]

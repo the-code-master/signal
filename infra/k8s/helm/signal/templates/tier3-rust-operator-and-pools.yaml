@@ -1,0 +1,48 @@
+# Module: infra/k8s/helm/signal/templates/tier3-rust-operator-and-pools.yaml — Tier-3 Multi-Version Operator & 1-4->N Rust Pool Config
+# Invariants: Reconciles isolated 1-Project=1-Cell pods across 1-4 -> N extensible pool-rust-engine worker nodes (20-*).
+# Spec: architecture/04-kubernetes-runtime-and-collaboration.md, architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: signal-rust-topology-config
+  labels:
+    {{- include "signal.labels" . | nindent 4 }}
+data:
+  baseline_worker_nodes: {{ .Values.tier3RustEngine.baselineWorkerNodes | quote }}
+  max_extensible_worker_nodes: {{ .Values.tier3RustEngine.maxExtensibleWorkerNodes | quote }}
+  runtime_class_name: {{ .Values.tier3RustEngine.runtimeClassName | quote }}
+  gpu_isolation_policy: {{ .Values.tier3RustEngine.gpuIsolationPolicy | quote }}
+  physics_determinism_epoch: {{ .Values.global.physicsDeterminismEpoch | quote }}
+  adaptive_single_node_fallback: {{ .Values.global.adaptiveSingleNodeFallback | quote }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: signal-operator
+  labels:
+    {{- include "signal.labels" . | nindent 4 }}
+    signal.design/tier: tier3-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: signal-operator
+  template:
+    metadata:
+      labels:
+        {{- include "signal.labels" . | nindent 8 }}
+        app.kubernetes.io/name: signal-operator
+        signal.design/tier: tier3-operator
+    spec:
+      {{- if not .Values.global.adaptiveSingleNodeFallback }}
+      nodeSelector:
+        signal.design/node-pool: {{ .Values.tier2ApiBridge.nodePool | quote }}
+      {{- end }}
+      containers:
+        - name: signal-operator
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.tier3RustEngine.operatorImage }}:v{{ .Values.global.platformVersion }}"
+          envFrom:
+            - configMapRef:
+                name: signal-rust-topology-config
+          securityContext:
+            {{- include "signal.containerSecurityContext" . | nindent 12 }}
