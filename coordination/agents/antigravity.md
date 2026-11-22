@@ -231,3 +231,9 @@
 - **Touched Paths:** `infra/local/{README.md,docker-compose.arm64.yml}`, `infra/local/env/{web,api,rust-engine,ai-llm,data}.env.example`, `infra/local/seeds/guest_signal_design_inc.json`, `infra/local/wgsl/verify_lavapipe_parity.sh`, `coordination/handoffs/20261121-P0-04-ag-to-cursor.md`, `coordination/TASK_BOARD.md`, `plan/TODO-LEDGER-ANTIGRAVITY-LANE-A.md`, `coordination/agents/antigravity.md`
 - **Verification:** `docker compose -f infra/local/docker-compose.arm64.yml config -q` (`0`), `./infra/local/wgsl/verify_lavapipe_parity.sh` (`0`), `./signal.sh dev {lite,full,k8s} --dry-run` (`0`), and full monorepo `./signal.sh check` (`9/9` components green, exit `0`).
 - **Handoff Notes for Cursor:** See [`coordination/handoffs/20261121-P0-04-ag-to-cursor.md`](../handoffs/20261121-P0-04-ag-to-cursor.md). All Step 0A (`C-P0-01..03`) and Lane A (`AG-P0-01..05`) deliverables are merged to `origin/main` with zero touches to Lane B (`web/**`, `services/**`, `cursor.md`, `TODO-LEDGER-CURSOR-LANE-B.md`).
+
+### [CU-P0-01] Angular `v22.3.0` ONLY Workspace, `@signal/design-system` & Automated UI Style/DLP Gates *(User-Requested Lane B Takeover)*
+- **Status:** `COMPLETED`
+- **Branch:** `cursor/CU-P0-01-angular-v22-design-system` → `main`
+- **Touched Paths:** `.nvmrc`, `web/package.json`, `web/pnpm-workspace.yaml`, `web/pnpm-lock.yaml`, `web/tsconfig.base.json`, `web/vitest.config.ts`, `web/eslint.config.mjs`, `web/.stylelintrc.json`, `web/tools/{codegen-contracts,verify-ui-style-guide}.mjs`, `web/libs/design-system/**`, `plan/TODO-LEDGER-CURSOR-LANE-B.md`, `coordination/agents/antigravity.md`
+- **Verification:** `pnpm --dir web lint` (`0` violations), `pnpm --dir web typecheck` (`tsc` TS `6.0.3` `--noEmit` `0` errors), and `pnpm --dir web test --run` (`2/2` `bigint` `9007199254740993n` & theme tests passing).

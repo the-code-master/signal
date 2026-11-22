@@ -1,0 +1,16 @@
+# Module: web/pnpm-workspace.yaml — Signal Angular v22+ Monorepo Workspace & Supply-Chain Build Policy
+# Invariants: Explicit allowlist for native build binaries; ignores legacy zone.js peer warning in Zoneless mode.
+# Spec: architecture/06-frontend-angular-and-fastapi-control-plane.md, architecture/15-application-security-and-project-isolation.md
+packages:
+  - "apps/*"
+  - "libs/*"
+
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  lmdb: true
+  msgpackr-extract: true
+
+peerDependencyRules:
+  ignoreMissing:
+    - "zone.js"

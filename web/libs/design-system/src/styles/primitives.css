@@ -1,0 +1,261 @@
+/* Module: web/libs/design-system/src/styles/primitives.css — Centralized .sig-* Platform Component & Layout Ecosystem */
+/* Invariants: Replaces ALL per-component CSS across 23 workbenches; <= 250 LOC; 100% var(--sig-*) tokens. */
+/* Spec: docs/engineering/ANGULAR_UI_STYLE_GUIDE.md */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--sig-bg-canvas);
+  color: var(--sig-text-primary);
+  font-family: var(--sig-font-sans);
+  font-size: 13px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+.sig-mono {
+  font-family: var(--sig-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.sig-app-shell {
+  display: grid;
+  grid-template-rows: 52px 1fr 28px;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sig-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sig-space-3);
+  padding: 0 var(--sig-space-4);
+  background: var(--sig-bg-surface);
+  border-bottom: 1px solid var(--sig-border-subtle);
+}
+
+.sig-workspace-grid {
+  display: grid;
+  grid-template-columns: 256px 1fr 340px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sig-sidebar,
+.sig-inspector-rail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sig-space-2);
+  padding: var(--sig-space-3);
+  background: var(--sig-bg-surface);
+  overflow-y: auto;
+}
+
+.sig-sidebar {
+  border-right: 1px solid var(--sig-border-subtle);
+}
+
+.sig-inspector-rail {
+  border-left: 1px solid var(--sig-border-subtle);
+}
+
+.sig-main-stage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sig-space-3);
+  padding: var(--sig-space-4);
+  overflow-y: auto;
+  background: radial-gradient(circle at 20% 10%, #122038 0%, var(--sig-bg-canvas) 65%);
+}
+
+.sig-statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--sig-space-4);
+  background: var(--sig-bg-surface);
+  border-top: 1px solid var(--sig-border-subtle);
+  color: var(--sig-text-secondary);
+  font-size: 11px;
+}
+
+.sig-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sig-space-2);
+  flex-wrap: wrap;
+}
+
+.sig-row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sig-space-3);
+}
+
+.sig-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sig-space-3);
+}
+
+.sig-grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--sig-space-3);
+}
+
+.sig-panel {
+  background: var(--sig-bg-elevated);
+  border: 1px solid var(--sig-border-subtle);
+  border-radius: var(--sig-radius-md);
+  padding: var(--sig-space-4);
+}
+
+.sig-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sig-space-3);
+  padding-bottom: var(--sig-space-2);
+  border-bottom: 1px solid var(--sig-border-subtle);
+}
+
+.sig-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sig-text-primary);
+}
+
+.sig-subtitle {
+  margin: 0;
+  font-size: 12px;
+  color: var(--sig-text-secondary);
+}
+
+.sig-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--sig-radius-sm);
+  border: 1px solid var(--sig-border-strong);
+  background: var(--sig-bg-interactive);
+  color: var(--sig-text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.sig-btn-primary {
+  background: var(--sig-accent-strong);
+  border-color: var(--sig-accent-primary);
+  color: #ffffff;
+}
+
+.sig-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  border-radius: var(--sig-radius-sm);
+  color: var(--sig-text-secondary);
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.sig-nav-item-active,
+.sig-nav-item:hover {
+  background: var(--sig-bg-interactive);
+  color: var(--sig-text-primary);
+  border-color: var(--sig-border-subtle);
+}
+
+.sig-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--sig-bg-interactive);
+  border: 1px solid var(--sig-border-strong);
+}
+
+.sig-badge-ok {
+  color: var(--sig-status-ok);
+  border-color: var(--sig-status-ok);
+}
+
+.sig-badge-warn {
+  color: var(--sig-status-warn);
+  border-color: var(--sig-status-warn);
+}
+
+.sig-badge-danger {
+  color: var(--sig-status-danger);
+  border-color: var(--sig-status-danger);
+}
+
+.sig-viewport-surface {
+  position: relative;
+  min-height: 300px;
+  border-radius: var(--sig-radius-md);
+  border: 1px solid var(--sig-border-strong);
+  background-color: #060a12;
+  background-image: radial-gradient(#1f3152 1px, transparent 1px);
+  background-size: 20px 20px;
+  padding: var(--sig-space-4);
+  overflow: hidden;
+}
+
+.sig-input {
+  padding: 6px 10px;
+  border-radius: var(--sig-radius-sm);
+  border: 1px solid var(--sig-border-strong);
+  background: var(--sig-bg-canvas);
+  color: var(--sig-text-primary);
+  font-family: var(--sig-font-mono);
+  font-size: 12px;
+}
+
+.sig-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.sig-table th,
+.sig-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--sig-border-subtle);
+}
+
+.sig-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 15, 0.72);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 50;
+}
+
+.sig-drawer-sheet {
+  width: min(460px, 92vw);
+  height: 100%;
+  background: var(--sig-bg-surface);
+  border-left: 1px solid var(--sig-border-strong);
+  padding: var(--sig-space-4);
+  overflow-y: auto;
+}

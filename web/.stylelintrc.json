@@ -1,0 +1,6 @@
+{
+  "rules": {
+    "declaration-no-important": true,
+    "selector-pseudo-element-disallowed-list": ["ng-deep"]
+  }
+}

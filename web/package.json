@@ -1,0 +1,36 @@
+{
+  "name": "@signal/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=26.0.0",
+    "pnpm": ">=11.0.0"
+  },
+  "scripts": {
+    "codegen": "node tools/codegen-contracts.mjs",
+    "lint": "node tools/verify-ui-style-guide.mjs",
+    "typecheck": "node tools/codegen-contracts.mjs && tsc -p tsconfig.base.json --noEmit",
+    "test": "node tools/codegen-contracts.mjs && vitest",
+    "build": "node tools/codegen-contracts.mjs && ng build signal-web",
+    "serve": "node tools/codegen-contracts.mjs && ng serve signal-web --host 0.0.0.0 --port 4200"
+  },
+  "dependencies": {
+    "@angular/common": "22.3.0",
+    "@angular/compiler": "22.3.0",
+    "@angular/core": "22.3.0",
+    "@angular/forms": "22.3.0",
+    "@angular/platform-browser": "22.3.0",
+    "@angular/router": "22.3.0",
+    "rxjs": "^7.8.2",
+    "tslib": "^2.8.1"
+  },
+  "devDependencies": {
+    "@angular/build": "22.3.0",
+    "@angular/cli": "22.3.0",
+    "@angular/compiler-cli": "22.3.0",
+    "@types/node": "^26.0.0",
+    "typescript": "~6.0.0",
+    "vitest": "^4.0.8"
+  }
+}

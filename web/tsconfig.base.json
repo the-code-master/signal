@@ -1,0 +1,59 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": false,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "types": ["node"],
+    "paths": {
+      "@signal/contracts": ["../contracts/gen/ts/signal_v1.ts"],
+      "@signal/design-system": ["./libs/design-system/src/index.ts"],
+      "@signal/ui-kit": ["./libs/ui-kit/src/index.ts"],
+      "@signal/canvas-core": ["./libs/canvas-core/src/index.ts"],
+      "@signal/schematic": ["./libs/schematic/src/index.ts"],
+      "@signal/sim-viewer": ["./libs/sim-viewer/src/index.ts"],
+      "@signal/pcb": ["./libs/pcb/src/index.ts"],
+      "@signal/magnetics": ["./libs/magnetics/src/index.ts"],
+      "@signal/power-studio": ["./libs/power-studio/src/index.ts"],
+      "@signal/emc-lab": ["./libs/emc-lab/src/index.ts"],
+      "@signal/safety-wcca": ["./libs/safety-wcca/src/index.ts"],
+      "@signal/ic": ["./libs/ic/src/index.ts"],
+      "@signal/fpga-studio": ["./libs/fpga-studio/src/index.ts"],
+      "@signal/code-ide": ["./libs/code-ide/src/index.ts"],
+      "@signal/bringup-lab": ["./libs/bringup-lab/src/index.ts"],
+      "@signal/harness-3d": ["./libs/harness-3d/src/index.ts"],
+      "@signal/dfm-panel": ["./libs/dfm-panel/src/index.ts"],
+      "@signal/library-studio": ["./libs/library-studio/src/index.ts"],
+      "@signal/specs": ["./libs/specs/src/index.ts"],
+      "@signal/ai-copilot": ["./libs/ai-copilot/src/index.ts"],
+      "@signal/visual-diff": ["./libs/visual-diff/src/index.ts"],
+      "@signal/review": ["./libs/review/src/index.ts"],
+      "@signal/sftp-release": ["./libs/sftp-release/src/index.ts"],
+      "@signal/academy": ["./libs/academy/src/index.ts"],
+      "@signal/admin": ["./libs/admin/src/index.ts"],
+      "@signal/mcad-studio": ["./libs/mcad-studio/src/index.ts"],
+      "@signal/cam-print": ["./libs/cam-print/src/index.ts"],
+      "@signal/plm-ops": ["./libs/plm-ops/src/index.ts"],
+      "@signal/collab-hub": ["./libs/collab-hub/src/index.ts"]
+    }
+  },
+  "include": [
+    "libs/**/*.ts",
+    "apps/**/*.ts",
+    "../contracts/gen/ts/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

@@ -1,0 +1,19 @@
+/* Module: web/libs/design-system/src/styles/themes.css — High-Contrast & Okabe-Ito Color-Blind-Safe Themes */
+/* Invariants: WCAG 2.2 AA contrast ratios + Okabe-Ito CVD-safe Copper/Net palette (F-070). */
+/* Spec: docs/engineering/ANGULAR_UI_STYLE_GUIDE.md */
+[data-sig-theme="high-contrast"] {
+  --sig-bg-canvas: #000000;
+  --sig-bg-surface: #0a0e17;
+  --sig-bg-elevated: #121a2b;
+  --sig-border-subtle: #4f6b99;
+  --sig-text-primary: #ffffff;
+  --sig-text-secondary: #dbe7ff;
+  --sig-accent-primary: #67e8f9;
+}
+
+[data-sig-theme="okabe-ito"] {
+  --sig-accent-primary: #56b4e9;
+  --sig-status-ok: #009e73;
+  --sig-status-warn: #e69f00;
+  --sig-status-danger: #d55e00;
+}
