@@ -51,7 +51,7 @@ def run_worktree_setup(
     as_json: bool = False,
 ) -> int:
     target_path = (reg.repo_root / peer_dir).resolve()
-    cmd = ["git", "worktree", "add", str(target_path), "main"]
+    cmd = ["git", "worktree", "add", "-B", "ag/workspace", str(target_path), "origin/main"]
     details = [
         f"Cursor Workspace (Lane B `web/`, `services/`): {reg.repo_root}",
         f"Antigravity Workspace (Lane A `engine/`, `infra/`, `contracts/`): {target_path}",
