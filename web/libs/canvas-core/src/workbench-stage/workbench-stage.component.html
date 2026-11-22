@@ -1,0 +1,28 @@
+<div class="sig-stack">
+  <sig-panel
+    [title]="vm().descriptor.title"
+    [subtitle]="vm().descriptor.subtitle"
+    [badge]="vm().engineBadge"
+  >
+    <div class="sig-grid-cards">
+      @for (kpi of vm().descriptor.kpis; track kpi.id) {
+        <div class="sig-panel sig-row-between">
+          <span class="sig-subtitle">{{ kpi.label }}</span>
+          <sig-status-pill [label]="kpi.value" [tone]="kpi.tone" />
+        </div>
+      }
+    </div>
+  </sig-panel>
+
+  <sig-dual-plane-viewport
+    [domainTitle]="vm().descriptor.title"
+    [hudSignals]="vm().descriptor.hudSignals"
+  />
+
+  <sig-panel [title]="vm().descriptor.gridTitle" badge="Virtual Window <= 50 DOM Rows">
+    <sig-data-grid
+      [columns]="vm().descriptor.columns"
+      [rows]="vm().descriptor.rows"
+    />
+  </sig-panel>
+</div>

@@ -243,3 +243,9 @@
 - **Branch:** `cursor/CU-P0-02-angular-ui-kit` → `main`
 - **Touched Paths:** `web/libs/ui-kit/**`, `plan/TODO-LEDGER-CURSOR-LANE-B.md`, `coordination/agents/antigravity.md`
 - **Verification:** `pnpm --dir web lint` (`0` violations), `pnpm --dir web typecheck` (`0` errors), and `pnpm --dir web test --run` (`3/3` passed including `m` milli vs `Meg`/`M` Mega `bigint` parser test).
+
+### [CU-P0-03] Angular `v22.3.0` Zoneless IDE Shell, Node `26` Route-Partitioned `COOP`/`COEP` Edge & 25 Lazy Workbenches *(User-Requested Lane B Takeover)*
+- **Status:** `COMPLETED`
+- **Branch:** `cursor/CU-P0-03-angular-ide-shell` → `main`
+- **Touched Paths:** `web/angular.json`, `web/tools/verify-ui-style-guide.mjs`, `web/apps/signal-web/**`, `web/libs/{canvas-core,schematic,sim-viewer,pcb,magnetics,power-studio,emc-lab,safety-wcca,ic,fpga-studio,code-ide,bringup-lab,harness-3d,dfm-panel,library-studio,specs,ai-copilot,visual-diff,review,sftp-release,academy,admin,mcad-studio,cam-print,plm-ops,collab-hub}/**`, `plan/TODO-LEDGER-CURSOR-LANE-B.md`, `coordination/agents/antigravity.md`
+- **Verification:** `pnpm --dir web lint` (`0` violations), `pnpm --dir web typecheck` (`0` errors), `pnpm --dir web test --run` (`4/4` passed), and `pnpm --dir web build` (`75.00 kB` gzipped initial bundle + 26 lazy chunks, `exit 0`).

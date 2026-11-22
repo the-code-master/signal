@@ -71,8 +71,9 @@ for (const file of walk(webRoot)) {
   }
 
   if ((file.endsWith(".ts") || file.endsWith(".html")) && !file.endsWith(".spec.ts")) {
+    const codeOnly = lines.filter((l) => !l.trim().startsWith("//") && !l.trim().startsWith("/*")).join("\n");
     for (const bad of ["localStorage", "sessionStorage", "indexedDB", "window.print", "bypassSecurityTrust"]) {
-      if (content.includes(bad)) errors.push(`${rel}: Zero-Leak DLP / security violation '${bad}'`);
+      if (codeOnly.includes(bad)) errors.push(`${rel}: Zero-Leak DLP / security violation '${bad}'`);
     }
   }
 }

@@ -1,0 +1,29 @@
+<div class="sig-viewport-surface sig-stack" (mousemove)="onPointerMove($event)">
+  <div class="sig-row-between">
+    <div class="sig-row">
+      <sig-status-pill [label]="vm().planeModeLabel" tone="ok" />
+      <sig-status-pill [label]="vm().watermarkBadge" tone="neutral" />
+    </div>
+    <button class="sig-btn" type="button" (click)="togglePlaneMode()">Switch Plane 1 / Plane 2</button>
+  </div>
+
+  <div class="sig-panel sig-stack">
+    <div class="sig-row-between">
+      <strong class="sig-title">{{ vm().domainTitle }} — Server-Rendered GPU Atlas Stream</strong>
+      <span class="sig-mono sig-subtitle">{{ vm().traceWidthText }}</span>
+    </div>
+    <div class="sig-row">
+      <span class="sig-badge sig-mono">{{ vm().cursorXText }}</span>
+      <span class="sig-badge sig-mono">{{ vm().cursorYText }}</span>
+      @for (sig of vm().hudSignals; track sig) {
+        <span class="sig-badge sig-mono">{{ sig }}</span>
+      }
+    </div>
+    <sig-si-input
+      label="Live SI Constraint (m vs Meg):"
+      unitSymbol="m"
+      initialText="85u"
+      (valueCommitted)="onWidthCommitted($event)"
+    />
+  </div>
+</div>

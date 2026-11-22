@@ -1,0 +1,89 @@
+<div class="sig-app-shell">
+  <header class="sig-topbar">
+    <div class="sig-row">
+      <strong class="sig-title">SIGNAL</strong>
+      <span class="sig-badge sig-mono">{{ vm().orgSlug }} / {{ vm().projectSlug }}</span>
+      <sig-status-pill [label]="vm().sessionBadge" tone="ok" />
+    </div>
+
+    <div class="sig-row">
+      @for (prof of profiles; track prof) {
+        <button
+          class="sig-btn"
+          [class.sig-btn-primary]="vm().activeProfile === prof"
+          type="button"
+          (click)="selectProfile(prof)"
+        >
+          {{ prof }}
+        </button>
+      }
+      @for (th of themes; track th.id) {
+        <button
+          class="sig-btn"
+          [class.sig-btn-primary]="vm().activeTheme === th.id"
+          type="button"
+          (click)="selectTheme(th.id)"
+        >
+          {{ th.label }}
+        </button>
+      }
+      <button class="sig-btn sig-btn-primary" type="button" (click)="toggleWhatsNew(true)">
+        What's New {{ vm().releaseBadge }}
+      </button>
+    </div>
+  </header>
+
+  <div class="sig-workspace-grid">
+    <nav class="sig-sidebar" aria-label="Domain Workbenches">
+      <span class="sig-subtitle">Workbenches ({{ vm().visibleNavLinks.length }})</span>
+      @for (nav of vm().visibleNavLinks; track nav.slug) {
+        <a
+          class="sig-nav-item"
+          [routerLink]="nav.routePath"
+          routerLinkActive="sig-nav-item-active"
+        >
+          <span>{{ nav.label }}</span>
+        </a>
+      }
+    </nav>
+
+    <main class="sig-main-stage">
+      <router-outlet />
+    </main>
+
+    <aside class="sig-inspector-rail" aria-label="Live Control Tower">
+      <sig-panel title="Project Status Tower" subtitle="5-Team Live Health (21-*)" badge="DVT">
+        <div class="sig-stack">
+          <sig-status-pill [label]="reviewSummary()" tone="ok" />
+          <p class="sig-subtitle">
+            Guest @ Signal Design, Inc. (`local-guest-0001`) • Padmé AES-256-GCM-SIV Vault • Hybrid ML-KEM-768 DEK
+          </p>
+        </div>
+      </sig-panel>
+
+      <sig-panel title="3-Tier Runtime Topology" subtitle="Live Tier Isolation" badge="K8s 1.37+">
+        <div class="sig-stack">
+          <span class="sig-badge sig-mono">Tier 1: Angular v22.3 + Node 26 (:4200)</span>
+          <span class="sig-badge sig-mono">Tier 2: Python 3.15 FastAPI (:8080)</span>
+          <span class="sig-badge sig-mono">Tier 3: Pure-Rust 1.100 Cell (:50051)</span>
+        </div>
+      </sig-panel>
+    </aside>
+  </div>
+
+  <footer class="sig-statusbar">
+    <span>Zero-Leak Mode: Active (Zero Browser Storage / Zero Download Routes / COOP+COEP Isolated)</span>
+    <span class="sig-mono">{{ vm().releaseBadge }}</span>
+  </footer>
+
+  <sig-drawer [open]="whatsNewOpen()" title="What's New in Signal Platform" (closed)="toggleWhatsNew(false)">
+    <div class="sig-stack">
+      <sig-status-pill [label]="vm().releaseBadge" tone="ok" />
+      @for (hl of vm().latestHighlights; track hl) {
+        <div class="sig-panel">
+          <p class="sig-subtitle">{{ hl }}</p>
+        </div>
+      }
+    </div>
+  </sig-drawer>
+</div>

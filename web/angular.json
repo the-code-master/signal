@@ -1,0 +1,54 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "analytics": false
+  },
+  "newProjectRoot": "apps",
+  "projects": {
+    "signal-web": {
+      "projectType": "application",
+      "root": "apps/signal-web",
+      "sourceRoot": "apps/signal-web/src",
+      "prefix": "sig",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/signal-web",
+            "index": "apps/signal-web/src/index.html",
+            "browser": "apps/signal-web/src/main.ts",
+            "tsConfig": "apps/signal-web/tsconfig.app.json",
+            "styles": [
+              "libs/design-system/src/styles/tokens.css",
+              "libs/design-system/src/styles/themes.css",
+              "libs/design-system/src/styles/primitives.css"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "signal-web:build:production"
+            },
+            "development": {
+              "buildTarget": "signal-web:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    }
+  }
+}
