@@ -255,3 +255,9 @@
 - **Branch:** `cursor/CU-P0-04-fastapi-control-plane-skeleton` → `main`
 - **Touched Paths:** `.python-version`, `pyproject.toml`, `uv.lock`, `services/__init__.py`, `services/{common,api-gateway,identity-org,project-catalog,parts-registry,plm-ops,collab-hub,vcs-connector,vcs-auditor,session-broker,sftp-egress}/**`, `services/tests/test_control_plane_security.py`, `plan/TODO-LEDGER-CURSOR-LANE-B.md`, `coordination/agents/antigravity.md`
 - **Verification:** `uv run ruff check services/` (`0` issues), `uv run pyright services/` (`0` errors, `0` warnings in strict mode), and `uv run pytest services/ -q` (`4/4` passed: startup unguarded-route rejection, DLP `/download` rejection, `Int64Str` `9007199254740993` fixture parity, and contractor uniform-`404` repo scoping).
+
+### [CU-P0-05] PostgreSQL `19+` `with_rls_tx` (`NOBYPASSRLS`) & Fail-Closed 3x Quorum Tier-0 Audit Outbox (`Phase 0` 100% Complete)
+- **Status:** `COMPLETED`
+- **Branch:** `cursor/CU-P0-05-postgres19-rls-and-audit-outbox` → `main`
+- **Touched Paths:** `services/common/db/**`, `services/audit-service/**`, `services/tests/test_rls_and_quorum_audit.py`, `coordination/TASK_BOARD.md`, `plan/TODO-LEDGER-CURSOR-LANE-B.md`, `coordination/agents/antigravity.md`
+- **Verification:** `uv run ruff check services/` (`0` issues), `uv run pyright services/` (`0` errors, `0` warnings), `uv run bandit -r services/ -ll -q` (`0` issues), and `uv run pytest services/ -q` (`6/6` passed).
