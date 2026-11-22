@@ -1,0 +1,123 @@
+# Module: scripts/components.toml — Declarative Monorepo Component & 3-Tier K8s Topology Manifest
+# Invariants: Single source of truth for paths, Dockerfiles, check/build argv, and K8s tiers (20-*).
+# Spec: architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+
+schema_version = "1.0.0"
+default_registry = "ghcr.io/the-code-master/signal"
+
+[components.contracts]
+tier = "SHARED_CONTRACTS"
+required_path = "contracts/buf.yaml"
+watched_paths = ["contracts/"]
+check_commands = [
+  ["buf", "lint", "contracts"],
+  ["buf", "format", "-d", "--exit-code", "contracts"],
+]
+build_commands = [
+  ["buf", "lint", "contracts"],
+]
+
+[components.rust-pod]
+tier = "TIER3_RUST_ENGINE"
+required_path = "engine/Cargo.toml"
+watched_paths = ["rust-toolchain.toml", "engine/", "benchmarks/", "contracts/proto/"]
+dockerfile = "infra/docker/Dockerfile.rust-pod"
+image_name = "signal-pod"
+forbid_features = ["dev-guest-auth"]
+check_commands = [
+  ["cargo", "fmt", "--manifest-path", "engine/Cargo.toml", "--all", "--", "--check"],
+  ["cargo", "clippy", "--manifest-path", "engine/Cargo.toml", "--workspace", "--all-targets", "--", "-D", "warnings"],
+  ["cargo", "test", "--manifest-path", "engine/Cargo.toml", "--workspace"],
+]
+build_commands = [
+  ["cargo", "build", "--manifest-path", "engine/Cargo.toml", "--workspace", "--no-default-features"],
+]
+
+[components.rust-operator]
+tier = "TIER3_RUST_ENGINE"
+required_path = "engine/crates/signal-operator/Cargo.toml"
+watched_paths = ["engine/crates/signal-operator/", "engine/crates/signal-proto/"]
+dockerfile = "infra/docker/Dockerfile.operator"
+image_name = "signal-operator"
+forbid_features = ["dev-guest-auth"]
+check_commands = [
+  ["cargo", "test", "--manifest-path", "engine/Cargo.toml", "-p", "signal-operator"],
+]
+build_commands = [
+  ["cargo", "build", "--manifest-path", "engine/Cargo.toml", "-p", "signal-operator", "--no-default-features"],
+]
+
+[components.web]
+tier = "TIER1_WEB"
+required_path = "web/package.json"
+watched_paths = [".nvmrc", "web/", "contracts/"]
+dockerfile = "infra/docker/Dockerfile.web"
+image_name = "signal-web"
+check_commands = [
+  ["pnpm", "--dir", "web", "lint"],
+  ["pnpm", "--dir", "web", "typecheck"],
+  ["pnpm", "--dir", "web", "test", "--run"],
+]
+build_commands = [
+  ["pnpm", "--dir", "web", "build"],
+]
+
+[components.api]
+tier = "TIER2_API_BRIDGE"
+required_path = "pyproject.toml"
+watched_paths = [".python-version", "pyproject.toml", "services/", "contracts/"]
+dockerfile = "infra/docker/Dockerfile.api"
+image_name = "signal-api"
+check_commands = [
+  ["uv", "run", "ruff", "check", "services/"],
+  ["uv", "run", "pyright", "services/"],
+  ["uv", "run", "pytest", "services/", "-q"],
+]
+build_commands = [
+  ["uv", "sync", "--frozen"],
+]
+
+[components.bridge]
+tier = "TIER2_API_BRIDGE"
+required_path = "infra/docker/Dockerfile.bridge"
+watched_paths = ["infra/docker/Dockerfile.bridge", "infra/k8s/helm/signal/"]
+dockerfile = "infra/docker/Dockerfile.bridge"
+image_name = "signal-engine-bridge"
+check_commands = []
+build_commands = []
+
+[components.ai]
+tier = "AI_PLANE"
+required_path = "ai/pyproject.toml"
+watched_paths = ["ai/", "contracts/"]
+dockerfile = "infra/docker/Dockerfile.ai"
+image_name = "signal-ai"
+check_commands = [
+  ["uv", "run", "ruff", "check", "ai/"],
+  ["uv", "run", "pytest", "ai/", "-q"],
+]
+build_commands = []
+
+[components.k8s]
+tier = "INFRA_K8S"
+required_path = "infra/k8s/helm/signal/Chart.yaml"
+watched_paths = ["infra/k8s/", "infra/docker/"]
+check_commands = [
+  ["helm", "lint", "infra/k8s/helm/signal", "-f", "infra/k8s/helm/signal/values.yaml"],
+  ["helm", "lint", "infra/k8s/helm/signal", "-f", "infra/k8s/helm/signal/values-local.yaml"],
+  ["helm", "lint", "infra/k8s/helm/signal", "-f", "infra/k8s/helm/signal/values-starter.yaml"],
+  ["helm", "lint", "infra/k8s/helm/signal", "-f", "infra/k8s/helm/signal/values-enterprise.yaml"],
+]
+build_commands = [
+  ["helm", "template", "signal", "infra/k8s/helm/signal", "-f", "infra/k8s/helm/signal/values-enterprise.yaml"],
+]
+
+[components.ops-cli]
+tier = "SHARED_OPS"
+required_path = "scripts/signal_ops.py"
+watched_paths = ["signal.sh", "justfile", "scripts/", "VERSION", "CHANGELOG.md", "releases/", ".github/workflows/"]
+check_commands = [
+  ["bash", "-n", "signal.sh"],
+  ["python3", "-m", "unittest", "discover", "-s", "scripts/tests", "-p", "test_*.py"],
+]
+build_commands = []

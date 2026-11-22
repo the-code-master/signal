@@ -212,3 +212,9 @@
 - **Branch:** `ag/AG-P0-02-rust-crate-skeletons` → `main`
 - **Touched Paths:** `engine/Cargo.toml`, `engine/Cargo.lock`, `engine/deny.toml`, `engine/supply-chain/{config,audits}.toml`, `engine/crates/{signal-core,signal-geom,signal-graph,signal-component,signal-parts,signal-sim,signal-diff-sim,signal-git-sync,signal-cell-wasm,signal-pod,signal-operator,signal-egress-proxy,signal-sftp-egress,signal-mcad,signal-cam,signal-plm}/**`, `benchmarks/**`, `coordination/TASK_BOARD.md`, `plan/TODO-LEDGER-ANTIGRAVITY-LANE-A.md`, `coordination/agents/antigravity.md`
 - **Verification:** `cargo fmt --all -- --check`, `cargo clippy --workspace --all-targets -- -D warnings` (`0` warnings across 18 crates), `cargo test --workspace` (`9/9` unit + JSONL transcript replay tests passing), `cargo check -p signal-core --release --features dev-guest-auth` deterministically blocked (`F-095`), and modularity/header audit (`<= 250 LOC`).
+
+### [AG-P0-03] Unified Small-Team Common Build, CI/CD, Release, Deploy & Rollback CLI (`./signal.sh` + `scripts/signal_ops.py`)
+- **Status:** `COMPLETED`
+- **Branch:** `ag/AG-P0-03-unified-signal-ops-cli` → `main`
+- **Touched Paths:** `VERSION`, `CHANGELOG.md`, `signal.sh`, `justfile`, `scripts/**`, `releases/**`, `.github/workflows/{pr-gate,release,deploy-gitops}.yml`, `plan/TODO-LEDGER-ANTIGRAVITY-LANE-A.md`, `coordination/agents/antigravity.md`
+- **Verification:** `bash -n signal.sh`, `./signal.sh doctor`, `./signal.sh release preview --dry-run`, `./signal.sh check --target ops-cli`, `ruff check scripts/` (`0` issues), `pyright scripts/` (`0` errors, `0` warnings), `pytest scripts/tests/ -q` (`4/4` passed), and `releases/manifest.json` Draft 2020-12 schema check (`exit 0`).

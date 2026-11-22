@@ -1,0 +1,11 @@
+{
+  "current_version": "0.1.0",
+  "wire_compatibility_window_minor": 2,
+  "wire_min_version": "0.1.0",
+  "angular_chunk_retention_releases": 3,
+  "physics_determinism_epoch": 1,
+  "supported_lts_engine_versions": [
+    "0.1.0"
+  ],
+  "db_migration_policy": "EXPAND_AND_CONTRACT_ZERO_DOWNTIME"
+}

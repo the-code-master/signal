@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0.0",
+  "version": "0.1.0",
+  "channel": "STABLE",
+  "git_commit_sha": "d1e7db8000000000000000000000000000000000",
+  "released_at_ms": "1795324800000",
+  "physics_determinism_epoch": 1,
+  "wire_min_version": "0.1.0",
+  "components": [
+    {
+      "name": "signal-web",
+      "tier": "TIER1_WEB",
+      "oci_digest": "sha256:6e8a9b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcd",
+      "sbom_blake3": "7f8a9b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcd",
+      "cosign_verified": true
+    },
+    {
+      "name": "signal-api",
+      "tier": "TIER2_API_BRIDGE",
+      "oci_digest": "sha256:808a9b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcd",
+      "sbom_blake3": "918a9b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcd",
+      "cosign_verified": true
+    },
+    {
+      "name": "signal-engine-bridge",
+      "tier": "TIER2_API_BRIDGE",
+      "oci_digest": "sha256:928a9b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcd",
+      "sbom_blake3": "a18a9b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcd",
+      "cosign_verified": true
+    },
+    {
+      "name": "signal-pod",
+      "tier": "TIER3_RUST_ENGINE",
+      "oci_digest": "sha256:a28a9b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcd",
+      "sbom_blake3": "b38a9b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcd",
+      "cosign_verified": true
+    }
+  ]
+}

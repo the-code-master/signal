@@ -1,0 +1,41 @@
+# Module: .github/workflows/deploy-gitops.yml — Thin 3-Tier K8s Deployment & Instant Rollback Workflow
+# Invariants: <= 45 LOC; delegates 100% to ./signal.sh deploy or ./signal.sh rollback (20-*).
+# Spec: architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+name: deploy-gitops
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        type: choice
+        default: staging
+        options: [dev, staging, prod]
+      rollback_to:
+        type: string
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.15"
+      - uses: azure/setup-helm@v4
+      - name: Deploy or Rollback
+        env:
+          TARGET_ENV: ${{ inputs.env }}
+          ROLLBACK_VER: ${{ inputs.rollback_to }}
+        run: |
+          if [ -n "${ROLLBACK_VER}" ]; then
+            ./signal.sh rollback --env "${TARGET_ENV}" --to "${ROLLBACK_VER}" --json
+          else
+            ./signal.sh deploy --env "${TARGET_ENV}" --json
+          fi

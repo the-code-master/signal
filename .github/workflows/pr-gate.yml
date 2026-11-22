@@ -1,0 +1,29 @@
+# Module: .github/workflows/pr-gate.yml — Thin Monorepo Pull-Request Verification Workflow
+# Invariants: <= 45 LOC; zero embedded shell logic; delegates 100% to ./signal.sh check --changed (20-*).
+# Spec: architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+name: pr-gate
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.15"
+      - uses: bufbuild/buf-setup-action@v1
+      - uses: azure/setup-helm@v4
+      - name: Toolchain Doctor
+        run: ./signal.sh doctor --json
+      - name: Changed Component Gates
+        run: ./signal.sh check --changed

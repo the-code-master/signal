@@ -1,0 +1,12 @@
+{
+  "version": "0.1.0",
+  "channel": "STABLE",
+  "released_at_ms": "1795324800000",
+  "physics_determinism_epoch": 1,
+  "wire_min_version": "0.1.0",
+  "highlights": [
+    "Canonical SI-unit bigint Protobuf v1 contracts, OpenAPI 3.1, and 11 Draft 2020-12 JSON schemas.",
+    "Pure-Rust 1.100+ (#![forbid(unsafe_code)]) 18-crate engine skeleton with release dev-guest-auth compile block.",
+    "Unified ./signal.sh CI/CD CLI and 3-Tier K8s 1.37+ Umbrella Helm Chart (1-4 -> N extensible Rust worker nodes)."
+  ]
+}

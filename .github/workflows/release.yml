@@ -1,0 +1,35 @@
+# Module: .github/workflows/release.yml — Thin Automated SemVer Release, Multi-Arch Image & Cosign Workflow
+# Invariants: <= 45 LOC; zero duplicated build logic; delegates 100% to ./signal.sh release & image (20-*).
+# Spec: architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        type: choice
+        default: STABLE
+        options: [STABLE, LTS, CANARY]
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
+jobs:
+  cut-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.15"
+      - uses: docker/setup-buildx-action@v3
+      - uses: sigstore/cosign-installer@v3
+      - name: Cut Release Notes & Manifest
+        run: ./signal.sh release cut --channel "${{ inputs.channel }}" --json
+      - name: Build & Sign Multi-Arch Images
+        run: ./signal.sh image --push --sign --json
