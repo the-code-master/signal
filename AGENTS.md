@@ -5,9 +5,9 @@
 
 ---
 
-## 1. Phase & Hard Gate
+## 1. Phase & Active Gate
 
-- **Phase:** **Architecture, Rules, Skills & 9-Phase Plan Complete** (Ready for Phase 0). **Gate:** **DO NOT write production code (`engine/`, `services/`, `web/`, `ai/`, `contracts/`, `infra/`) until explicit Phase 0 approval.**
+- **Phase:** **Phase 0 Active (Approved 2026-11-21)** — Execute `C-P0-01..03` (`contracts/**`) to `main` FIRST, then parallel `AG-P0-01..05` (Antigravity) & `CU-P0-01..05` (Cursor) with strictly disjoint `touched_paths`.
 - **Stack (Nov 2026):** **Angular `v22+` ONLY** (TS `6.0+`, **Node `26 LTS+`** Tier 1 edge, `pnpm 11+`), **Rust `1.100+`** (2024 Ed.), **Python `3.15+` FastAPI** (`Granian 2.8+`, `Pydantic v2`, `uv`), **Postgres `19+`**, **K8s `1.37+`**.
 - **Plan:** [`plan/README.md`](./plan/README.md) | **Runbook:** [`PHASE0_LAUNCH_PLAYBOOK.md`](./docs/engineering/PHASE0_LAUNCH_PLAYBOOK.md) | **Board:** [`TASK_BOARD.md`](./coordination/TASK_BOARD.md).
 

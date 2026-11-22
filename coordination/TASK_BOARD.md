@@ -5,14 +5,14 @@
 
 ---
 
-## Current Phase: Architecture Complete (Awaiting Phase 0 Kickoff)
+## Current Phase: Phase 0 Implementation Active (Approved `2026-11-21`)
 
 | Status | Milestone | Notes |
 |---|---|---|
 | `DONE` | **Full Architecture (21 Specs): EDA, Parts, CAD/CAM/PLM, Collab/Reviews & 3-Tier K8s** | All **21 specification docs (`01`–`21` + `README.md`)**—covering 148 resolved flaws (`F-001`–`F-148`), 12 AI-EDA innovations (`I-01`–`I-12`), 120 dual UI+Rust extended features (`FEAT-001`–`FEAT-120`), Universal Parts (`18-*`), CAD/CAM/3D-Print/PLM-Ops (`19-*`), Platform Versioning/Auto-Release Notes/Monorepo Build & 3-Tier `1–4` Extensible Rust Node K8s (`20-*`), and Native 5-Team Collaboration Space, Project Status & Automated Weekly/Monthly/Status Reviews (`21-*`)—published and verified. |
 | `DONE` | **Cross-IDE Rules, Angular v22+ Style System, FastAPI Guide & 19 Portable Skills** | Optimized zero-truncation `AGENTS.md` (`< 12 KB`), 6 scoped `.cursor/rules/*.mdc` rules, 19 Open-Standard `.agents/skills/*/SKILL.md` skills (Antigravity + Cursor) enforcing **Angular `v22+` ONLY** (TS `6.0+`, Node `26 LTS+`, `pnpm 11+`), **Rust `1.100+`**, **Python `3.15+` FastAPI (`Granian 2.8+`, `Pydantic v2`, `uv`)**, **PostgreSQL `19+`**, **K8s `1.37+`**, 2–3 sentence dev replies, anti-hallucination, and strict Angular `.component.ts`/`.html`/`.logic.ts`/`.model.ts` + centralized `@signal/design-system`/`@signal/ui-kit` rules, plus 6 guides (`docs/engineering/`). |
 | `DONE` | **9-Phase Modular Execution Plan (`plan/`) & 3 Single-Writer Tickable TODO Ledgers** | **14 modular planning docs** under [`plan/README.md`](../plan/README.md): [`00-FEATURE-TRACEABILITY-MATRIX.md`](../plan/00-FEATURE-TRACEABILITY-MATRIX.md) (100% zero-miss mapping of all `21` specs, `31` Rust crates, `11` FastAPI services, `23` Angular workbenches, `120` `FEAT-001..120`, `148` `F-001..148`, `12` `I-01..12`), 9 phase plans ([`phase-0`](../plan/phase-0-foundation-contracts-and-cicd.md)–[`phase-8`](../plan/phase-8-academy-finops-compliance-and-ga.md)), and 3 zero-conflict single-writer tickable ledgers (`108` total micro-tasks). |
-| `READY` | **Phase 0 — Foundation, `bigint` SI-Unit Contracts, `./signal.sh` CI/CD & 3-Tier K8s Harness** | Ready to start once the user approves kicking off Phase 0 coding ([`plan/phase-0-foundation-contracts-and-cicd.md`](../plan/phase-0-foundation-contracts-and-cicd.md) & [`docs/engineering/PHASE0_LAUNCH_PLAYBOOK.md`](../docs/engineering/PHASE0_LAUNCH_PLAYBOOK.md)). |
+| `IN_PROGRESS` | **Phase 0 — Foundation, `bigint` SI-Unit Contracts, `./signal.sh` CI/CD & 3-Tier K8s Harness** | Approved `2026-11-21` — Executing Step 0A (`C-P0-01..03`) → parallel Step 0B (`AG-P0-01..05` Antigravity Lane A & `CU-P0-01..05` Cursor Lane B). |
 
 ---
 

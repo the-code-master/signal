@@ -9,7 +9,7 @@ alwaysApply: true
 
 ## 1. Sources of Truth & Phase Gate
 - **Rules & Plans:** [`AGENTS.md`](../../AGENTS.md) | [`plan/README.md`](../../plan/README.md) (`phase-0..8`) | `architecture/01..21-*.md` | `docs/engineering/*.md` | `.agents/skills/*/SKILL.md`.
-- **Phase Gate:** Check `AGENTS.md` §1 & `TASK_BOARD.md`. Never write production code (`engine/`, `services/`, `web/`, `ai/`, `contracts/`, `infra/`) before explicit Phase 0 approval.
+- **Phase Gate:** **Phase 0 Active** — Merge `C-Px-*` (`contracts/**`) to `main` FIRST before parallel `AG-Px-*` / `CU-Px-*` implementation waves.
 - **Session Start:** Run `git fetch origin --prune`, read `plan/README.md`, `TASK_BOARD.md`, peer journal/ledger read-only, & `coordination/handoffs/`. Branch `cursor/*` or `contract/*` with zero `touched_paths` overlap.
 - **Single-Writer Journals & Ledgers:** Cursor edits ONLY `coordination/agents/cursor.md` & `plan/TODO-LEDGER-CURSOR-LANE-B.md`; Antigravity edits ONLY `antigravity.md` & `plan/TODO-LEDGER-ANTIGRAVITY-LANE-A.md` (`TODO-LEDGER-SHARED-CONTRACTS.md` in `contract/*` PRs).
 

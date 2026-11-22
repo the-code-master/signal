@@ -2,9 +2,9 @@
 
 > **Signal** (by **Signal Design, Inc.**) is a next-generation, cloud-native, **AI-Agent-First Electronic Design Automation (EDA), CAD/CAM, PLM & Collaboration** platform built on a pure **Rust `1.100+`** physics/CAD engine in Kubernetes `1.37+`, a stateless **Python `3.15+` FastAPI** (`Granian`/`Pydantic v2`) Control Plane, and an **Angular `v22+` ONLY** zero-trust web workspace (**Node.js `26 LTS+`** Tier 1 edge).
 
-## Current Phase: Architecture & Planning
+## Current Phase: Phase 0 Implementation Active (`plan/phase-0-foundation-contracts-and-cicd.md`)
 
-This repository is currently in the **complete architecture and planning phase** — no production application code has been written yet. Every architectural decision, subsystem design, security model, data contract, roadmap, and multi-AI-IDE collaboration protocol is documented inside [`architecture/`](./architecture/README.md).
+Phase 0 foundation coding is active following explicit approval (`2026-11-21`). Every architectural invariant, subsystem design, security model, data contract, 9-phase execution plan ([`plan/README.md`](./plan/README.md)), and multi-AI-IDE collaboration protocol is governed by [`AGENTS.md`](./AGENTS.md) and [`architecture/`](./architecture/README.md).
 
 ## Documentation Map
 
