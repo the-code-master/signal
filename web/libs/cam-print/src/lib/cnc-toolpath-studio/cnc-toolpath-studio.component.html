@@ -1,0 +1,39 @@
+<sig-panel
+  title="2.5D / 3-Axis / 5-Axis Trochoidal CNC Toolpath & Dexel Gouge Simulator"
+  subtitle="CAM_CNC Constant-Engagement Clearing • Holder/Spindle Collision Scrub • Step-Up 2FA SFTP Post"
+  badge="signal-cam::cnc"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (post of vm().postProfiles; track post) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().postProfile === post"
+            type="button"
+            (click)="selectPost(post)"
+          >
+            {{ post }}
+          </button>
+        }
+        @for (sc of vm().scrubPresets; track sc) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().scrubProgressPct === sc"
+            type="button"
+            (click)="selectScrub(sc)"
+          >
+            Scrub {{ sc }}%
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().gougeBadge" [tone]="vm().gougeTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">{{ vm().gcodeSftpDigest }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

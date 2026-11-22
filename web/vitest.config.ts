@@ -30,6 +30,10 @@ export default defineConfig({
       "@signal/safety-wcca": resolve(root, "libs/safety-wcca/src/index.ts"),
       "@signal/dfm-panel": resolve(root, "libs/dfm-panel/src/index.ts"),
       "@signal/sftp-release": resolve(root, "libs/sftp-release/src/index.ts"),
+      "@signal/mcad-studio": resolve(root, "libs/mcad-studio/src/index.ts"),
+      "@signal/harness-3d": resolve(root, "libs/harness-3d/src/index.ts"),
+      "@signal/cam-print": resolve(root, "libs/cam-print/src/index.ts"),
+      "@signal/plm-ops": resolve(root, "libs/plm-ops/src/index.ts"),
     },
   },
   test: {

@@ -1,0 +1,29 @@
+<sig-panel
+  title="Synchronized eBOM / mBOM / sBOM Matrix & Digital Product Passport"
+  subtitle="PLM_OPS ECAD + MCAD + CAM/3D-Print Rollup • Cost, Carbon, RoHS, REACH & PFAS (F-112)"
+  badge="signal-plm"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (vmMode of vm().viewModes; track vmMode) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().viewMode === vmMode"
+            type="button"
+            (click)="selectView(vmMode)"
+          >
+            {{ vmMode }}
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().dppBadge" [tone]="vm().dppTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">{{ vm().rollupBadge }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

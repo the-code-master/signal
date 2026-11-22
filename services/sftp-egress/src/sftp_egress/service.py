@@ -12,6 +12,7 @@ import uuid
 from audit_service.outbox import FailClosedQuorumOutbox
 from audit_service.schemas import QuorumCommitReceipt, Tier0AuditEvent
 from fastapi import HTTPException
+from plm_ops.service import verify_deviation_sftp_gate
 
 from services.common.errors import raise_not_found
 from services.common.schemas import PrincipalContext
@@ -129,6 +130,16 @@ async def execute_sftp_egress(
 
     effective_now = now_epoch_sec if now_epoch_sec is not None else int(time.time())
     verify_fresh_step_up_2fa(principal.actor_hmac, payload.step_up, effective_now)
+
+    dev_gate = verify_deviation_sftp_gate(
+        org_slug=principal.org_slug,
+        proj_slug=proj_slug,
+        requested_qty=payload.requested_release_qty,
+        now_utc_ms=effective_now * 1000,
+        consume_on_pass=True,
+    )
+    if not dev_gate.release_permitted:
+        raise HTTPException(status_code=409, detail="DEVIATION_WAIVER_EXCEEDED")
 
     release_id = str(uuid.uuid4())
     short_id = release_id.split("-")[0]

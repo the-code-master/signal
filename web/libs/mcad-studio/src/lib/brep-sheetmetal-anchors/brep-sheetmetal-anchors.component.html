@@ -1,0 +1,32 @@
+<sig-panel
+  title="Parametric B-Rep Timeline, 2D Dogleg Sketcher, Sheet-Metal Unfolder & ECAD Anchors"
+  subtitle="CAD_MCAD Exact nm Solid/Surface Tree • K-Factor Flat Pattern • <50 ms Zero-Import PCB Anchors"
+  badge="signal-mcad"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (kf of vm().kFactorPresets; track kf) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().kFactor === kf"
+            type="button"
+            (click)="selectKFactor(kf)"
+          >
+            K={{ kf }}
+          </button>
+        }
+        <button class="sig-btn" [class.sig-btn-primary]="vm().sketchRemainingDof === 0" type="button" (click)="toggleSketchLock()">
+          Lock 2D Sketch Constraints
+        </button>
+      </div>
+      <sig-status-pill [label]="vm().anchorSyncBadge" [tone]="vm().anchorSyncTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">{{ vm().sheetMetalBadge }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

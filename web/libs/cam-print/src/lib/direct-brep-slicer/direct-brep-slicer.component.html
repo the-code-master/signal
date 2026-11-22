@@ -1,0 +1,35 @@
+<sig-panel
+  title="Direct-B-Rep 3D Printing Slicer, Build-Plate Nesting & Thermal Warp Compensation"
+  subtitle="PRINT_3D Analytic NURBS Contours • FDM / SLA / SLS / DMLS LPBF • FEA Gyroid & Tree Supports"
+  badge="signal-cam::slicer"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (proc of vm().processes; track proc) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().process === proc"
+            type="button"
+            (click)="selectProcess(proc)"
+          >
+            {{ proc }}
+          </button>
+        }
+        <button class="sig-btn" [class.sig-btn-primary]="vm().treeSupportsEnabled" type="button" (click)="toggleTreeSupports()">
+          Tree Supports
+        </button>
+        <button class="sig-btn" [class.sig-btn-primary]="vm().thermalWarpPrecomp" type="button" (click)="toggleThermalWarp()">
+          Thermal Warp Pre-Comp
+        </button>
+      </div>
+      <sig-status-pill [label]="vm().slicerBadge" [tone]="vm().slicerTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">{{ vm().dispatchBadge }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

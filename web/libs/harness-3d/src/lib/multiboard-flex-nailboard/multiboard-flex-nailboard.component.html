@@ -1,0 +1,36 @@
+<sig-panel
+  title="Multi-Board 3D Assembly, Rigid-Flex Kinematic Folding & 1:1 Wire-Harness Nailboard"
+  subtitle="FEAT-061 Enclosure Mating • FEAT-020 0%–100% IPC-2223 Flex Fold • FEAT-062 WHMA-A-620 Formboard"
+  badge="signal-harness"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <span class="sig-subtitle">Rigid-Flex Fold:</span>
+        @for (fp of vm().foldPresets; track fp) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().foldProgressPct === fp"
+            type="button"
+            (click)="selectFold(fp)"
+          >
+            {{ fp }}%
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().flexAssemblyBadge" [tone]="vm().flexAssemblyTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <sig-si-input
+        label="Dynamic Flex Bend Radius:"
+        unitSymbol="m"
+        initialText="2.5m"
+        (valueCommitted)="onRadiusCommitted($event)"
+      />
+      <span class="sig-code">{{ vm().nailboardBadge }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

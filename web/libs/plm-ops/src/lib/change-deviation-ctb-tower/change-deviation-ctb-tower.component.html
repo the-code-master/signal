@@ -1,0 +1,35 @@
+<sig-panel
+  title="ECN / MCN / PCN / Hard-Deviation / 8D NCR-CAPA / CTB & 3D Work Instructions"
+  subtitle="21 CFR Part 11 ML-DSA-65 Sign-Off • Qty/Expiry Deviation SFTP Blocker • Interactive 3D Factory Steps"
+  badge="PLM_OPS Tower"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <button class="sig-btn" [class.sig-btn-primary]="vm().part11Signed" type="button" (click)="togglePart11Signoff()">
+          21 CFR Part 11 Sign-Off
+        </button>
+        <button class="sig-btn" type="button" (click)="simulateConsumeLot()">
+          Test Deviation Cap (450 vs 480/500)
+        </button>
+        @for (ws of vm().workSteps; track ws.stepNumber) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().activeWorkStep.stepNumber === ws.stepNumber"
+            type="button"
+            (click)="selectWorkStep(ws.stepNumber)"
+          >
+            3D WI #{{ ws.stepNumber }}
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().deviationGateBadge" [tone]="vm().deviationGateTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">{{ vm().workInstructionBadge }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

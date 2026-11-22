@@ -1,12 +1,33 @@
-// Module: engine/crates/signal-plm/src/lib.rs — Deviation/Waiver Clear-to-Build & SFTP Egress Gate
+// Module: engine/crates/signal-plm/src/lib.rs — Multi-View BOM, ECO/ECN Part 11 Gate, Clear-to-Build & Deviation Gate
 // Invariants: Blocks factory release when requested_release_qty exceeds remaining authorized_qty_limit or expiry (19-*).
 // Spec: architecture/19-cad-cam-3d-printing-and-plm-operations.md
 #![forbid(unsafe_code)]
 
-use signal_parts as _;
 use signal_proto::v1::{
     DeviationWaiverGate, VerifyDeviationGateRequest, VerifyDeviationGateResponse,
 };
+use thiserror::Error;
+
+pub mod eco_ctb_netting;
+pub mod multi_bom_passport;
+
+pub use eco_ctb_netting::{
+    EcoBomRedlineDiff, InventoryLotPosition, compute_eco_bom_redline_diff, evaluate_clear_to_build,
+    transition_change_order,
+};
+pub use multi_bom_passport::{
+    BomSourceDomain, DigitalProductPassport, MultiDomainBomCandidate, compile_multiview_bom,
+};
+
+#[derive(Debug, Error, PartialEq, Eq)]
+pub enum PlmError {
+    #[error("BOM view kind must be EBOM, MBOM, or SBOM")]
+    UnspecifiedBomView,
+    #[error("invalid change notice transition for `{0}`")]
+    InvalidChangeTransition(String),
+    #[error("21 CFR Part 11 HybridPqcSignature required to transition `{0}` to RELEASED")]
+    MissingPart11Signature(String),
+}
 
 pub fn evaluate_deviation_gates(
     gates: &[DeviationWaiverGate],

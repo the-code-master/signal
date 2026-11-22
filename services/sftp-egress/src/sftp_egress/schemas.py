@@ -52,6 +52,7 @@ class SftpReleaseRequest(StrictSchema):
     artifact_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     drc_erc_lvs_clean: bool = True
     active_deviation_approved: bool = False
+    requested_release_qty: Int64Str = 1
     step_up: FreshStepUpProof
     simulated_audit_quorum_acks: int = Field(default=3, ge=0, le=3)
 

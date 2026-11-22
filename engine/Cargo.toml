@@ -35,6 +35,7 @@ members = [
     "crates/signal-emc",
     "crates/signal-aging",
     "crates/signal-dfm",
+    "crates/signal-harness",
 ]
 
 [workspace.package]

@@ -736,6 +736,8 @@ dependencies = [
 name = "signal-cam"
 version = "0.1.0"
 dependencies = [
+ "signal-core",
+ "signal-geom",
  "signal-proto",
  "thiserror",
 ]
@@ -850,6 +852,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "signal-harness"
+version = "0.1.0"
+dependencies = [
+ "signal-core",
+ "signal-geom",
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
 name = "signal-import"
 version = "0.1.0"
 dependencies = [
@@ -889,6 +901,7 @@ dependencies = [
 name = "signal-mcad"
 version = "0.1.0"
 dependencies = [
+ "signal-core",
  "signal-geom",
  "signal-proto",
  "thiserror",
@@ -937,8 +950,12 @@ dependencies = [
 name = "signal-plm"
 version = "0.1.0"
 dependencies = [
+ "serde",
+ "serde_json",
+ "signal-core",
  "signal-parts",
  "signal-proto",
+ "thiserror",
 ]
 
 [[package]]

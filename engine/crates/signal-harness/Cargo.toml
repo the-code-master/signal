@@ -1,0 +1,19 @@
+# Module: engine/crates/signal-harness/Cargo.toml — Multi-Board 3D Mates, Rigid-Flex Kinematics & Wire-Harness Nailboards
+# Invariants: Enforces IPC-2223 outer-fiber copper strain limits and IPC/WHMA-A-620 voltage-drop/ampacity derating (19-*).
+# Spec: architecture/17-extended-feature-specifications-ui-and-rust.md, architecture/19-cad-cam-3d-printing-and-plm-operations.md
+[package]
+name = "signal-harness"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-core = { workspace = true }
+signal-geom = { workspace = true }
+signal-proto = { workspace = true }
+thiserror = { workspace = true }

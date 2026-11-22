@@ -1,0 +1,39 @@
+<div class="sig-stack">
+  <sig-panel
+    [title]="vm().descriptor.title"
+    [subtitle]="vm().descriptor.subtitle"
+    [badge]="vm().engineBadge"
+  >
+    <div class="sig-stack">
+      <div class="sig-toolbar">
+        <div class="sig-row">
+          <span class="sig-subtitle">Exploded Assembly:</span>
+          @for (pct of vm().explodedPresets; track pct) {
+            <button
+              class="sig-btn"
+              [class.sig-btn-primary]="vm().explodedPct === pct"
+              type="button"
+              (click)="selectExploded(pct)"
+            >
+              {{ pct }}%
+            </button>
+          }
+        </div>
+        <sig-status-pill [label]="vm().viewBadge" [tone]="vm().clearanceTone" />
+      </div>
+      <sig-si-input
+        label="Dynamic Section-Plane Z Offset:"
+        unitSymbol="m"
+        initialText="12.5m"
+        (valueCommitted)="onSectionOffsetCommitted($event)"
+      />
+    </div>
+  </sig-panel>
+
+  <sig-dual-plane-viewport
+    [domainTitle]="vm().descriptor.title"
+    [hudSignals]="vm().descriptor.hudSignals"
+  />
+
+  <sig-brep-sheetmetal-anchors />
+</div>
