@@ -1,0 +1,68 @@
+# Module: pyproject.toml — Python 3.15+ FastAPI / Granian / Pydantic v2 Control-Plane Workspace
+# Invariants: Enforces Python >=3.15, FastAPI >=0.165, Granian >=2.8, Pydantic >=2.14, ruff, pyright strict, and bandit.
+# Spec: architecture/06-frontend-angular-and-fastapi-control-plane.md, docs/engineering/FASTAPI_ENGINEERING_GUIDE.md
+[project]
+name = "signal-control-plane"
+version = "0.1.0"
+description = "Signal Stateless Tier-2A FastAPI / Granian Control Plane"
+requires-python = ">=3.15"
+dependencies = [
+    "fastapi>=0.165.0",
+    "granian>=2.8.0",
+    "pydantic>=2.14.0",
+]
+
+[dependency-groups]
+dev = [
+    "bandit>=1.8.0",
+    "httpx>=0.28.0",
+    "pyright>=1.1.390",
+    "pytest>=8.3.0",
+    "ruff>=0.9.0",
+]
+
+[tool.ruff]
+line-length = 125
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Header"]
+
+[tool.pyright]
+pythonVersion = "3.13"
+typeCheckingMode = "strict"
+include = ["services"]
+extraPaths = [
+    ".",
+    "services/api-gateway/src",
+    "services/identity-org/src",
+    "services/project-catalog/src",
+    "services/parts-registry/src",
+    "services/plm-ops/src",
+    "services/collab-hub/src",
+    "services/vcs-connector/src",
+    "services/vcs-auditor/src",
+    "services/session-broker/src",
+    "services/sftp-egress/src",
+    "services/audit-service/src",
+]
+
+[tool.pytest.ini_options]
+pythonpath = [
+    ".",
+    "services/api-gateway/src",
+    "services/identity-org/src",
+    "services/project-catalog/src",
+    "services/parts-registry/src",
+    "services/plm-ops/src",
+    "services/collab-hub/src",
+    "services/vcs-connector/src",
+    "services/vcs-auditor/src",
+    "services/session-broker/src",
+    "services/sftp-egress/src",
+    "services/audit-service/src",
+]
+testpaths = ["services/tests"]

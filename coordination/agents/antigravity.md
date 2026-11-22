@@ -249,3 +249,9 @@
 - **Branch:** `cursor/CU-P0-03-angular-ide-shell` → `main`
 - **Touched Paths:** `web/angular.json`, `web/tools/verify-ui-style-guide.mjs`, `web/apps/signal-web/**`, `web/libs/{canvas-core,schematic,sim-viewer,pcb,magnetics,power-studio,emc-lab,safety-wcca,ic,fpga-studio,code-ide,bringup-lab,harness-3d,dfm-panel,library-studio,specs,ai-copilot,visual-diff,review,sftp-release,academy,admin,mcad-studio,cam-print,plm-ops,collab-hub}/**`, `plan/TODO-LEDGER-CURSOR-LANE-B.md`, `coordination/agents/antigravity.md`
 - **Verification:** `pnpm --dir web lint` (`0` violations), `pnpm --dir web typecheck` (`0` errors), `pnpm --dir web test --run` (`4/4` passed), and `pnpm --dir web build` (`75.00 kB` gzipped initial bundle + 26 lazy chunks, `exit 0`).
+
+### [CU-P0-04] Python `3.15.2` FastAPI `0.165` / Granian `2.8` / Pydantic v2 `2.14` Control Plane & Startup Auth Gate *(User-Requested Lane B Takeover)*
+- **Status:** `COMPLETED`
+- **Branch:** `cursor/CU-P0-04-fastapi-control-plane-skeleton` → `main`
+- **Touched Paths:** `.python-version`, `pyproject.toml`, `uv.lock`, `services/__init__.py`, `services/{common,api-gateway,identity-org,project-catalog,parts-registry,plm-ops,collab-hub,vcs-connector,vcs-auditor,session-broker,sftp-egress}/**`, `services/tests/test_control_plane_security.py`, `plan/TODO-LEDGER-CURSOR-LANE-B.md`, `coordination/agents/antigravity.md`
+- **Verification:** `uv run ruff check services/` (`0` issues), `uv run pyright services/` (`0` errors, `0` warnings in strict mode), and `uv run pytest services/ -q` (`4/4` passed: startup unguarded-route rejection, DLP `/download` rejection, `Int64Str` `9007199254740993` fixture parity, and contractor uniform-`404` repo scoping).
