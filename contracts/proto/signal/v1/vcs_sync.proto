@@ -1,5 +1,5 @@
-// Module: Customer BYO-Git Multi-Repo Sync, Padme Vault & Dual-Fenced Super-Commit Contract
-// Invariants: Tracks repos by immutable provider_repo_id; commits <project>-meta CAS lockfile FIRST.
+// Module: Customer BYO-Git Multi-Repo Sync, Padme Vault, Egress Fencing & Dual-Fenced Super-Commit
+// Invariants: Tracks repos by immutable provider_repo_id; commits <project>-meta CAS lockfile FIRST (I-12, F-119).
 // Spec: architecture/13-vcs-git-server-and-storage-analysis.md, architecture/10-api-and-data-contracts.md
 
 syntax = "proto3";
@@ -24,6 +24,14 @@ enum GitNamespaceKind {
   GIT_NAMESPACE_KIND_USER_NAMESPACE = 2;
 }
 
+enum HardwareLifecycleStage {
+  HARDWARE_LIFECYCLE_STAGE_UNSPECIFIED = 0;
+  HARDWARE_LIFECYCLE_STAGE_EVT = 1;
+  HARDWARE_LIFECYCLE_STAGE_DVT = 2;
+  HARDWARE_LIFECYCLE_STAGE_PVT = 3;
+  HARDWARE_LIFECYCLE_STAGE_TAPEOUT = 4;
+}
+
 message BoundRepositoryRef {
   GitProviderKind provider = 1;
   GitNamespaceKind namespace_kind = 2;
@@ -31,6 +39,15 @@ message BoundRepositoryRef {
   string display_full_name = 4;
   SubprojectDomain domain = 5;
   ProjectVaultMode vault_mode = 6;
+}
+
+message PadmeVaultBlobEntry {
+  string blinded_blob_path = 1;
+  string entity_hmac_hex = 2;
+  uint64 unpadded_size_bytes = 3 [jstype = JS_STRING];
+  uint64 padme_padded_bytes = 4 [jstype = JS_STRING];
+  uint32 dek_version = 5;
+  string gcm_siv_tag_hex = 6;
 }
 
 message RepoCommitEntry {
@@ -47,6 +64,7 @@ message ExecuteSuperCommitRequest {
   string commit_message = 3;
   string author_pseudo_id = 4;
   repeated BoundRepositoryRef target_repos = 5;
+  repeated PadmeVaultBlobEntry vault_blobs = 6;
 }
 
 message ExecuteSuperCommitResponse {
@@ -56,6 +74,19 @@ message ExecuteSuperCommitResponse {
   repeated RepoCommitEntry member_commits = 4;
   HybridPqcSignature manifest_signature = 5;
   int64 committed_at_utc_ms = 6 [jstype = JS_STRING];
+}
+
+message VerifyEgressFencingTokenRequest {
+  FencingAuthority fencing = 1;
+  string target_host = 2;
+  string resolved_socket_ip = 3;
+  string provider_repo_id = 4;
+}
+
+message VerifyEgressFencingTokenResponse {
+  bool allowed = 1;
+  uint64 current_linearizable_epoch = 2 [jstype = JS_STRING];
+  string denial_reason_code = 3;
 }
 
 message ReconcileExternalPushRequest {
@@ -86,8 +117,28 @@ message ScrubHistoryTimelineResponse {
   repeated HistoryTimelineEntry entries = 1;
 }
 
+message StageGateCriterionResult {
+  string criterion_id = 1;
+  string label = 2;
+  bool passed = 3;
+  string evidence_summary = 4;
+}
+
+message EvaluateStageGateChecklistRequest {
+  string project_id = 1;
+  string super_commit_id = 2;
+  HardwareLifecycleStage stage = 3;
+}
+
+message EvaluateStageGateChecklistResponse {
+  bool gate_ready = 1;
+  repeated StageGateCriterionResult criteria = 2;
+}
+
 service VcsSyncService {
   rpc ExecuteSuperCommit(ExecuteSuperCommitRequest) returns (ExecuteSuperCommitResponse);
+  rpc VerifyEgressFencingToken(VerifyEgressFencingTokenRequest) returns (VerifyEgressFencingTokenResponse);
   rpc ReconcileExternalPush(ReconcileExternalPushRequest) returns (ReconcileExternalPushResponse);
   rpc ScrubHistoryTimeline(ScrubHistoryTimelineRequest) returns (ScrubHistoryTimelineResponse);
+  rpc EvaluateStageGateChecklist(EvaluateStageGateChecklistRequest) returns (EvaluateStageGateChecklistResponse);
 }

@@ -1,0 +1,46 @@
+{
+  "fixture_id": "universal_part_gold_phase2_bigint_v1",
+  "part": {
+    "upid": "urn:signal:part:ti:tps546d24arvf",
+    "revision_hash_blake3": "9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b",
+    "orderable_mpn": "TPS546D24ARVFR",
+    "manufacturer": "Texas Instruments",
+    "badge": "VERIFICATION_BADGE_GOLD",
+    "preferred_symbol": "SYMBOL_STANDARD_IEEE_315",
+    "org_private_nda_taint": false,
+    "master_pins": [
+      {
+        "pin_number": "1",
+        "canonical_signal_name": "PVIN_1",
+        "symbol_unit_index": 0,
+        "pad_designator": "1",
+        "spice_port_id": 1,
+        "step_lead_centroid_nm": {
+          "x_nm": "-2250000",
+          "y_nm": "3000000",
+          "z_nm": "0"
+        }
+      }
+    ],
+    "padstacks": [
+      {
+        "padstack_id": "pad_lqfn40_sig_0p5mm",
+        "shape": "PAD_SHAPE_KIND_ROUNDRECT",
+        "copper_width_nm": "280000",
+        "copper_height_nm": "750000",
+        "drill_diameter_nm": "0",
+        "solder_mask_expansion_nm": "50000",
+        "paste_mask_contraction_nm": "20000",
+        "requires_backdrill": false,
+        "thermal_spoke_width_nm": "9007199254740993"
+      }
+    ]
+  },
+  "verification_report": {
+    "pin_pad_spice_step_bijection": true,
+    "min_lead_pad_overlap_ratio": 0.94,
+    "watertight_step_manifold": true,
+    "erc_spice_smoke_passed": true,
+    "awarded_badge": "VERIFICATION_BADGE_GOLD"
+  }
+}

@@ -1,6 +1,6 @@
 // Module: 3-Tier Universal Component, Master Pin Table, IEEE/IEC Symbol, Padstack & 3D STEP Contract
-// Invariants: Never leaks Org NDA AVL overlays into Global CAS; enforces 3-way pin/pad/STEP bijection.
-// Spec: architecture/18-universal-component-and-datasheet-repository.md
+// Invariants: Never leaks Org NDA AVL overlays into Global CAS; enforces 3-way pin/pad/STEP bijection (18-*).
+// Spec: architecture/18-universal-component-and-datasheet-repository.md, architecture/17-extended-feature-specifications-ui-and-rust.md
 
 syntax = "proto3";
 
@@ -25,6 +25,13 @@ enum PadShapeKind {
   PAD_SHAPE_KIND_POLYGON = 4;
 }
 
+enum Ipc7351DensityTier {
+  IPC7351_DENSITY_TIER_UNSPECIFIED = 0;
+  IPC7351_DENSITY_TIER_MOST = 1;
+  IPC7351_DENSITY_TIER_NOMINAL = 2;
+  IPC7351_DENSITY_TIER_LEAST = 3;
+}
+
 message MasterPinRecord {
   string pin_number = 1;
   string canonical_signal_name = 2;
@@ -32,6 +39,13 @@ message MasterPinRecord {
   string pad_designator = 4;
   uint32 spice_port_id = 5;
   Point3dNm step_lead_centroid_nm = 6;
+}
+
+message SymbolGraphicAst {
+  SymbolStandard standard = 1;
+  uint32 unit_count = 2;
+  BoundingBox2dNm body_bounds_nm = 3;
+  string svg_path_digest_blake3 = 4;
 }
 
 message PadstackDef {
@@ -43,6 +57,35 @@ message PadstackDef {
   int64 solder_mask_expansion_nm = 6 [jstype = JS_STRING];
   int64 paste_mask_contraction_nm = 7 [jstype = JS_STRING];
   bool requires_backdrill = 8;
+  int64 thermal_spoke_width_nm = 9 [jstype = JS_STRING];
+}
+
+message FootprintPackageModel {
+  string package_family = 1;
+  Ipc7351DensityTier density_tier = 2;
+  BoundingBox3dNm courtyard_3d_nm = 3;
+  string step_ap242_blake3 = 4;
+}
+
+message PartVerificationReport {
+  bool pin_pad_spice_step_bijection = 1;
+  double min_lead_pad_overlap_ratio = 2;
+  bool watertight_step_manifold = 3;
+  bool erc_spice_smoke_passed = 4;
+  VerificationBadge awarded_badge = 5;
+}
+
+message ProjectPartsLockEntry {
+  string upid = 1;
+  string revision_hash_blake3 = 2;
+  string padstack_hash_blake3 = 3;
+  bool from_org_avl_overlay = 4;
+}
+
+message ProjectPartsLockfile {
+  string project_id = 1;
+  int64 locked_at_utc_ms = 2 [jstype = JS_STRING];
+  repeated ProjectPartsLockEntry entries = 3;
 }
 
 message UniversalComponentRevision {
@@ -56,6 +99,8 @@ message UniversalComponentRevision {
   repeated MasterPinRecord master_pins = 8;
   repeated PadstackDef padstacks = 9;
   bool org_private_nda_taint = 10;
+  repeated SymbolGraphicAst symbol_asts = 11;
+  FootprintPackageModel footprint_model = 12;
 }
 
 message ResolveUniversalPartRequest {
@@ -81,9 +126,93 @@ message VerifyThreeWayStepPadAlignmentResponse {
   double min_lead_pad_overlap_ratio = 2;
   int64 max_centroid_offset_nm = 3 [jstype = JS_STRING];
   VerificationBadge awarded_badge = 4;
+  PartVerificationReport full_report = 5;
+}
+
+message SplitSymbolBanksRequest {
+  string upid = 1;
+  uint32 max_pins_per_bank = 2;
+}
+
+message FunctionalSymbolBank {
+  uint32 unit_index = 1;
+  string bank_title = 2;
+  repeated string pin_numbers = 3;
+}
+
+message SplitSymbolBanksResponse {
+  repeated FunctionalSymbolBank banks = 1;
+}
+
+message GenerateIpc7351FootprintRequest {
+  string package_family = 1;
+  uint32 pin_count = 2;
+  int64 lead_pitch_nm = 3 [jstype = JS_STRING];
+  int64 body_width_nm = 4 [jstype = JS_STRING];
+  int64 body_length_nm = 5 [jstype = JS_STRING];
+  int64 body_height_nm = 6 [jstype = JS_STRING];
+  Ipc7351DensityTier density_tier = 7;
+}
+
+message GenerateIpc7351FootprintResponse {
+  FootprintPackageModel footprint = 1;
+  repeated PadstackDef generated_padstacks = 2;
+  string step_ap242_preview_digest = 3;
+}
+
+message FitCompactModelCurveRequest {
+  string model_family = 1;
+  repeated double stimulus_x = 2;
+  repeated double measured_y = 3;
+  bool enforce_passivity_monotonicity = 4;
+}
+
+message FitCompactModelCurveResponse {
+  bool converged = 1;
+  double rms_relative_error = 2;
+  repeated double fitted_parameters = 3;
+}
+
+message QueryAvlWhereUsedRequest {
+  string org_id = 1;
+  string target_mpn = 2;
+}
+
+message QueryAvlWhereUsedResponse {
+  repeated string affected_project_ids = 1;
+  string suggested_drop_in_mpn = 2;
+}
+
+message VerifyDistributorProvenanceRequest {
+  string orderable_mpn = 1;
+  string distributor_code = 2;
+  string lot_trace_signature = 3;
+}
+
+message VerifyDistributorProvenanceResponse {
+  bool authorized_franchise_verified = 1;
+  string counterfeit_risk_tier = 2;
+}
+
+message StampGoldenSnippetRequest {
+  string snippet_id = 1;
+  string target_branch_id = 2;
+  Point2dNm anchor_nm = 3;
+  uint32 refdes_base_offset = 4;
+}
+
+message StampGoldenSnippetResponse {
+  uint32 stamped_entity_count = 1;
+  uint64 new_revision = 2 [jstype = JS_STRING];
 }
 
 service UniversalPartsService {
   rpc ResolveUniversalPart(ResolveUniversalPartRequest) returns (ResolveUniversalPartResponse);
   rpc VerifyThreeWayStepPadAlignment(VerifyThreeWayStepPadAlignmentRequest) returns (VerifyThreeWayStepPadAlignmentResponse);
+  rpc SplitSymbolBanks(SplitSymbolBanksRequest) returns (SplitSymbolBanksResponse);
+  rpc GenerateIpc7351Footprint(GenerateIpc7351FootprintRequest) returns (GenerateIpc7351FootprintResponse);
+  rpc FitCompactModelCurve(FitCompactModelCurveRequest) returns (FitCompactModelCurveResponse);
+  rpc QueryAvlWhereUsed(QueryAvlWhereUsedRequest) returns (QueryAvlWhereUsedResponse);
+  rpc VerifyDistributorProvenance(VerifyDistributorProvenanceRequest) returns (VerifyDistributorProvenanceResponse);
+  rpc StampGoldenSnippet(StampGoldenSnippetRequest) returns (StampGoldenSnippetResponse);
 }
