@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.signal.design/schemas/project-status-review.schema.json",
+  "title": "AutomatedProjectStatusReview",
+  "description": "Module: project-status-review.schema.json | Invariants: Weekly/Monthly/Stage-Gate deterministic metrics + GBNF narrative + ML-DSA-65 signature | Spec: 21",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "review_id",
+    "project_id",
+    "cadence",
+    "overall_rag",
+    "generated_at_ms",
+    "stage_gate",
+    "kpis",
+    "narrative_summary",
+    "mldsa65_ed25519_sig"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "review_id": { "type": "string", "format": "uuid" },
+    "project_id": { "type": "string", "format": "uuid" },
+    "cadence": { "type": "string", "enum": ["WEEKLY", "MONTHLY_EXECUTIVE", "STAGE_GATE"] },
+    "overall_rag": { "type": "string", "enum": ["GREEN", "AMBER", "RED"] },
+    "generated_at_ms": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+    "stage_gate": { "type": "string", "enum": ["EVT", "DVT", "PVT", "MP", "TAPE_OUT"] },
+    "kpis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["drc_errors", "erc_errors", "open_ecns", "ctb_readiness_bps", "bom_unit_cost_micros"],
+      "properties": {
+        "drc_errors": { "type": "integer", "minimum": 0 },
+        "erc_errors": { "type": "integer", "minimum": 0 },
+        "open_ecns": { "type": "integer", "minimum": 0 },
+        "ctb_readiness_bps": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "bom_unit_cost_micros": { "type": "string", "pattern": "^[0-9]{1,20}$" }
+      }
+    },
+    "narrative_summary": { "type": "string", "maxLength": 8000 },
+    "mldsa65_ed25519_sig": { "type": "string", "minLength": 64 }
+  }
+}

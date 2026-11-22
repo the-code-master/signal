@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.signal.design/schemas/release-manifest.schema.json",
+  "title": "PlatformReleaseManifest",
+  "description": "Module: release-manifest.schema.json | Invariants: Unified ./signal.sh release metadata, SLSA L3/Cosign digest map, physics_determinism_epoch | Spec: 20",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "version",
+    "channel",
+    "git_commit_sha",
+    "released_at_ms",
+    "physics_determinism_epoch",
+    "wire_min_version",
+    "components"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[a-z0-9.]+)?$" },
+    "channel": { "type": "string", "enum": ["STABLE", "LTS", "CANARY"] },
+    "git_commit_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "released_at_ms": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+    "physics_determinism_epoch": { "type": "integer", "minimum": 1 },
+    "wire_min_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "tier", "oci_digest", "sbom_blake3", "cosign_verified"],
+        "properties": {
+          "name": { "type": "string" },
+          "tier": { "type": "string", "enum": ["TIER1_WEB", "TIER2_API_BRIDGE", "TIER3_RUST_ENGINE", "AI_PLANE"] },
+          "oci_digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+          "sbom_blake3": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "cosign_verified": { "type": "boolean", "const": true }
+        }
+      }
+    }
+  }
+}

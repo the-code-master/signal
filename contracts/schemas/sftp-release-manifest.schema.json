@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.signal.design/schemas/sftp-release-manifest.schema.json",
+  "title": "SftpReleaseManifest",
+  "description": "Module: sftp-release-manifest.schema.json | Invariants: Step-Up 2FA proof, Tier-0 3x Quorum Audit ID (F-147), Constellation watermark (F-128), write-only SFTP | Spec: 07, 15, 19",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "release_id",
+    "project_id",
+    "super_commit_id",
+    "step_up_method",
+    "tier0_quorum_audit_id",
+    "constellation_watermark_id",
+    "destination_host",
+    "released_at_ms",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "release_id": { "type": "string", "format": "uuid" },
+    "project_id": { "type": "string", "format": "uuid" },
+    "super_commit_id": { "type": "string", "format": "uuid" },
+    "step_up_method": { "type": "string", "enum": ["WEBAUTHN_PASSKEY", "TOTP_REDIS_BURNED"] },
+    "tier0_quorum_audit_id": { "type": "string", "format": "uuid" },
+    "constellation_watermark_id": { "type": "string", "pattern": "^[0-9a-f]{32,64}$" },
+    "destination_host": { "type": "string", "minLength": 3 },
+    "released_at_ms": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["filename", "format", "size_bytes", "sha256_hex"],
+        "properties": {
+          "filename": { "type": "string" },
+          "format": { "type": "string", "enum": ["ODB_PLUS_PLUS", "GERBER_X3", "IPC_2581", "GDSII", "OASIS", "STEP_AP242", "GCODE", "THREE_MF", "BOM_CSV"] },
+          "size_bytes": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+          "sha256_hex": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        }
+      }
+    }
+  }
+}

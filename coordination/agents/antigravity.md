@@ -187,3 +187,9 @@
 - **Branch:** `contract/C-P0-01-core-protobufs` → `main`
 - **Touched Paths:** `contracts/buf.yaml`, `contracts/buf.gen.yaml`, `contracts/proto/signal/v1/*.proto` (14 files), `plan/TODO-LEDGER-SHARED-CONTRACTS.md`, `coordination/agents/antigravity.md`
 - **Verification:** `buf lint contracts` (`0` warnings), `buf format -d --exit-code contracts` (`0` diffs), `protoc --descriptor_set_out=/dev/null` (`0`), and 100% `jstype = JS_STRING` / `<= 250 LOC` / 3-line header audit (`0` issues).
+
+### [C-P0-02] Canonical OpenAPI 3.1 (`control-plane.v1.yaml`) & 11 Draft 2020-12 JSON Schemas
+- **Status:** `COMPLETED`
+- **Branch:** `contract/C-P0-02-openapi-and-schemas` → `main`
+- **Touched Paths:** `contracts/openapi/control-plane.v1.yaml`, `contracts/schemas/*.schema.json` (11 files), `plan/TODO-LEDGER-SHARED-CONTRACTS.md`, `coordination/agents/antigravity.md`
+- **Verification:** OpenAPI `3.1.0` structural/DLP/uniform-`404`/`Idempotency-Key` check (`0` issues) + `Draft202012Validator.check_schema` across all 11 schemas (`0` issues, all files `<= 236 LOC`).

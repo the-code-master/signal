@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.signal.design/schemas/datasheet-record.schema.json",
+  "title": "DatasheetRecord",
+  "description": "Module: datasheet-record.schema.json | Invariants: Dual-VLM quarantined extraction (F-131), condition curves (F-132), 64-bit SI strings (F-144) | Spec: 05, 18",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "mpn",
+    "manufacturer",
+    "doc_blake3",
+    "quarantine_verified",
+    "pins",
+    "condition_curves"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "mpn": { "type": "string", "minLength": 1 },
+    "manufacturer": { "type": "string", "minLength": 1 },
+    "doc_blake3": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "quarantine_verified": { "type": "boolean", "const": true },
+    "pins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["pin_number", "signal_name", "electrical_class", "abs_max_uv", "citation"],
+        "properties": {
+          "pin_number": { "type": "string" },
+          "signal_name": { "type": "string" },
+          "electrical_class": {
+            "type": "string",
+            "enum": ["POWER_IN", "POWER_OUT", "GND", "BIDIR", "INPUT", "OUTPUT", "OPEN_DRAIN", "DIFF_P", "DIFF_N", "NC"]
+          },
+          "abs_max_uv": { "type": "string", "pattern": "^-?[0-9]{1,20}$" },
+          "citation": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["page", "bbox_norm"],
+            "properties": {
+              "page": { "type": "integer", "minimum": 1 },
+              "bbox_norm": {
+                "type": "array",
+                "items": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+                "minItems": 4,
+                "maxItems": 4
+              }
+            }
+          }
+        }
+      }
+    },
+    "condition_curves": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["metric", "temp_mk", "bias_uv", "freq_hz", "value_scaled"],
+        "properties": {
+          "metric": { "type": "string", "enum": ["C_EFF_AF", "L_EFF_NH", "R_DS_ON_UOHM", "R_THETA_JA_MK_PER_W"] },
+          "temp_mk": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+          "bias_uv": { "type": "string", "pattern": "^-?[0-9]{1,20}$" },
+          "freq_hz": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+          "value_scaled": { "type": "string", "pattern": "^-?[0-9]{1,20}$" }
+        }
+      }
+    }
+  }
+}

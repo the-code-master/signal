@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.signal.design/schemas/universal-part-manifest.schema.json",
+  "title": "UniversalPartManifest",
+  "description": "Module: universal-part-manifest.schema.json | Invariants: 3-Tier CAS + Master Pin Table + Dual IEEE/IEC + IPC-7351 + 64-bit SI strings | Spec: 18",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "part_urn",
+    "revision_blake3",
+    "verification_tier",
+    "mpn",
+    "manufacturer",
+    "master_pin_count",
+    "symbols",
+    "padstacks",
+    "footprints",
+    "step_model_blake3"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "part_urn": { "type": "string", "pattern": "^urn:signal:part:[a-z0-9._-]+:[A-Za-z0-9._-]+$" },
+    "revision_blake3": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "verification_tier": { "type": "string", "enum": ["BRONZE", "SILVER", "GOLD"] },
+    "mpn": { "type": "string", "minLength": 1 },
+    "manufacturer": { "type": "string", "minLength": 1 },
+    "master_pin_count": { "type": "integer", "minimum": 1 },
+    "symbols": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ieee_ansi_blake3", "iec_60617_blake3"],
+      "properties": {
+        "ieee_ansi_blake3": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "iec_60617_blake3": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "padstacks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["padstack_id", "copper_width_nm", "copper_height_nm", "drill_diameter_nm"],
+        "properties": {
+          "padstack_id": { "type": "string" },
+          "copper_width_nm": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+          "copper_height_nm": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+          "drill_diameter_nm": { "type": "string", "pattern": "^[0-9]{1,20}$" }
+        }
+      }
+    },
+    "footprints": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["density_level", "courtyard_width_nm", "courtyard_height_nm"],
+        "properties": {
+          "density_level": { "type": "string", "enum": ["MOST", "NOMINAL", "LEAST"] },
+          "courtyard_width_nm": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+          "courtyard_height_nm": { "type": "string", "pattern": "^[0-9]{1,20}$" }
+        }
+      }
+    },
+    "step_model_blake3": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

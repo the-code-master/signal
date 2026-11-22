@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.signal.design/schemas/super-commit-manifest.schema.json",
+  "title": "SuperCommitManifest",
+  "description": "Module: super-commit-manifest.schema.json | Invariants: Dual-Fenced 2PC Super-Commit (I-12, F-119), immutable provider_repo_id, Padme vault.merkle.sig | Spec: 07, 13",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "super_commit_id",
+    "project_id",
+    "fencing_epoch",
+    "committed_at_ms",
+    "encryption_mode",
+    "vault_merkle_root",
+    "repos"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "super_commit_id": { "type": "string", "format": "uuid" },
+    "project_id": { "type": "string", "format": "uuid" },
+    "fencing_epoch": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+    "committed_at_ms": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+    "encryption_mode": { "type": "string", "enum": ["ENCRYPTED_VAULT", "PLAIN_CANONICAL"] },
+    "vault_merkle_root": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "repos": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["subproject_type", "provider_repo_id", "git_commit_oid", "kek_id", "dek_version"],
+        "properties": {
+          "subproject_type": { "type": "string" },
+          "provider_repo_id": { "type": "string", "minLength": 1 },
+          "git_commit_oid": { "type": "string", "pattern": "^[0-9a-f]{40,64}$" },
+          "kek_id": { "type": "string" },
+          "dek_version": { "type": "integer", "minimum": 0 }
+        }
+      }
+    }
+  }
+}

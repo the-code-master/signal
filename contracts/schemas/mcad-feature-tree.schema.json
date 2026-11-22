@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.signal.design/schemas/mcad-feature-tree.schema.json",
+  "title": "McadFeatureTree",
+  "description": "Module: mcad-feature-tree.schema.json | Invariants: Parametric B-Rep feature DAG, exact i128 nm SI strings, topological ECAD-MCAD anchors | Spec: 19",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "part_id", "units", "features", "ecad_anchors"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "part_id": { "type": "string", "minLength": 1 },
+    "units": { "type": "string", "const": "nm" },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["feature_id", "op_kind", "parent_ids", "suppressed", "parameter_nm"],
+        "properties": {
+          "feature_id": { "type": "string" },
+          "op_kind": {
+            "type": "string",
+            "enum": ["SKETCH", "EXTRUDE", "CUT", "REVOLVE", "FILLET", "CHAMFER", "SHELL", "SHEET_METAL_BEND", "HOLE_WIZARD"]
+          },
+          "parent_ids": { "type": "array", "items": { "type": "string" } },
+          "suppressed": { "type": "boolean" },
+          "parameter_nm": { "type": "string", "pattern": "^-?[0-9]{1,20}$" }
+        }
+      }
+    },
+    "ecad_anchors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["anchor_id", "pcb_entity_uuid", "x_nm", "y_nm", "z_nm"],
+        "properties": {
+          "anchor_id": { "type": "string" },
+          "pcb_entity_uuid": { "type": "string" },
+          "x_nm": { "type": "string", "pattern": "^-?[0-9]{1,20}$" },
+          "y_nm": { "type": "string", "pattern": "^-?[0-9]{1,20}$" },
+          "z_nm": { "type": "string", "pattern": "^-?[0-9]{1,20}$" }
+        }
+      }
+    }
+  }
+}

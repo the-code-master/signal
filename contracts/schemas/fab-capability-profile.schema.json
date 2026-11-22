@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.signal.design/schemas/fab-capability-profile.schema.json",
+  "title": "SignedFabCapabilityProfile",
+  "description": "Module: fab-capability-profile.schema.json | Invariants: ML-DSA-65 signed fab rules (F-135), exact nm SI strings (F-144) | Spec: 03, 16, 17",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "fab_vendor_id",
+    "process_class",
+    "min_trace_nm",
+    "min_space_nm",
+    "min_mechanical_drill_nm",
+    "min_laser_microvia_nm",
+    "min_annular_ring_nm",
+    "max_aspect_ratio_milli",
+    "mldsa65_ed25519_sig"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "fab_vendor_id": { "type": "string", "minLength": 1 },
+    "process_class": { "type": "string", "minLength": 1 },
+    "min_trace_nm": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+    "min_space_nm": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+    "min_mechanical_drill_nm": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+    "min_laser_microvia_nm": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+    "min_annular_ring_nm": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+    "max_aspect_ratio_milli": { "type": "integer", "minimum": 1000 },
+    "mldsa65_ed25519_sig": { "type": "string", "minLength": 64 }
+  }
+}

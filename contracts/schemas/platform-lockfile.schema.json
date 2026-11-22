@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.signal.design/schemas/platform-lockfile.schema.json",
+  "title": "ProjectPlatformLockfile",
+  "description": "Module: platform-lockfile.schema.json | Invariants: Per-project LTS engine pinning, physics_determinism_epoch immutability, parts.lock.json hash | Spec: 18, 20",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "pinned_engine_version",
+    "physics_determinism_epoch",
+    "parts_lock_blake3",
+    "allow_auto_patch_upgrade"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "pinned_engine_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "physics_determinism_epoch": { "type": "integer", "minimum": 1 },
+    "parts_lock_blake3": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "allow_auto_patch_upgrade": { "type": "boolean" }
+  }
+}

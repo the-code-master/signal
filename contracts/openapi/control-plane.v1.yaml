@@ -1,0 +1,236 @@
+# Module: contracts/openapi/control-plane.v1.yaml — Signal Tier-2A FastAPI Control-Plane OpenAPI 3.1 Contract
+# Invariants: URL-scoped /orgs/{org_slug} (F-097); Idempotency-Key on mutations (F-102); uniform 404 (F-084); zero /export|/download|/print routes; 64-bit SI strings (F-144).
+# Spec: architecture/06-frontend-angular-and-fastapi-control-plane.md, architecture/10-api-and-data-contracts.md, architecture/15-application-security-and-project-isolation.md
+openapi: "3.1.0"
+info:
+  title: Signal Control Plane API
+  version: "0.1.0"
+  description: >-
+    Stateless Python 3.15+ FastAPI / Granian Control-Plane contract. Zero browser file-egress routes;
+    all manufacturing egress requires Step-Up 2FA SFTP via /sftp-releases.
+servers:
+  - url: https://api.signal.design
+    description: Production Tier-2A API Gateway
+security:
+  - BearerCookieAuth: []
+components:
+  securitySchemes:
+    BearerCookieAuth:
+      type: apiKey
+      in: cookie
+      name: __Host-signal_session
+  parameters:
+    OrgSlug:
+      name: org_slug
+      in: path
+      required: true
+      schema: { type: string, pattern: "^[a-z0-9][a-z0-9-]{1,62}$" }
+    ProjectSlug:
+      name: proj_slug
+      in: path
+      required: true
+      schema: { type: string, pattern: "^[a-z0-9][a-z0-9-]{1,62}$" }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: { type: string, format: uuid }
+    StepUpProofHeader:
+      name: X-Signal-StepUp-Proof
+      in: header
+      required: true
+      schema: { type: string, minLength: 32 }
+  responses:
+    UniformNotFound:
+      description: Uniform fail-closed 404 preventing BOLA/IDOR cross-tenant enumeration (F-084).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/UniformError" }
+  schemas:
+    Int64String:
+      type: string
+      pattern: "^-?[0-9]{1,20}$"
+      description: 64-bit integer serialized as decimal string to preserve >2^53-1 precision (F-144).
+    UniformError:
+      type: object
+      additionalProperties: false
+      required: [code, message, request_id]
+      properties:
+        code: { type: string, const: "NOT_FOUND" }
+        message: { type: string }
+        request_id: { type: string }
+    PlatformReleaseSummary:
+      type: object
+      additionalProperties: false
+      required: [version, channel, released_at_ms, physics_determinism_epoch, wire_min_version, highlights]
+      properties:
+        version: { type: string, pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$" }
+        channel: { type: string, enum: [STABLE, LTS, CANARY] }
+        released_at_ms: { $ref: "#/components/schemas/Int64String" }
+        physics_determinism_epoch: { type: integer, minimum: 1 }
+        wire_min_version: { type: string }
+        highlights: { type: array, items: { type: string } }
+    ProjectCreateRequest:
+      type: object
+      additionalProperties: false
+      required: [slug, display_name, initial_subprojects, encryption_mode]
+      properties:
+        slug: { type: string, pattern: "^[a-z0-9][a-z0-9-]{1,62}$" }
+        display_name: { type: string, minLength: 1, maxLength: 120 }
+        initial_subprojects:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            enum: [PRD, SCHEMATIC, PCB, IC_ANALOG, IC_DIGITAL, FPGA, FIRMWARE, BIOS, HARNESS, CAD_MCAD, CAM_CNC, PRINT_3D, PLM_OPS]
+        encryption_mode: { type: string, enum: [ENCRYPTED_VAULT, PLAIN_CANONICAL] }
+    ProjectSummary:
+      type: object
+      additionalProperties: false
+      required: [project_id, org_slug, slug, meta_provider_repo_id, fencing_epoch, encryption_mode]
+      properties:
+        project_id: { type: string, format: uuid }
+        org_slug: { type: string }
+        slug: { type: string }
+        meta_provider_repo_id: { type: string }
+        fencing_epoch: { $ref: "#/components/schemas/Int64String" }
+        encryption_mode: { type: string, enum: [ENCRYPTED_VAULT, PLAIN_CANONICAL] }
+paths:
+  /api/v1/healthz:
+    get:
+      security: []
+      operationId: getHealthz
+      responses:
+        "200":
+          description: Liveness check
+          content: { application/json: { schema: { type: object, properties: { status: { type: string } } } } }
+  /api/v1/platform/releases:
+    get:
+      operationId: listPlatformReleases
+      responses:
+        "200":
+          description: Platform release catalog and In-App What's New feed (20-*).
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/PlatformReleaseSummary" }
+        "404": { $ref: "#/components/responses/UniformNotFound" }
+  /api/v1/auth/sso/pkce/callback:
+    post:
+      security: []
+      operationId: exchangeSsoPkceCallback
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      responses:
+        "200": { description: Dual-bound SSO + Git provider PKCE session issued (__Host- cookie upgrade, F-127). }
+        "404": { $ref: "#/components/responses/UniformNotFound" }
+  /api/v1/orgs/{org_slug}/vcs/connection:
+    put:
+      operationId: upsertOrgVcsConnection
+      parameters:
+        - { $ref: "#/components/parameters/OrgSlug" }
+        - { $ref: "#/components/parameters/IdempotencyKey" }
+        - { $ref: "#/components/parameters/StepUpProofHeader" }
+      responses:
+        "200": { description: Customer BYO-Git (GitHub/GitLab/Bitbucket) connection updated. }
+        "404": { $ref: "#/components/responses/UniformNotFound" }
+  /api/v1/orgs/{org_slug}/vcs/posture:
+    get:
+      operationId: getOrgVcsSecurityPosture
+      parameters: [{ $ref: "#/components/parameters/OrgSlug" }]
+      responses:
+        "200": { description: Periodic vcs-auditor Org Security Posture Score (0-100). }
+        "404": { $ref: "#/components/responses/UniformNotFound" }
+  /api/v1/orgs/{org_slug}/access-review:
+    get:
+      operationId: listOrgAccessReviewEntries
+      parameters: [{ $ref: "#/components/parameters/OrgSlug" }]
+      responses:
+        "200": { description: Live provider roster REPO_ACCESS_ENTRY matrix & attestation status. }
+        "404": { $ref: "#/components/responses/UniformNotFound" }
+  /api/v1/orgs/{org_slug}/projects:
+    get:
+      operationId: listOrgProjects
+      parameters: [{ $ref: "#/components/parameters/OrgSlug" }]
+      responses:
+        "200":
+          description: Authorized projects within org.
+          content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/ProjectSummary" } } } }
+        "404": { $ref: "#/components/responses/UniformNotFound" }
+    post:
+      operationId: createOrgProject
+      parameters:
+        - { $ref: "#/components/parameters/OrgSlug" }
+        - { $ref: "#/components/parameters/IdempotencyKey" }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/ProjectCreateRequest" } } }
+      responses:
+        "201":
+          description: Project created (<project>-meta provisioned; lazy sub-repos registered, F-120).
+          content: { application/json: { schema: { $ref: "#/components/schemas/ProjectSummary" } } }
+        "404": { $ref: "#/components/responses/UniformNotFound" }
+  /api/v1/orgs/{org_slug}/projects/{proj_slug}/sessions:
+    post:
+      operationId: brokerProjectCellSession
+      parameters:
+        - { $ref: "#/components/parameters/OrgSlug" }
+        - { $ref: "#/components/parameters/ProjectSlug" }
+        - { $ref: "#/components/parameters/IdempotencyKey" }
+      responses:
+        "200": { description: Isolated Tier-3 signal-pod or signal-cell-wasm lease + Envoy bridge ticket. }
+        "404": { $ref: "#/components/responses/UniformNotFound" }
+  /api/v1/orgs/{org_slug}/parts:
+    get:
+      operationId: searchUniversalParts
+      parameters: [{ $ref: "#/components/parameters/OrgSlug" }]
+      responses:
+        "200": { description: 3-Tier Universal Component + Org AVL Overlay search results (18-*). }
+        "404": { $ref: "#/components/responses/UniformNotFound" }
+  /api/v1/orgs/{org_slug}/projects/{proj_slug}/plm/change-notices:
+    get:
+      operationId: listPlmChangeNotices
+      parameters:
+        - { $ref: "#/components/parameters/OrgSlug" }
+        - { $ref: "#/components/parameters/ProjectSlug" }
+      responses:
+        "200": { description: ECR/ECO/ECN, MCN, PCN, Deviation/Waiver, and CTB records (19-*). }
+        "404": { $ref: "#/components/responses/UniformNotFound" }
+    post:
+      operationId: createPlmChangeNotice
+      parameters:
+        - { $ref: "#/components/parameters/OrgSlug" }
+        - { $ref: "#/components/parameters/ProjectSlug" }
+        - { $ref: "#/components/parameters/IdempotencyKey" }
+      responses:
+        "201": { description: PLM change notice created. }
+        "404": { $ref: "#/components/responses/UniformNotFound" }
+  /api/v1/orgs/{org_slug}/projects/{proj_slug}/collab/reviews:
+    get:
+      operationId: listAutomatedProjectReviews
+      parameters:
+        - { $ref: "#/components/parameters/OrgSlug" }
+        - { $ref: "#/components/parameters/ProjectSlug" }
+      responses:
+        "200": { description: Weekly, Monthly Executive, and Stage-Gate Project Status Reviews (21-*). }
+        "404": { $ref: "#/components/responses/UniformNotFound" }
+    post:
+      operationId: generateAutomatedProjectReview
+      parameters:
+        - { $ref: "#/components/parameters/OrgSlug" }
+        - { $ref: "#/components/parameters/ProjectSlug" }
+        - { $ref: "#/components/parameters/IdempotencyKey" }
+      responses:
+        "201": { description: Quarantined GBNF review generated and signed into <project>-ops/reviews/. }
+        "404": { $ref: "#/components/responses/UniformNotFound" }
+  /api/v1/orgs/{org_slug}/projects/{proj_slug}/sftp-releases:
+    post:
+      operationId: initiateStepUpSftpRelease
+      parameters:
+        - { $ref: "#/components/parameters/OrgSlug" }
+        - { $ref: "#/components/parameters/ProjectSlug" }
+        - { $ref: "#/components/parameters/IdempotencyKey" }
+        - { $ref: "#/components/parameters/StepUpProofHeader" }
+      responses:
+        "202": { description: Step-Up 2FA verified, Tier-0 3x Quorum Audit committed, disposable russh SFTP pod queued. }
+        "404": { $ref: "#/components/responses/UniformNotFound" }

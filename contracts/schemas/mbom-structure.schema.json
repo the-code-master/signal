@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.signal.design/schemas/mbom-structure.schema.json",
+  "title": "MultiViewBomStructure",
+  "description": "Module: mbom-structure.schema.json | Invariants: eBOM/mBOM/sBOM reconciliation, ECN/Deviation traceability, 64-bit micro-currency & qty strings | Spec: 19",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "project_id", "bom_view", "revision", "lines"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "project_id": { "type": "string", "format": "uuid" },
+    "bom_view": { "type": "string", "enum": ["EBOM", "MBOM", "SBOM"] },
+    "revision": { "type": "string", "minLength": 1 },
+    "effective_ecn_id": { "type": "string" },
+    "lines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["line_id", "part_urn", "ref_designators", "quantity_milli", "unit_cost_micros", "avl_status"],
+        "properties": {
+          "line_id": { "type": "string" },
+          "part_urn": { "type": "string" },
+          "ref_designators": { "type": "array", "items": { "type": "string" } },
+          "quantity_milli": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+          "unit_cost_micros": { "type": "string", "pattern": "^[0-9]{1,20}$" },
+          "avl_status": { "type": "string", "enum": ["PREFERRED", "APPROVED", "DEVIATION_ACTIVE", "NRND", "OBSOLETE"] },
+          "active_deviation_id": { "type": "string" }
+        }
+      }
+    }
+  }
+}
