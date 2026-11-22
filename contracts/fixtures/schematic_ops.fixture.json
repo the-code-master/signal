@@ -1,0 +1,30 @@
+{
+  "fixture_id": "schematic_ops_phase1_bigint_v1",
+  "beautify_request": {
+    "fencing": {
+      "org_id": "11111111-2222-4333-8444-555555555555",
+      "project_id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+      "fencing_epoch": "9007199254740993",
+      "lease_holder_pod_id": "signal-pod-core-01-x9k2",
+      "issued_at_utc_ms": "1795324800000",
+      "expires_at_utc_ms": "1795324815000"
+    },
+    "branch_id": "main",
+    "sheet_id": "sheet_power_stage",
+    "grid_pitch_nm": "2540000",
+    "preview_only": true
+  },
+  "pin_swap_proposal": {
+    "entity_id": "U4_LM358",
+    "from_pin_number": 2,
+    "to_pin_number": 6,
+    "wirelength_saved_nm": "9007199254740997"
+  },
+  "equation_card": {
+    "card_id": "eq_vout_divider",
+    "expression": "R_top = R_bot * (V_out / V_ref - 1)",
+    "target_entity_id": "R12",
+    "target_param_key": "resistance_mohm",
+    "evaluated_si_value": "100000000"
+  }
+}

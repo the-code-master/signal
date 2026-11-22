@@ -1,6 +1,6 @@
-// Module: Multi-Domain ECS Design Graph, Topological CRDT & CoW Speculative Branching
+// Module: Multi-Domain ECS Design Graph, Topological CRDT, CoW Branching & Smart Schematic Ops
 // Invariants: Rejects power-rail shorting CRDT merges; enforces causal selective undo and Merge-Time Proof check.
-// Spec: architecture/03-rust-eda-engine.md, architecture/10-api-and-data-contracts.md
+// Spec: architecture/03-rust-eda-engine.md, architecture/10-api-and-data-contracts.md, architecture/17-extended-feature-specifications-ui-and-rust.md
 
 syntax = "proto3";
 
@@ -19,6 +19,18 @@ enum GraphMutationKind {
   GRAPH_MUTATION_KIND_ROUTE_TRACE_SEGMENT = 4;
   GRAPH_MUTATION_KIND_UPDATE_PARAMETER = 5;
   GRAPH_MUTATION_KIND_DELETE_ENTITY = 6;
+  GRAPH_MUTATION_KIND_BEAUTIFY_SCHEMATIC = 7;
+  GRAPH_MUTATION_KIND_DEFINE_BUS_BUNDLE = 8;
+  GRAPH_MUTATION_KIND_SET_VARIANT_STUFFING = 9;
+  GRAPH_MUTATION_KIND_SWAP_EQUIVALENT_PIN = 10;
+  GRAPH_MUTATION_KIND_REANNOTATE_REFDES = 11;
+}
+
+enum ReannotateDirection {
+  REANNOTATE_DIRECTION_UNSPECIFIED = 0;
+  REANNOTATE_DIRECTION_LEFT_TO_RIGHT_TOP_DOWN = 1;
+  REANNOTATE_DIRECTION_TOP_DOWN_LEFT_TO_RIGHT = 2;
+  REANNOTATE_DIRECTION_HIERARCHICAL_SHEET_BLOCK = 3;
 }
 
 message GraphMutationOp {
@@ -99,10 +111,128 @@ message DiffBranchesResponse {
   ArrowStreamChunk diff_chunk = 1;
 }
 
+message BeautifySchematicRequest {
+  FencingAuthority fencing = 1;
+  string branch_id = 2;
+  string sheet_id = 3;
+  int64 grid_pitch_nm = 4 [jstype = JS_STRING];
+  bool preview_only = 5;
+}
+
+message BeautifySchematicResponse {
+  uint32 crossing_count_before = 1;
+  uint32 crossing_count_after = 2;
+  repeated GraphMutationOp proposed_ops = 3;
+}
+
+message BusSliceDescriptor {
+  string bundle_id = 1;
+  string protocol_kind = 2;
+  string slice_expression = 3;
+  repeated string expanded_member_nets = 4;
+}
+
+message SheetPortalEntry {
+  string net_name = 1;
+  string source_sheet_id = 2;
+  string target_sheet_id = 3;
+  Point2dNm portal_anchor_nm = 4;
+}
+
+message MultiChannelRepeatRule {
+  string block_id = 1;
+  uint32 repeat_count = 2;
+  string net_naming_template = 3;
+  string refdes_offset_rule = 4;
+}
+
+message AssemblyVariantEntry {
+  string variant_id = 1;
+  string entity_id = 2;
+  bool do_not_populate = 3;
+  string alternate_mpn = 4;
+}
+
+message PinSwapProposal {
+  string entity_id = 1;
+  uint32 from_pin_number = 2;
+  uint32 to_pin_number = 3;
+  int64 wirelength_saved_nm = 4 [jstype = JS_STRING];
+}
+
+message ReannotateSheetRequest {
+  FencingAuthority fencing = 1;
+  string branch_id = 2;
+  ReannotateDirection direction = 3;
+  uint32 sheet_base_step = 4;
+}
+
+message RefdesRemapPair {
+  string entity_id = 1;
+  string old_refdes = 2;
+  string new_refdes = 3;
+}
+
+message ReannotateSheetResponse {
+  uint64 committed_revision = 1 [jstype = JS_STRING];
+  repeated RefdesRemapPair remapped = 2;
+}
+
+message ParametricEquationCard {
+  string card_id = 1;
+  string expression = 2;
+  string target_entity_id = 3;
+  string target_param_key = 4;
+  int64 evaluated_si_value = 5 [jstype = JS_STRING];
+}
+
+message ExecuteCommandDslRequest {
+  FencingAuthority fencing = 1;
+  string branch_id = 2;
+  string command_line = 3;
+}
+
+message ExecuteCommandDslResponse {
+  bool accepted = 1;
+  string normalized_action = 2;
+  repeated GraphMutationOp generated_ops = 3;
+}
+
+message EvaluateSelectionQueryRequest {
+  string branch_id = 1;
+  string query_expression = 2;
+}
+
+message EvaluateSelectionQueryResponse {
+  repeated string matched_entity_ids = 1;
+  uint32 evaluated_node_count = 2;
+}
+
+message A11ySpatialNode {
+  string entity_id = 1;
+  string aria_label = 2;
+  Point2dNm position_nm = 3;
+  repeated string connected_net_summaries = 4;
+}
+
+message GetAccessibilityTreeRequest {
+  string branch_id = 1;
+  string sheet_id = 2;
+}
+
+message GetAccessibilityTreeResponse {
+  repeated A11ySpatialNode nodes = 1;
+}
+
 service DesignGraphService {
   rpc ApplyTransaction(ApplyTransactionRequest) returns (ApplyTransactionResponse);
   rpc UndoActorLastTransaction(UndoActorLastTransactionRequest) returns (UndoActorLastTransactionResponse);
   rpc CreateSpeculativeBranch(CreateSpeculativeBranchRequest) returns (CreateSpeculativeBranchResponse);
   rpc MergeBranch(MergeBranchRequest) returns (MergeBranchResponse);
   rpc DiffBranches(DiffBranchesRequest) returns (stream DiffBranchesResponse);
+  rpc BeautifySchematic(BeautifySchematicRequest) returns (BeautifySchematicResponse);
+  rpc ReannotateSheet(ReannotateSheetRequest) returns (ReannotateSheetResponse);
+  rpc ExecuteCommandDsl(ExecuteCommandDslRequest) returns (ExecuteCommandDslResponse);
+  rpc EvaluateSelectionQuery(EvaluateSelectionQueryRequest) returns (EvaluateSelectionQueryResponse);
+  rpc GetAccessibilityTree(GetAccessibilityTreeRequest) returns (GetAccessibilityTreeResponse);
 }

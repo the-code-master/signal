@@ -1,4 +1,4 @@
-// Module: Dual-Plane Zstd-QOI/WebP Dirty Tiles, HudOverlayPrimitive & Constellation Watermarks
+// Module: Dual-Plane Zstd-QOI/WebP Dirty Tiles, HudOverlayPrimitive, Multi-Monitor & Cloud Clipboard
 // Invariants: Raw design geometry never enters browser in Zero-Leak DLP mode; <= 1 MB frame chunks.
 // Spec: architecture/06-frontend-angular-and-fastapi-control-plane.md, architecture/07-security-encryption-dlp-and-sftp.md
 
@@ -17,6 +17,13 @@ enum TileEncodingFormat {
   TILE_ENCODING_FORMAT_LOSSLESS_WEBP_RGBA8 = 2;
 }
 
+enum MotionStreamProfile {
+  MOTION_STREAM_PROFILE_UNSPECIFIED = 0;
+  MOTION_STREAM_PROFILE_HEVC_444_HW = 1;
+  MOTION_STREAM_PROFILE_AV1_DUAL_LUMA_HW = 2;
+  MOTION_STREAM_PROFILE_TILES_ONLY = 3;
+}
+
 enum HudPrimitiveKind {
   HUD_PRIMITIVE_KIND_UNSPECIFIED = 0;
   HUD_PRIMITIVE_KIND_SNAP_CROSSHAIR = 1;
@@ -24,6 +31,9 @@ enum HudPrimitiveKind {
   HUD_PRIMITIVE_KIND_SELECTION_BOX = 3;
   HUD_PRIMITIVE_KIND_COLLAB_CURSOR = 4;
   HUD_PRIMITIVE_KIND_LENGTH_TUNE_GAUGE = 5;
+  HUD_PRIMITIVE_KIND_CURRENT_RIVER_PARTICLE = 6;
+  HUD_PRIMITIVE_KIND_SOA_SMOKE_BADGE = 7;
+  HUD_PRIMITIVE_KIND_PORTAL_MINIMAP_ANCHOR = 8;
 }
 
 message HudOverlayPrimitive {
@@ -34,6 +44,31 @@ message HudOverlayPrimitive {
   string semantic_token_color = 5;
 }
 
+message SpaceMouse6DofDelta {
+  int32 tx_milli = 1;
+  int32 ty_milli = 2;
+  int32 tz_milli = 3;
+  int32 rx_milli_rad = 4;
+  int32 ry_milli_rad = 5;
+  int32 rz_milli_rad = 6;
+}
+
+message NegotiateDualPlaneRequest {
+  string collaborator_session_id = 1;
+  bool supports_hevc_444_hw = 2;
+  bool supports_av1_hw = 3;
+  bool supports_webtransport_h3 = 4;
+  uint32 secondary_monitor_count = 5;
+  uint32 device_pixel_ratio_x100 = 6;
+}
+
+message NegotiateDualPlaneResponse {
+  MotionStreamProfile selected_motion_profile = 1;
+  TileEncodingFormat selected_tile_format = 2;
+  uint32 settling_delay_ms = 3;
+  string negotiated_transport = 4;
+}
+
 message ViewportInputEvent {
   string collaborator_session_id = 1;
   uint64 input_seq = 2 [jstype = JS_STRING];
@@ -41,6 +76,8 @@ message ViewportInputEvent {
   int64 cursor_y_nm = 4 [jstype = JS_STRING];
   double zoom_scale = 5;
   uint64 xray_layer_mask = 6 [jstype = JS_STRING];
+  uint32 monitor_pane_index = 7;
+  SpaceMouse6DofDelta spacemouse_delta = 8;
 }
 
 message DirtyTileFrame {
@@ -54,6 +91,7 @@ message DirtyTileFrame {
   bool is_settling_lossless_frame = 8;
   string watermark_epoch_hmac = 9;
   repeated HudOverlayPrimitive hud_primitives = 10;
+  uint32 monitor_pane_index = 11;
 }
 
 message StreamViewportRequest {
@@ -64,6 +102,20 @@ message StreamViewportResponse {
   DirtyTileFrame tile_frame = 1;
 }
 
+message SealCloudClipboardRequest {
+  FencingAuthority fencing = 1;
+  string actor_pseudo_id = 2;
+  repeated string selected_entity_ids = 3;
+}
+
+message SealCloudClipboardResponse {
+  string clipboard_envelope_id = 1;
+  int64 expires_at_utc_ms = 2 [jstype = JS_STRING];
+  bytes aead_sealed_snippet = 3;
+}
+
 service RenderStreamService {
+  rpc NegotiateDualPlane(NegotiateDualPlaneRequest) returns (NegotiateDualPlaneResponse);
   rpc StreamViewport(stream StreamViewportRequest) returns (stream StreamViewportResponse);
+  rpc SealCloudClipboard(SealCloudClipboardRequest) returns (SealCloudClipboardResponse);
 }

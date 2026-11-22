@@ -1,6 +1,6 @@
-// Module: ElectronicModule Manifest, Multi-Physics Ports, Condition Curves & SOA Bounds
+// Module: ElectronicModule Manifest, Multi-Physics Ports, SOA Smoke Events & Engineering Quick-Calcs
 // Invariants: All ratings and test conditions carry explicit SI suffixes (_uv, _na, _mkelvin, _hz, _ps).
-// Spec: architecture/03-rust-eda-engine.md, architecture/10-api-and-data-contracts.md
+// Spec: architecture/03-rust-eda-engine.md, architecture/10-api-and-data-contracts.md, architecture/17-extended-feature-specifications-ui-and-rust.md
 
 syntax = "proto3";
 
@@ -20,6 +20,23 @@ enum PhysicalPortDomain {
   PHYSICAL_PORT_DOMAIN_OPTICAL_ENVELOPE = 5;
   PHYSICAL_PORT_DOMAIN_MECHANICAL = 6;
   PHYSICAL_PORT_DOMAIN_QUANTUM_FLUX = 7;
+}
+
+enum FaultInjectionMode {
+  FAULT_INJECTION_MODE_UNSPECIFIED = 0;
+  FAULT_INJECTION_MODE_NONE = 1;
+  FAULT_INJECTION_MODE_OPEN_CIRCUIT = 2;
+  FAULT_INJECTION_MODE_SHORT_CIRCUIT = 3;
+  FAULT_INJECTION_MODE_PARAMETRIC_DRIFT = 4;
+  FAULT_INJECTION_MODE_STUCK_AT_LOGIC = 5;
+}
+
+enum CompactModelExecutionKind {
+  COMPACT_MODEL_EXECUTION_KIND_UNSPECIFIED = 0;
+  COMPACT_MODEL_EXECUTION_KIND_NATIVE_RUST = 1;
+  COMPACT_MODEL_EXECUTION_KIND_AOT_CRANELIFT_VERILOG_A = 2;
+  COMPACT_MODEL_EXECUTION_KIND_MICROVM_OSDI_IPC = 3;
+  COMPACT_MODEL_EXECUTION_KIND_MICROVM_IBIS_AMI_IPC = 4;
 }
 
 message PortDescriptor {
@@ -56,6 +73,32 @@ message ElectronicModuleManifest {
   int64 r_theta_jb_mk_per_mw = 11 [jstype = JS_STRING];
   repeated PortDescriptor ports = 12;
   repeated ConditionCurvePoint derating_curve = 13;
+  CompactModelExecutionKind execution_kind = 14;
+}
+
+message SoaFailureEvent {
+  string entity_id = 1;
+  string failure_mode = 2;
+  int64 peak_voltage_uv = 3 [jstype = JS_STRING];
+  int64 peak_current_na = 4 [jstype = JS_STRING];
+  int64 peak_power_uw = 5 [jstype = JS_STRING];
+  int64 junction_temp_mkelvin = 6 [jstype = JS_STRING];
+  Point2dNm smoke_anchor_nm = 7;
+  string recommended_upgrade_mpn = 8;
+}
+
+message EvaluateQuickResistorCalcRequest {
+  repeated string color_bands = 1;
+  string eia96_smd_code = 2;
+  int64 target_resistance_mohm = 3 [jstype = JS_STRING];
+  uint32 e_series = 4;
+}
+
+message EvaluateQuickResistorCalcResponse {
+  int64 nominal_resistance_mohm = 1 [jstype = JS_STRING];
+  double tolerance_pct = 2;
+  int32 tempco_ppm_per_k = 3;
+  int64 nearest_standard_mohm = 4 [jstype = JS_STRING];
 }
 
 message InspectElectronicModuleRequest {
@@ -68,4 +111,5 @@ message InspectElectronicModuleResponse {
 
 service ComponentCatalogService {
   rpc InspectElectronicModule(InspectElectronicModuleRequest) returns (InspectElectronicModuleResponse);
+  rpc EvaluateQuickResistorCalc(EvaluateQuickResistorCalcRequest) returns (EvaluateQuickResistorCalcResponse);
 }

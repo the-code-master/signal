@@ -1,12 +1,13 @@
-// Module: Equilibrated MNA SPICE, Filippov Saltation Adjoint Diff-Sim & Arrow Waveform Stream
+// Module: Equilibrated MNA SPICE, Filippov Saltation Adjoint Diff-Sim, Virtual Bench & Arrow Stream
 // Invariants: Streams <= 1 MB Arrow IPC waveform chunks; carries physics_determinism_epoch.
-// Spec: architecture/03-rust-eda-engine.md, architecture/10-api-and-data-contracts.md
+// Spec: architecture/03-rust-eda-engine.md, architecture/10-api-and-data-contracts.md, architecture/17-extended-feature-specifications-ui-and-rust.md
 
 syntax = "proto3";
 
 package signal.v1;
 
 import "signal/v1/common.proto";
+import "signal/v1/component.proto";
 
 option java_multiple_files = true;
 option java_package = "com.signaldesign.v1";
@@ -19,6 +20,7 @@ enum AnalysisKind {
   ANALYSIS_KIND_SHOOTING_PSS = 4;
   ANALYSIS_KIND_HARMONIC_BALANCE = 5;
   ANALYSIS_KIND_MONTE_CARLO_PELGROM = 6;
+  ANALYSIS_KIND_NOISE_SPECTRAL = 7;
 }
 
 enum LinearSolverBackend {
@@ -26,6 +28,14 @@ enum LinearSolverBackend {
   LINEAR_SOLVER_BACKEND_AUTO_CROSSOVER = 1;
   LINEAR_SOLVER_BACKEND_CPU_KLU = 2;
   LINEAR_SOLVER_BACKEND_GPU_CUDSS = 3;
+}
+
+enum VirtualInstrumentKind {
+  VIRTUAL_INSTRUMENT_KIND_UNSPECIFIED = 0;
+  VIRTUAL_INSTRUMENT_KIND_DSO_4CH = 1;
+  VIRTUAL_INSTRUMENT_KIND_LOGIC_ANALYZER_32CH = 2;
+  VIRTUAL_INSTRUMENT_KIND_FFT_SPECTRUM = 3;
+  VIRTUAL_INSTRUMENT_KIND_VNA_2PORT_SMITH = 4;
 }
 
 message RunAnalysisRequest {
@@ -37,6 +47,14 @@ message RunAnalysisRequest {
   int64 max_step_fs = 6 [jstype = JS_STRING];
   int64 ambient_temp_mkelvin = 7 [jstype = JS_STRING];
   uint32 monte_carlo_runs = 8;
+  uint32 max_display_pixels = 9;
+}
+
+message BranchCurrentTelemetry {
+  string entity_id = 1;
+  int64 rms_current_na = 2 [jstype = JS_STRING];
+  int64 peak_current_na = 3 [jstype = JS_STRING];
+  int64 avg_power_uw = 4 [jstype = JS_STRING];
 }
 
 message RunAnalysisResponse {
@@ -46,6 +64,24 @@ message RunAnalysisResponse {
   int64 wall_elapsed_ps = 4 [jstype = JS_STRING];
   uint32 soa_violation_count = 5;
   ArrowStreamChunk waveform_chunk = 6;
+  repeated BranchCurrentTelemetry branch_telemetry = 7;
+  repeated SoaFailureEvent soa_failures = 8;
+}
+
+message InteractiveSliderStepRequest {
+  FencingAuthority fencing = 1;
+  string simulation_run_id = 2;
+  string entity_id = 3;
+  string param_key = 4;
+  int64 new_si_value = 5 [jstype = JS_STRING];
+  FaultInjectionMode fault_mode = 6;
+}
+
+message InteractiveSliderStepResponse {
+  int64 solve_latency_ps = 1 [jstype = JS_STRING];
+  ArrowStreamChunk delta_waveform_chunk = 2;
+  repeated BranchCurrentTelemetry branch_telemetry = 3;
+  repeated SoaFailureEvent soa_failures = 4;
 }
 
 message AdjointParameterTarget {
@@ -76,7 +112,89 @@ message RunSaltationAdjointOptimizationResponse {
   repeated ParameterGradientResult results = 3;
 }
 
+message FastWhatIfSweepRequest {
+  string simulation_run_id = 1;
+  string entity_id = 2;
+  string param_key = 3;
+  repeated int64 candidate_si_values = 4 [jstype = JS_STRING];
+}
+
+message FastWhatIfSweepResponse {
+  int64 compute_elapsed_ps = 1 [jstype = JS_STRING];
+  ArrowStreamChunk family_curves_chunk = 2;
+}
+
+message VirtualBenchMeasureRequest {
+  string simulation_run_id = 1;
+  VirtualInstrumentKind instrument = 2;
+  string signal_expression = 3;
+  int64 rbw_hz = 4 [jstype = JS_STRING];
+}
+
+message VirtualBenchMeasureResponse {
+  double thd_db = 1;
+  double sinad_db = 2;
+  double enob_bits = 3;
+  ArrowStreamChunk instrument_trace_chunk = 4;
+}
+
+message MonteCarloSensitivityBar {
+  string entity_id = 1;
+  string param_key = 2;
+  double spearman_rank_corr = 3;
+  double variance_share_pct = 4;
+}
+
+message MonteCarloYieldSummary {
+  uint32 sample_count = 1;
+  double cpk_index = 2;
+  double pass_yield_pct = 3;
+  repeated MonteCarloSensitivityBar tornado_bars = 4;
+}
+
+message SerDesJitterDecomposition {
+  int64 rj_rms_fs = 1 [jstype = JS_STRING];
+  int64 dj_pp_fs = 2 [jstype = JS_STRING];
+  int64 pj_pp_fs = 3 [jstype = JS_STRING];
+  int64 ddj_pp_fs = 4 [jstype = JS_STRING];
+  double horizontal_eye_opening_ui_at_1e15 = 5;
+}
+
+message RegressionAssertionResult {
+  string assertion_id = 1;
+  string metric_expression = 2;
+  bool passed = 3;
+  double measured_value = 4;
+  double margin_pct = 5;
+}
+
+message RunRegressionSuiteRequest {
+  FencingAuthority fencing = 1;
+  string branch_id = 2;
+  repeated string assertion_expressions = 3;
+}
+
+message RunRegressionSuiteResponse {
+  bool all_passed = 1;
+  repeated RegressionAssertionResult results = 2;
+}
+
+message SynthesizeStimulusRequest {
+  string preset_kind = 1;
+  int64 sample_rate_hz = 2 [jstype = JS_STRING];
+  int64 duration_ps = 3 [jstype = JS_STRING];
+}
+
+message SynthesizeStimulusResponse {
+  ArrowStreamChunk pcm_preview_chunk = 1;
+}
+
 service SimulationService {
   rpc RunAnalysis(RunAnalysisRequest) returns (stream RunAnalysisResponse);
+  rpc InteractiveSliderStep(InteractiveSliderStepRequest) returns (InteractiveSliderStepResponse);
   rpc RunSaltationAdjointOptimization(RunSaltationAdjointOptimizationRequest) returns (RunSaltationAdjointOptimizationResponse);
+  rpc FastWhatIfSweep(FastWhatIfSweepRequest) returns (FastWhatIfSweepResponse);
+  rpc VirtualBenchMeasure(VirtualBenchMeasureRequest) returns (VirtualBenchMeasureResponse);
+  rpc RunRegressionSuite(RunRegressionSuiteRequest) returns (RunRegressionSuiteResponse);
+  rpc SynthesizeStimulus(SynthesizeStimulusRequest) returns (SynthesizeStimulusResponse);
 }

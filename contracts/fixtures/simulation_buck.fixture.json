@@ -1,0 +1,34 @@
+{
+  "fixture_id": "simulation_buck_phase1_bigint_v1",
+  "run_analysis_request": {
+    "fencing": {
+      "org_id": "11111111-2222-4333-8444-555555555555",
+      "project_id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+      "fencing_epoch": "9007199254740993",
+      "lease_holder_pod_id": "signal-pod-core-01-x9k2",
+      "issued_at_utc_ms": "1795324800000",
+      "expires_at_utc_ms": "1795324815000"
+    },
+    "branch_id": "main",
+    "kind": "ANALYSIS_KIND_TRANSIENT_TR_BDF2",
+    "solver_backend": "LINEAR_SOLVER_BACKEND_AUTO_CROSSOVER",
+    "stop_time_ps": "500000000",
+    "max_step_fs": "9007199254740993",
+    "ambient_temp_mkelvin": "298150",
+    "monte_carlo_runs": 64,
+    "max_display_pixels": 4096
+  },
+  "soa_failure_event": {
+    "entity_id": "Q1_GAN_100V",
+    "failure_mode": "SAFE_OPERATING_AREA_VDS_OVERSHOOT",
+    "peak_voltage_uv": "118500000",
+    "peak_current_na": "34200000000",
+    "peak_power_uw": "9007199254740999",
+    "junction_temp_mkelvin": "448150",
+    "smoke_anchor_nm": {
+      "x_nm": "15240000",
+      "y_nm": "25400000"
+    },
+    "recommended_upgrade_mpn": "EPC2218-150V"
+  }
+}
