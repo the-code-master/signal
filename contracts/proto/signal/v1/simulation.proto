@@ -1,0 +1,82 @@
+// Module: Equilibrated MNA SPICE, Filippov Saltation Adjoint Diff-Sim & Arrow Waveform Stream
+// Invariants: Streams <= 1 MB Arrow IPC waveform chunks; carries physics_determinism_epoch.
+// Spec: architecture/03-rust-eda-engine.md, architecture/10-api-and-data-contracts.md
+
+syntax = "proto3";
+
+package signal.v1;
+
+import "signal/v1/common.proto";
+
+option java_multiple_files = true;
+option java_package = "com.signaldesign.v1";
+
+enum AnalysisKind {
+  ANALYSIS_KIND_UNSPECIFIED = 0;
+  ANALYSIS_KIND_DC_OPERATING_POINT = 1;
+  ANALYSIS_KIND_AC_SMALL_SIGNAL = 2;
+  ANALYSIS_KIND_TRANSIENT_TR_BDF2 = 3;
+  ANALYSIS_KIND_SHOOTING_PSS = 4;
+  ANALYSIS_KIND_HARMONIC_BALANCE = 5;
+  ANALYSIS_KIND_MONTE_CARLO_PELGROM = 6;
+}
+
+enum LinearSolverBackend {
+  LINEAR_SOLVER_BACKEND_UNSPECIFIED = 0;
+  LINEAR_SOLVER_BACKEND_AUTO_CROSSOVER = 1;
+  LINEAR_SOLVER_BACKEND_CPU_KLU = 2;
+  LINEAR_SOLVER_BACKEND_GPU_CUDSS = 3;
+}
+
+message RunAnalysisRequest {
+  FencingAuthority fencing = 1;
+  string branch_id = 2;
+  AnalysisKind kind = 3;
+  LinearSolverBackend solver_backend = 4;
+  int64 stop_time_ps = 5 [jstype = JS_STRING];
+  int64 max_step_fs = 6 [jstype = JS_STRING];
+  int64 ambient_temp_mkelvin = 7 [jstype = JS_STRING];
+  uint32 monte_carlo_runs = 8;
+}
+
+message RunAnalysisResponse {
+  string simulation_run_id = 1;
+  uint32 physics_determinism_epoch = 2;
+  string waveform_merkle_digest = 3;
+  int64 wall_elapsed_ps = 4 [jstype = JS_STRING];
+  uint32 soa_violation_count = 5;
+  ArrowStreamChunk waveform_chunk = 6;
+}
+
+message AdjointParameterTarget {
+  string entity_id = 1;
+  string param_key = 2;
+  int64 min_si_bound = 3 [jstype = JS_STRING];
+  int64 max_si_bound = 4 [jstype = JS_STRING];
+}
+
+message RunSaltationAdjointOptimizationRequest {
+  FencingAuthority fencing = 1;
+  string branch_id = 2;
+  repeated AdjointParameterTarget parameters = 3;
+  uint32 max_iterations = 4;
+  uint32 revolve_checkpoint_slots = 5;
+}
+
+message ParameterGradientResult {
+  string entity_id = 1;
+  string param_key = 2;
+  int64 optimized_si_value = 3 [jstype = JS_STRING];
+  double saltation_adjoint_gradient = 4;
+}
+
+message RunSaltationAdjointOptimizationResponse {
+  bool converged = 1;
+  double final_loss = 2;
+  repeated ParameterGradientResult results = 3;
+}
+
+service SimulationService {
+  rpc RunAnalysis(RunAnalysisRequest) returns (stream RunAnalysisResponse);
+  rpc RunSaltationAdjointOptimization(RunSaltationAdjointOptimizationRequest) returns (RunSaltationAdjointOptimizationResponse);
+}

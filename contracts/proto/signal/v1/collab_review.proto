@@ -1,0 +1,82 @@
+// Module: Zero-Leak 5-Team Collaboration Space, Project Status Tower & Automated Reviews
+// Invariants: Enforces per-repo required_repo_scopes RBAC masking and deterministic KPI review generation.
+// Spec: architecture/21-collaboration-space-project-status-and-automated-reviews.md
+
+syntax = "proto3";
+
+package signal.v1;
+
+import "signal/v1/common.proto";
+
+option java_multiple_files = true;
+option java_package = "com.signaldesign.v1";
+
+enum TeamWorkspaceKind {
+  TEAM_WORKSPACE_KIND_UNSPECIFIED = 0;
+  TEAM_WORKSPACE_KIND_DESIGN = 1;
+  TEAM_WORKSPACE_KIND_DEVELOPMENT_BRINGUP = 2;
+  TEAM_WORKSPACE_KIND_SOFTWARE_FIRMWARE = 3;
+  TEAM_WORKSPACE_KIND_MANUFACTURING = 4;
+  TEAM_WORKSPACE_KIND_OPERATIONS_SUPPLY_CHAIN = 5;
+  TEAM_WORKSPACE_KIND_CROSS_TEAM_PROGRAM = 6;
+}
+
+enum RagHealthStatus {
+  RAG_HEALTH_STATUS_UNSPECIFIED = 0;
+  RAG_HEALTH_STATUS_GREEN = 1;
+  RAG_HEALTH_STATUS_AMBER = 2;
+  RAG_HEALTH_STATUS_RED = 3;
+}
+
+enum PeriodicReviewCadence {
+  PERIODIC_REVIEW_CADENCE_UNSPECIFIED = 0;
+  PERIODIC_REVIEW_CADENCE_WEEKLY_ENGINEERING = 1;
+  PERIODIC_REVIEW_CADENCE_MONTHLY_EXECUTIVE = 2;
+  PERIODIC_REVIEW_CADENCE_STAGE_GATE_STATUS = 3;
+}
+
+message EntityAnchorRef {
+  SubprojectDomain domain = 1;
+  string entity_id = 2;
+  string commit_sha = 3;
+  Point3dNm location_nm = 4;
+  string required_provider_repo_id = 5;
+}
+
+message PostAnchoredMessageRequest {
+  string org_id = 1;
+  string project_id = 2;
+  string channel_id = 3;
+  TeamWorkspaceKind team = 4;
+  string ciphertext_body_b64 = 5;
+  repeated EntityAnchorRef entity_anchors = 6;
+}
+
+message PostAnchoredMessageResponse {
+  string message_id = 1;
+  int64 created_at_utc_ms = 2 [jstype = JS_STRING];
+}
+
+message GeneratePeriodicReviewRequest {
+  string org_id = 1;
+  string project_id = 2;
+  PeriodicReviewCadence cadence = 3;
+  int64 window_start_utc_ms = 4 [jstype = JS_STRING];
+  int64 window_end_utc_ms = 5 [jstype = JS_STRING];
+  string stage_gate_name = 6;
+}
+
+message GeneratePeriodicReviewResponse {
+  string review_id = 1;
+  PeriodicReviewCadence cadence = 2;
+  RagHealthStatus overall_health = 3;
+  uint32 open_drc_erc_violations = 4;
+  uint32 clear_to_build_units = 5;
+  string archived_ops_repo_path = 6;
+  HybridPqcSignature review_signature = 7;
+}
+
+service CollabReviewService {
+  rpc PostAnchoredMessage(PostAnchoredMessageRequest) returns (PostAnchoredMessageResponse);
+  rpc GeneratePeriodicReview(GeneratePeriodicReviewRequest) returns (GeneratePeriodicReviewResponse);
+}

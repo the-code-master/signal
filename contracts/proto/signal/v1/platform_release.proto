@@ -1,0 +1,63 @@
+// Module: Platform Version Management, N-2 Compatibility Matrix & Automated Release Notes
+// Invariants: Enforces N-2 minor wire compatibility and explicit physics_determinism_epoch tracking.
+// Spec: architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+
+syntax = "proto3";
+
+package signal.v1;
+
+option java_multiple_files = true;
+option java_package = "com.signaldesign.v1";
+
+enum ReleaseChannel {
+  RELEASE_CHANNEL_UNSPECIFIED = 0;
+  RELEASE_CHANNEL_STABLE = 1;
+  RELEASE_CHANNEL_LTS = 2;
+  RELEASE_CHANNEL_CANARY = 3;
+}
+
+message ReleaseNoteEntry {
+  string version = 1;
+  ReleaseChannel channel = 2;
+  int64 released_at_utc_ms = 3 [jstype = JS_STRING];
+  uint32 physics_determinism_epoch = 4;
+  repeated string highlights = 5;
+  repeated string security_fixes = 6;
+  string sbom_spdx_uri = 7;
+}
+
+message GetPlatformVersionRequest {}
+
+message GetPlatformVersionResponse {
+  string platform_version = 1;
+  string contract_api_version = 2;
+  uint32 physics_determinism_epoch = 3;
+  repeated string supported_engine_versions = 4;
+}
+
+message NegotiateEngineCompatibilityRequest {
+  string client_web_version = 1;
+  string api_gateway_version = 2;
+  string pinned_project_engine_version = 3;
+}
+
+message NegotiateEngineCompatibilityResponse {
+  bool wire_compatible = 1;
+  string routed_engine_image_digest = 2;
+  bool reload_web_chunks_recommended = 3;
+}
+
+message ListReleaseNotesRequest {
+  uint32 limit = 1;
+  ReleaseChannel channel_filter = 2;
+}
+
+message ListReleaseNotesResponse {
+  repeated ReleaseNoteEntry releases = 1;
+}
+
+service PlatformReleaseService {
+  rpc GetPlatformVersion(GetPlatformVersionRequest) returns (GetPlatformVersionResponse);
+  rpc NegotiateEngineCompatibility(NegotiateEngineCompatibilityRequest) returns (NegotiateEngineCompatibilityResponse);
+  rpc ListReleaseNotes(ListReleaseNotesRequest) returns (ListReleaseNotesResponse);
+}

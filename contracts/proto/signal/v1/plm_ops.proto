@@ -1,0 +1,95 @@
+// Module: Native PLM & Supply-Chain Operations (eBOM/mBOM/sBOM, ECN, MCN, PCN, Deviation & CTB)
+// Invariants: Expired or over-limit Deviation/Waivers MUST fail-closed block SFTP manufacturing release.
+// Spec: architecture/19-cad-cam-3d-printing-and-plm-operations.md
+
+syntax = "proto3";
+
+package signal.v1;
+
+import "signal/v1/common.proto";
+
+option java_multiple_files = true;
+option java_package = "com.signaldesign.v1";
+
+enum BomViewKind {
+  BOM_VIEW_KIND_UNSPECIFIED = 0;
+  BOM_VIEW_KIND_EBOM = 1;
+  BOM_VIEW_KIND_MBOM = 2;
+  BOM_VIEW_KIND_SBOM = 3;
+}
+
+enum ChangeNoticeKind {
+  CHANGE_NOTICE_KIND_UNSPECIFIED = 0;
+  CHANGE_NOTICE_KIND_ECR = 1;
+  CHANGE_NOTICE_KIND_ECO = 2;
+  CHANGE_NOTICE_KIND_ECN = 3;
+  CHANGE_NOTICE_KIND_MCN = 4;
+  CHANGE_NOTICE_KIND_PCN = 5;
+  CHANGE_NOTICE_KIND_DEVIATION_WAIVER = 6;
+  CHANGE_NOTICE_KIND_NCR_CAPA = 7;
+}
+
+message BomLineItem {
+  string line_id = 1;
+  string upid = 2;
+  string orderable_mpn = 3;
+  uint32 quantity_per_unit = 4;
+  int64 unit_cost_micros_usd = 5 [jstype = JS_STRING];
+  int64 embodied_co2e_mg = 6 [jstype = JS_STRING];
+  bool rohs_pfas_compliant = 7;
+}
+
+message CompileMultiViewBomRequest {
+  string org_id = 1;
+  string project_id = 2;
+  string super_commit_id = 3;
+  BomViewKind view = 4;
+}
+
+message CompileMultiViewBomResponse {
+  BomViewKind view = 1;
+  repeated BomLineItem lines = 2;
+  int64 total_unit_cost_micros_usd = 3 [jstype = JS_STRING];
+  uint32 clear_to_build_max_units = 4;
+}
+
+message DeviationWaiverGate {
+  string deviation_id = 1;
+  uint64 authorized_qty_limit = 2 [jstype = JS_STRING];
+  uint64 consumed_qty = 3 [jstype = JS_STRING];
+  int64 expires_at_utc_ms = 4 [jstype = JS_STRING];
+  HybridPqcSignature ccb_approval_sig = 5;
+}
+
+message VerifyDeviationGateRequest {
+  string org_id = 1;
+  string project_id = 2;
+  uint64 requested_release_qty = 3 [jstype = JS_STRING];
+  int64 evaluation_time_utc_ms = 4 [jstype = JS_STRING];
+}
+
+message VerifyDeviationGateResponse {
+  bool release_permitted = 1;
+  repeated string blocking_deviation_ids = 2;
+}
+
+message TransitionChangeOrderRequest {
+  string org_id = 1;
+  string project_id = 2;
+  string change_id = 3;
+  ChangeNoticeKind kind = 4;
+  string target_state = 5;
+  HybridPqcSignature part11_signature = 6;
+}
+
+message TransitionChangeOrderResponse {
+  string change_id = 1;
+  string current_state = 2;
+  string ops_repo_commit_sha = 3;
+}
+
+service PlmOpsService {
+  rpc CompileMultiViewBom(CompileMultiViewBomRequest) returns (CompileMultiViewBomResponse);
+  rpc VerifyDeviationGate(VerifyDeviationGateRequest) returns (VerifyDeviationGateResponse);
+  rpc TransitionChangeOrder(TransitionChangeOrderRequest) returns (TransitionChangeOrderResponse);
+}

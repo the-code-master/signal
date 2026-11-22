@@ -1,0 +1,113 @@
+// Module: Sticky Project Cell Hydration, Lease Fencing & Live Migration Contract
+// Invariants: Enforces N-2 wire handshake, Host-Aggregated Lease fencing, and < 150 ms Pre-Copy migration.
+// Spec: architecture/04-kubernetes-runtime-and-collaboration.md, architecture/10-api-and-data-contracts.md
+
+syntax = "proto3";
+
+package signal.v1;
+
+import "signal/v1/common.proto";
+
+option java_multiple_files = true;
+option java_package = "com.signaldesign.v1";
+
+enum CellComputeTier {
+  CELL_COMPUTE_TIER_UNSPECIFIED = 0;
+  CELL_COMPUTE_TIER_EXPLORER_WASM = 1;
+  CELL_COMPUTE_TIER_CORE_STANDARD = 2;
+  CELL_COMPUTE_TIER_CORE_HIGHMEM = 3;
+  CELL_COMPUTE_TIER_CORE_GPU = 4;
+  CELL_COMPUTE_TIER_CONFIDENTIAL_SILICON = 5;
+}
+
+enum VideoStreamCodec {
+  VIDEO_STREAM_CODEC_UNSPECIFIED = 0;
+  VIDEO_STREAM_CODEC_ZSTD_QOI_TILES_ONLY = 1;
+  VIDEO_STREAM_CODEC_HEVC_444_HW = 2;
+  VIDEO_STREAM_CODEC_AV1_DUAL_LUMA = 3;
+  VIDEO_STREAM_CODEC_H264_DUAL_LUMA = 4;
+}
+
+enum SessionLifecycleState {
+  SESSION_LIFECYCLE_STATE_UNSPECIFIED = 0;
+  SESSION_LIFECYCLE_STATE_BOOTING = 1;
+  SESSION_LIFECYCLE_STATE_MOUNTED = 2;
+  SESSION_LIFECYCLE_STATE_MIGRATING = 3;
+  SESSION_LIFECYCLE_STATE_HIBERNATING = 4;
+}
+
+message HydrateProjectRequest {
+  FencingAuthority fencing = 1;
+  ProjectVaultMode vault_mode = 2;
+  CellComputeTier compute_tier = 3;
+  repeated string authorized_provider_repo_ids = 4;
+  string kms_wrapped_dek_key_id = 5;
+  string pinned_engine_version = 6;
+}
+
+message HydrateProjectResponse {
+  SessionLifecycleState state = 1;
+  uint64 active_fencing_epoch = 2 [jstype = JS_STRING];
+  string mounted_super_commit_id = 3;
+  int64 hydration_duration_ps = 4 [jstype = JS_STRING];
+  string engine_version = 5;
+}
+
+message AttachCollaboratorRequest {
+  string project_id = 1;
+  string actor_pseudo_id = 2;
+  string client_web_version = 3;
+  ProgressiveUiProfile ui_profile = 4;
+  repeated VideoStreamCodec supported_hw_codecs = 5;
+  repeated string verified_provider_repo_ids = 6;
+  bool zero_leak_dlp_enforced = 7;
+}
+
+message AttachCollaboratorResponse {
+  string collaborator_session_id = 1;
+  VideoStreamCodec negotiated_codec = 2;
+  uint64 current_graph_revision = 3 [jstype = JS_STRING];
+  uint64 active_fencing_epoch = 4 [jstype = JS_STRING];
+  int64 ticket_expires_at_utc_ms = 5 [jstype = JS_STRING];
+}
+
+message EvictCollaboratorRequest {
+  string project_id = 1;
+  string collaborator_session_id = 2;
+  string reason_code = 3;
+}
+
+message EvictCollaboratorResponse {
+  bool evicted = 1;
+  int64 evicted_at_utc_ms = 2 [jstype = JS_STRING];
+}
+
+message ThreePhaseLiveMigrateRequest {
+  FencingAuthority next_fencing = 1;
+  string destination_node_id = 2;
+  int64 max_cutover_freeze_ps = 3 [jstype = JS_STRING];
+}
+
+message ThreePhaseLiveMigrateResponse {
+  bool completed = 1;
+  int64 observed_cutover_freeze_ps = 2 [jstype = JS_STRING];
+  uint64 new_fencing_epoch = 3 [jstype = JS_STRING];
+}
+
+message HibernateAndZeroizeRequest {
+  FencingAuthority fencing = 1;
+  bool flush_super_commit_first = 2;
+}
+
+message HibernateAndZeroizeResponse {
+  bool ram_dek_zeroized = 1;
+  string final_super_commit_id = 2;
+}
+
+service ProjectSessionService {
+  rpc HydrateProject(HydrateProjectRequest) returns (HydrateProjectResponse);
+  rpc AttachCollaborator(AttachCollaboratorRequest) returns (AttachCollaboratorResponse);
+  rpc EvictCollaborator(EvictCollaboratorRequest) returns (EvictCollaboratorResponse);
+  rpc ThreePhaseLiveMigrate(ThreePhaseLiveMigrateRequest) returns (ThreePhaseLiveMigrateResponse);
+  rpc HibernateAndZeroize(HibernateAndZeroizeRequest) returns (HibernateAndZeroizeResponse);
+}

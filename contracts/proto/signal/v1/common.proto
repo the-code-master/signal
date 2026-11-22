@@ -1,0 +1,96 @@
+// Module: Shared SI-Unit Primitives, Fencing Tokens & Bounded Chunk Envelopes
+// Invariants: 100% of 64-bit integer fields enforce [jstype = JS_STRING]; <= 1 MB stream chunks.
+// Spec: architecture/10-api-and-data-contracts.md
+
+syntax = "proto3";
+
+package signal.v1;
+
+option java_multiple_files = true;
+option java_package = "com.signaldesign.v1";
+
+enum ProgressiveUiProfile {
+  PROGRESSIVE_UI_PROFILE_UNSPECIFIED = 0;
+  PROGRESSIVE_UI_PROFILE_EXPLORER = 1;
+  PROGRESSIVE_UI_PROFILE_MAKER = 2;
+  PROGRESSIVE_UI_PROFILE_PRO = 3;
+}
+
+enum ProjectVaultMode {
+  PROJECT_VAULT_MODE_UNSPECIFIED = 0;
+  PROJECT_VAULT_MODE_PLAIN_CANONICAL = 1;
+  PROJECT_VAULT_MODE_ENCRYPTED_VAULT = 2;
+}
+
+enum VerificationBadge {
+  VERIFICATION_BADGE_UNSPECIFIED = 0;
+  VERIFICATION_BADGE_BRONZE_PARSED = 1;
+  VERIFICATION_BADGE_SILVER_SIM_MATCHED = 2;
+  VERIFICATION_BADGE_GOLD_ATTESTED = 3;
+}
+
+enum SubprojectDomain {
+  SUBPROJECT_DOMAIN_UNSPECIFIED = 0;
+  SUBPROJECT_DOMAIN_META = 1;
+  SUBPROJECT_DOMAIN_PRD = 2;
+  SUBPROJECT_DOMAIN_HFS = 3;
+  SUBPROJECT_DOMAIN_SCHEMATIC = 4;
+  SUBPROJECT_DOMAIN_PCB = 5;
+  SUBPROJECT_DOMAIN_IC_ANALOG = 6;
+  SUBPROJECT_DOMAIN_IC_DIGITAL = 7;
+  SUBPROJECT_DOMAIN_FPGA = 8;
+  SUBPROJECT_DOMAIN_FIRMWARE = 9;
+  SUBPROJECT_DOMAIN_BIOS = 10;
+  SUBPROJECT_DOMAIN_CAD_MCAD = 11;
+  SUBPROJECT_DOMAIN_CAM_CNC = 12;
+  SUBPROJECT_DOMAIN_PRINT_3D = 13;
+  SUBPROJECT_DOMAIN_PLM_OPS = 14;
+}
+
+message Point2dNm {
+  int64 x_nm = 1 [jstype = JS_STRING];
+  int64 y_nm = 2 [jstype = JS_STRING];
+}
+
+message Point3dNm {
+  int64 x_nm = 1 [jstype = JS_STRING];
+  int64 y_nm = 2 [jstype = JS_STRING];
+  int64 z_nm = 3 [jstype = JS_STRING];
+}
+
+message BoundingBox2dNm {
+  int64 min_x_nm = 1 [jstype = JS_STRING];
+  int64 min_y_nm = 2 [jstype = JS_STRING];
+  int64 max_x_nm = 3 [jstype = JS_STRING];
+  int64 max_y_nm = 4 [jstype = JS_STRING];
+}
+
+message BoundingBox3dNm {
+  Point3dNm min_corner = 1;
+  Point3dNm max_corner = 2;
+}
+
+message FencingAuthority {
+  string org_id = 1;
+  string project_id = 2;
+  uint64 fencing_epoch = 3 [jstype = JS_STRING];
+  string lease_holder_pod_id = 4;
+  int64 issued_at_utc_ms = 5 [jstype = JS_STRING];
+  int64 expires_at_utc_ms = 6 [jstype = JS_STRING];
+}
+
+message HybridPqcSignature {
+  bytes ed25519_sig = 1;
+  bytes ml_dsa_65_sig = 2;
+  string key_id = 3;
+  int64 signed_at_utc_ms = 4 [jstype = JS_STRING];
+}
+
+message ArrowStreamChunk {
+  string stream_id = 1;
+  uint64 sequence_index = 2 [jstype = JS_STRING];
+  bytes arrow_ipc_payload = 3;
+  uint32 crc32c_checksum = 4;
+  bool is_final_chunk = 5;
+  uint32 remaining_credit_hint = 6;
+}

@@ -1,0 +1,61 @@
+// Module: Step-Up 2FA Disposable Write-Only russh SFTP Manufacturing & Regulatory Release
+// Invariants: Zero browser /export or /download; atomic .tmp.part -> SHA-256 read-back -> rename + PQC sig.
+// Spec: architecture/07-security-encryption-dlp-and-sftp.md, architecture/15-application-security-and-project-isolation.md
+
+syntax = "proto3";
+
+package signal.v1;
+
+import "signal/v1/common.proto";
+
+option java_multiple_files = true;
+option java_package = "com.signaldesign.v1";
+
+enum ReleaseBundleKind {
+  RELEASE_BUNDLE_KIND_UNSPECIFIED = 0;
+  RELEASE_BUNDLE_KIND_PCB_GERBER_ODB_IPC2581 = 1;
+  RELEASE_BUNDLE_KIND_IC_GDSII_OASIS = 2;
+  RELEASE_BUNDLE_KIND_MCAD_STEP_AP242 = 3;
+  RELEASE_BUNDLE_KIND_CAM_CNC_GCODE = 4;
+  RELEASE_BUNDLE_KIND_PRINT_3D_3MF = 5;
+  RELEASE_BUNDLE_KIND_REGULATORY_LAB_DOSSIER = 6;
+}
+
+enum StepUpMfaMethod {
+  STEP_UP_MFA_METHOD_UNSPECIFIED = 0;
+  STEP_UP_MFA_METHOD_WEBAUTHN_FIDO2 = 1;
+  STEP_UP_MFA_METHOD_SINGLE_USE_BURNED_TOTP = 2;
+}
+
+message ReleaseSignoffApproval {
+  string actor_pseudo_id = 1;
+  string approval_meaning = 2;
+  StepUpMfaMethod mfa_method = 3;
+  string burned_totp_or_webauthn_nonce = 4;
+  HybridPqcSignature signature = 5;
+}
+
+message PushSftpReleaseRequest {
+  FencingAuthority fencing = 1;
+  string idempotency_key = 2;
+  string release_id = 3;
+  string super_commit_id = 4;
+  ReleaseBundleKind bundle_kind = 5;
+  string sftp_target_id = 6;
+  string pinned_host_key_ed25519 = 7;
+  uint64 release_unit_quantity = 8 [jstype = JS_STRING];
+  uint64 quorum_audit_outbox_seq = 9 [jstype = JS_STRING];
+  repeated ReleaseSignoffApproval approvals = 10;
+}
+
+message PushSftpReleaseResponse {
+  string release_id = 1;
+  bool atomic_rename_completed = 2;
+  string remote_verified_sha256 = 3;
+  HybridPqcSignature manifest_signature = 4;
+  int64 completed_at_utc_ms = 5 [jstype = JS_STRING];
+}
+
+service SftpReleaseService {
+  rpc PushSftpRelease(PushSftpReleaseRequest) returns (PushSftpReleaseResponse);
+}

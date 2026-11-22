@@ -1,0 +1,89 @@
+// Module: Parametric B-Rep Mechanical CAD (CAD_MCAD), CNC CAM (CAM_CNC) & Direct-B-Rep 3D Printing
+// Invariants: All physical geometry in exact integer nanometers (_nm); CNC/3MF egress via SFTP only.
+// Spec: architecture/19-cad-cam-3d-printing-and-plm-operations.md
+
+syntax = "proto3";
+
+package signal.v1;
+
+import "signal/v1/common.proto";
+
+option java_multiple_files = true;
+option java_package = "com.signaldesign.v1";
+
+enum McadFeatureOpKind {
+  MCAD_FEATURE_OP_KIND_UNSPECIFIED = 0;
+  MCAD_FEATURE_OP_KIND_EXTRUDE = 1;
+  MCAD_FEATURE_OP_KIND_REVOLVE = 2;
+  MCAD_FEATURE_OP_KIND_FILLET = 3;
+  MCAD_FEATURE_OP_KIND_SHELL = 4;
+  MCAD_FEATURE_OP_KIND_SHEET_METAL_FLANGE = 5;
+}
+
+enum CncAxisStrategy {
+  CNC_AXIS_STRATEGY_UNSPECIFIED = 0;
+  CNC_AXIS_STRATEGY_ADAPTIVE_3AXIS = 1;
+  CNC_AXIS_STRATEGY_INDEXED_3PLUS2 = 2;
+  CNC_AXIS_STRATEGY_SIMULTANEOUS_5AXIS = 3;
+}
+
+enum AdditiveProcessKind {
+  ADDITIVE_PROCESS_KIND_UNSPECIFIED = 0;
+  ADDITIVE_PROCESS_KIND_FDM_FFF = 1;
+  ADDITIVE_PROCESS_KIND_SLA_MSLA = 2;
+  ADDITIVE_PROCESS_KIND_SLS_MJF = 3;
+  ADDITIVE_PROCESS_KIND_DMLS_METAL_LPBF = 4;
+}
+
+message McadFeatureNode {
+  string feature_id = 1;
+  McadFeatureOpKind op_kind = 2;
+  int64 primary_depth_nm = 3 [jstype = JS_STRING];
+  int64 fillet_radius_nm = 4 [jstype = JS_STRING];
+  string linked_pcb_anchor_id = 5;
+}
+
+message EvaluateBRepFeatureTreeRequest {
+  FencingAuthority fencing = 1;
+  repeated McadFeatureNode features = 2;
+}
+
+message EvaluateBRepFeatureTreeResponse {
+  string brep_solid_hash = 1;
+  BoundingBox3dNm bounds_nm = 2;
+  int64 min_pcb_enclosure_clearance_nm = 3 [jstype = JS_STRING];
+  uint32 interference_collision_count = 4;
+}
+
+message GenerateCncToolpathRequest {
+  FencingAuthority fencing = 1;
+  string brep_solid_hash = 2;
+  CncAxisStrategy strategy = 3;
+  int64 tool_diameter_nm = 4 [jstype = JS_STRING];
+  string post_processor_profile = 5;
+}
+
+message GenerateCncToolpathResponse {
+  string toolpath_job_id = 1;
+  int64 estimated_cycle_time_ps = 2 [jstype = JS_STRING];
+  bool holder_gouge_free = 3;
+}
+
+message SliceBRepFor3dPrintRequest {
+  FencingAuthority fencing = 1;
+  string brep_solid_hash = 2;
+  AdditiveProcessKind process = 3;
+  int64 layer_height_nm = 4 [jstype = JS_STRING];
+}
+
+message SliceBRepFor3dPrintResponse {
+  string print_job_id = 1;
+  uint32 total_layer_count = 2;
+  int64 estimated_material_volume_cubic_nm = 3 [jstype = JS_STRING];
+}
+
+service McadCamPrintService {
+  rpc EvaluateBRepFeatureTree(EvaluateBRepFeatureTreeRequest) returns (EvaluateBRepFeatureTreeResponse);
+  rpc GenerateCncToolpath(GenerateCncToolpathRequest) returns (GenerateCncToolpathResponse);
+  rpc SliceBRepFor3dPrint(SliceBRepFor3dPrintRequest) returns (SliceBRepFor3dPrintResponse);
+}

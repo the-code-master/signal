@@ -1,0 +1,93 @@
+// Module: Customer BYO-Git Multi-Repo Sync, Padme Vault & Dual-Fenced Super-Commit Contract
+// Invariants: Tracks repos by immutable provider_repo_id; commits <project>-meta CAS lockfile FIRST.
+// Spec: architecture/13-vcs-git-server-and-storage-analysis.md, architecture/10-api-and-data-contracts.md
+
+syntax = "proto3";
+
+package signal.v1;
+
+import "signal/v1/common.proto";
+
+option java_multiple_files = true;
+option java_package = "com.signaldesign.v1";
+
+enum GitProviderKind {
+  GIT_PROVIDER_KIND_UNSPECIFIED = 0;
+  GIT_PROVIDER_KIND_GITHUB = 1;
+  GIT_PROVIDER_KIND_GITLAB = 2;
+  GIT_PROVIDER_KIND_BITBUCKET = 3;
+}
+
+enum GitNamespaceKind {
+  GIT_NAMESPACE_KIND_UNSPECIFIED = 0;
+  GIT_NAMESPACE_KIND_ORG_NAMESPACE = 1;
+  GIT_NAMESPACE_KIND_USER_NAMESPACE = 2;
+}
+
+message BoundRepositoryRef {
+  GitProviderKind provider = 1;
+  GitNamespaceKind namespace_kind = 2;
+  string provider_repo_id = 3;
+  string display_full_name = 4;
+  SubprojectDomain domain = 5;
+  ProjectVaultMode vault_mode = 6;
+}
+
+message RepoCommitEntry {
+  string provider_repo_id = 1;
+  string commit_sha = 2;
+  string vault_merkle_root = 3;
+  uint32 dek_version = 4;
+  uint64 padme_padded_bytes = 5 [jstype = JS_STRING];
+}
+
+message ExecuteSuperCommitRequest {
+  FencingAuthority fencing = 1;
+  string idempotency_key = 2;
+  string commit_message = 3;
+  string author_pseudo_id = 4;
+  repeated BoundRepositoryRef target_repos = 5;
+}
+
+message ExecuteSuperCommitResponse {
+  string super_commit_id = 1;
+  uint64 fencing_epoch = 2 [jstype = JS_STRING];
+  string meta_repo_commit_sha = 3;
+  repeated RepoCommitEntry member_commits = 4;
+  HybridPqcSignature manifest_signature = 5;
+  int64 committed_at_utc_ms = 6 [jstype = JS_STRING];
+}
+
+message ReconcileExternalPushRequest {
+  FencingAuthority fencing = 1;
+  string provider_repo_id = 2;
+  string external_head_commit_sha = 3;
+}
+
+message ReconcileExternalPushResponse {
+  bool auto_rebased_cleanly = 1;
+  string resulting_commit_sha = 2;
+  uint32 conflicting_entity_count = 3;
+}
+
+message ScrubHistoryTimelineRequest {
+  string project_id = 1;
+  uint32 max_commits = 2;
+}
+
+message HistoryTimelineEntry {
+  string super_commit_id = 1;
+  string summary = 2;
+  int64 committed_at_utc_ms = 3 [jstype = JS_STRING];
+  uint32 changed_entity_count = 4;
+}
+
+message ScrubHistoryTimelineResponse {
+  repeated HistoryTimelineEntry entries = 1;
+}
+
+service VcsSyncService {
+  rpc ExecuteSuperCommit(ExecuteSuperCommitRequest) returns (ExecuteSuperCommitResponse);
+  rpc ReconcileExternalPush(ReconcileExternalPushRequest) returns (ReconcileExternalPushResponse);
+  rpc ScrubHistoryTimeline(ScrubHistoryTimelineRequest) returns (ScrubHistoryTimelineResponse);
+}

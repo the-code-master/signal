@@ -1,0 +1,108 @@
+// Module: Multi-Domain ECS Design Graph, Topological CRDT & CoW Speculative Branching
+// Invariants: Rejects power-rail shorting CRDT merges; enforces causal selective undo and Merge-Time Proof check.
+// Spec: architecture/03-rust-eda-engine.md, architecture/10-api-and-data-contracts.md
+
+syntax = "proto3";
+
+package signal.v1;
+
+import "signal/v1/common.proto";
+
+option java_multiple_files = true;
+option java_package = "com.signaldesign.v1";
+
+enum GraphMutationKind {
+  GRAPH_MUTATION_KIND_UNSPECIFIED = 0;
+  GRAPH_MUTATION_KIND_PLACE_INSTANCE = 1;
+  GRAPH_MUTATION_KIND_MOVE_INSTANCE = 2;
+  GRAPH_MUTATION_KIND_CONNECT_NET = 3;
+  GRAPH_MUTATION_KIND_ROUTE_TRACE_SEGMENT = 4;
+  GRAPH_MUTATION_KIND_UPDATE_PARAMETER = 5;
+  GRAPH_MUTATION_KIND_DELETE_ENTITY = 6;
+}
+
+message GraphMutationOp {
+  string op_id = 1;
+  GraphMutationKind kind = 2;
+  string entity_id = 3;
+  SubprojectDomain domain = 4;
+  Point2dNm position_nm = 5;
+  int64 trace_width_nm = 6 [jstype = JS_STRING];
+  string net_name = 7;
+  string param_key = 8;
+  int64 param_si_value = 9 [jstype = JS_STRING];
+}
+
+message ApplyTransactionRequest {
+  FencingAuthority fencing = 1;
+  string idempotency_key = 2;
+  string actor_pseudo_id = 3;
+  string branch_id = 4;
+  uint64 expected_base_revision = 5 [jstype = JS_STRING];
+  repeated GraphMutationOp operations = 6;
+}
+
+message ApplyTransactionResponse {
+  uint64 committed_revision = 1 [jstype = JS_STRING];
+  string graph_merkle_root = 2;
+  bool has_topological_conflict = 3;
+  string conflict_card_summary = 4;
+}
+
+message UndoActorLastTransactionRequest {
+  FencingAuthority fencing = 1;
+  string actor_pseudo_id = 2;
+  string branch_id = 3;
+}
+
+message UndoActorLastTransactionResponse {
+  bool undone = 1;
+  uint64 new_revision = 2 [jstype = JS_STRING];
+  string blocked_by_dependent_op_id = 3;
+}
+
+message CreateSpeculativeBranchRequest {
+  FencingAuthority fencing = 1;
+  string parent_branch_id = 2;
+  string new_branch_name = 3;
+  string created_by_agent_id = 4;
+}
+
+message CreateSpeculativeBranchResponse {
+  string branch_id = 1;
+  uint64 base_revision = 2 [jstype = JS_STRING];
+  string base_graph_merkle_root = 3;
+}
+
+message MergeBranchRequest {
+  FencingAuthority fencing = 1;
+  string source_branch_id = 2;
+  string target_branch_id = 3;
+  string expected_base_graph_merkle_root = 4;
+  string attached_proof_bundle_id = 5;
+}
+
+message MergeBranchResponse {
+  bool merged = 1;
+  uint64 merged_revision = 2 [jstype = JS_STRING];
+  bool proof_reverified_after_rebase = 3;
+  int64 delta_reverify_duration_ps = 4 [jstype = JS_STRING];
+}
+
+message DiffBranchesRequest {
+  string project_id = 1;
+  string base_branch_id = 2;
+  string head_branch_id = 3;
+}
+
+message DiffBranchesResponse {
+  ArrowStreamChunk diff_chunk = 1;
+}
+
+service DesignGraphService {
+  rpc ApplyTransaction(ApplyTransactionRequest) returns (ApplyTransactionResponse);
+  rpc UndoActorLastTransaction(UndoActorLastTransactionRequest) returns (UndoActorLastTransactionResponse);
+  rpc CreateSpeculativeBranch(CreateSpeculativeBranchRequest) returns (CreateSpeculativeBranchResponse);
+  rpc MergeBranch(MergeBranchRequest) returns (MergeBranchResponse);
+  rpc DiffBranches(DiffBranchesRequest) returns (stream DiffBranchesResponse);
+}

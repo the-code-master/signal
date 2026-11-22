@@ -1,0 +1,16 @@
+# Module: Build-Time Protobuf Codegen Configuration (TypeScript bigint & Python)
+# Invariants: Never commit generated stubs; TypeScript MUST generate ES2020 bigint (long_type_bigint).
+# Spec: architecture/10-api-and-data-contracts.md
+version: v2
+clean: true
+plugins:
+  - local: protoc-gen-ts
+    out: ../web/libs/proto-gen/src/generated
+    opt:
+      - long_type_bigint
+      - generate_dependencies
+      - eslint_disable
+  - local: protoc-gen-python
+    out: ../services/common/src/signal_common/generated
+inputs:
+  - directory: proto

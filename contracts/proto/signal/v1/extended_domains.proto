@@ -1,0 +1,81 @@
+// Module: Extended Domain Service Stubs (Formal, 3D EM, Magnetics/Power, EMC/Safety, DFM, IC/FPGA, Twin, AI, Academy)
+// Invariants: Preserves explicit SI suffixes and [jstype = JS_STRING] across all Phase 3-8 RPC anchors.
+// Spec: architecture/10-api-and-data-contracts.md, architecture/17-extended-feature-specifications-ui-and-rust.md
+
+syntax = "proto3";
+
+package signal.v1;
+
+import "signal/v1/common.proto";
+
+option java_multiple_files = true;
+option java_package = "com.signaldesign.v1";
+
+message RunFormalProofRequest {
+  FencingAuthority fencing = 1;
+  string property_deck_id = 2;
+  int64 timeout_ps = 3 [jstype = JS_STRING];
+}
+
+message RunFormalProofResponse {
+  bool proven_unsat_safe = 1;
+  uint32 bounded_depth_steps = 2;
+  string counterexample_trace_id = 3;
+}
+
+message RunEm3dExtractionRequest {
+  FencingAuthority fencing = 1;
+  int64 min_freq_hz = 2 [jstype = JS_STRING];
+  int64 max_freq_hz = 3 [jstype = JS_STRING];
+  bool enable_baseband_cpo_envelope = 4;
+}
+
+message RunEm3dExtractionResponse {
+  bool passivity_enforced = 1;
+  double channel_operating_margin_db = 2;
+  ArrowStreamChunk touchstone_chunk = 3;
+}
+
+message Verify3dGeodesicCreepageRequest {
+  FencingAuthority fencing = 1;
+  string source_net = 2;
+  string target_net = 3;
+  int64 required_creepage_nm = 4 [jstype = JS_STRING];
+}
+
+message Verify3dGeodesicCreepageResponse {
+  bool compliant = 1;
+  int64 shortest_surface_geodesic_nm = 2 [jstype = JS_STRING];
+}
+
+message RunAutomatedFmedaRequest {
+  FencingAuthority fencing = 1;
+  string safety_standard = 2;
+  int64 mission_duration_hours = 3 [jstype = JS_STRING];
+}
+
+message RunAutomatedFmedaResponse {
+  double single_point_fault_metric_pct = 1;
+  double latent_fault_metric_pct = 2;
+  double pmhf_fit = 3;
+  ArrowStreamChunk fmeda_table_chunk = 4;
+}
+
+message CorrelateLabMeasurementRequest {
+  FencingAuthority fencing = 1;
+  string instrument_capture_id = 2;
+  int64 sample_interval_fs = 3 [jstype = JS_STRING];
+}
+
+message CorrelateLabMeasurementResponse {
+  double rms_correlation_error_pct = 1;
+  string calibrated_branch_id = 2;
+}
+
+service ExtendedDomainGatewayService {
+  rpc RunFormalProof(RunFormalProofRequest) returns (RunFormalProofResponse);
+  rpc RunEm3dExtraction(RunEm3dExtractionRequest) returns (stream RunEm3dExtractionResponse);
+  rpc Verify3dGeodesicCreepage(Verify3dGeodesicCreepageRequest) returns (Verify3dGeodesicCreepageResponse);
+  rpc RunAutomatedFmeda(RunAutomatedFmedaRequest) returns (RunAutomatedFmedaResponse);
+  rpc CorrelateLabMeasurement(CorrelateLabMeasurementRequest) returns (CorrelateLabMeasurementResponse);
+}

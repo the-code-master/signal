@@ -1,0 +1,13 @@
+# Module: Buf v2 Workspace & Lint/Breaking Configuration
+# Invariants: Enforces STANDARD Protobuf lint rules and FILE breaking-change detection across signal.v1.
+# Spec: architecture/10-api-and-data-contracts.md
+version: v2
+modules:
+  - path: proto
+    name: buf.build/signal-design/signal
+lint:
+  use:
+    - STANDARD
+breaking:
+  use:
+    - FILE

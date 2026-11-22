@@ -1,0 +1,71 @@
+// Module: ElectronicModule Manifest, Multi-Physics Ports, Condition Curves & SOA Bounds
+// Invariants: All ratings and test conditions carry explicit SI suffixes (_uv, _na, _mkelvin, _hz, _ps).
+// Spec: architecture/03-rust-eda-engine.md, architecture/10-api-and-data-contracts.md
+
+syntax = "proto3";
+
+package signal.v1;
+
+import "signal/v1/common.proto";
+
+option java_multiple_files = true;
+option java_package = "com.signaldesign.v1";
+
+enum PhysicalPortDomain {
+  PHYSICAL_PORT_DOMAIN_UNSPECIFIED = 0;
+  PHYSICAL_PORT_DOMAIN_ELECTRICAL = 1;
+  PHYSICAL_PORT_DOMAIN_THERMAL = 2;
+  PHYSICAL_PORT_DOMAIN_DIGITAL_LOGIC = 3;
+  PHYSICAL_PORT_DOMAIN_RF_WAVE = 4;
+  PHYSICAL_PORT_DOMAIN_OPTICAL_ENVELOPE = 5;
+  PHYSICAL_PORT_DOMAIN_MECHANICAL = 6;
+  PHYSICAL_PORT_DOMAIN_QUANTUM_FLUX = 7;
+}
+
+message PortDescriptor {
+  uint32 port_id = 1;
+  string port_name = 2;
+  PhysicalPortDomain domain = 3;
+  int64 abs_max_voltage_uv = 4 [jstype = JS_STRING];
+  int64 abs_max_current_na = 5 [jstype = JS_STRING];
+}
+
+message OperatingTestCondition {
+  int64 v_bias_uv = 1 [jstype = JS_STRING];
+  int64 temp_mkelvin = 2 [jstype = JS_STRING];
+  int64 freq_hz = 3 [jstype = JS_STRING];
+  int64 copper_area_sq_nm = 4 [jstype = JS_STRING];
+}
+
+message ConditionCurvePoint {
+  OperatingTestCondition condition = 1;
+  double normalized_ratio = 2;
+}
+
+message ElectronicModuleManifest {
+  string module_id = 1;
+  string version = 2;
+  string orderable_mpn = 3;
+  string package_code = 4;
+  string datasheet_ref_id = 5;
+  VerificationBadge verification_badge = 6;
+  string spdx_license = 7;
+  bool must_encrypt_taint = 8;
+  int64 max_junction_temp_mkelvin = 9 [jstype = JS_STRING];
+  int64 r_theta_jc_mk_per_mw = 10 [jstype = JS_STRING];
+  int64 r_theta_jb_mk_per_mw = 11 [jstype = JS_STRING];
+  repeated PortDescriptor ports = 12;
+  repeated ConditionCurvePoint derating_curve = 13;
+}
+
+message InspectElectronicModuleRequest {
+  string module_id = 1;
+}
+
+message InspectElectronicModuleResponse {
+  ElectronicModuleManifest manifest = 1;
+}
+
+service ComponentCatalogService {
+  rpc InspectElectronicModule(InspectElectronicModuleRequest) returns (InspectElectronicModuleResponse);
+}
