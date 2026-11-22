@@ -1,0 +1,6 @@
+# Module: engine/supply-chain/audits.toml — First-Party Signal Supply-Chain Audit Ledger
+# Invariants: Append-only cryptographic audit records for third-party crates lacking upstream vet imports (F-091).
+# Spec: architecture/15-application-security-and-project-isolation.md
+[criteria]
+
+[audits]

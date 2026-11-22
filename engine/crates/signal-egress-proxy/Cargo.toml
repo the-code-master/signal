@@ -1,0 +1,16 @@
+# Module: engine/crates/signal-egress-proxy/Cargo.toml — Socket-Pinned Anti-SSRF & Epoch-Fenced Egress Proxy
+# Invariants: Blocks RFC1918/link-local/IMDS IPs post-DNS (F-089) and drops stale X-Signal-Fencing-Token pushes with 412 (F-119).
+# Spec: architecture/13-vcs-git-server-and-storage-analysis.md, architecture/15-application-security-and-project-isolation.md
+[package]
+name = "signal-egress-proxy"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+thiserror = { workspace = true }

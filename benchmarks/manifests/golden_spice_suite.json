@@ -1,0 +1,20 @@
+{
+  "suite_version": "0.1.0",
+  "physics_determinism_epoch": 1,
+  "max_relative_error": 0.001,
+  "max_abs_voltage_error_uv": "1",
+  "cases": [
+    {
+      "id": "rc_step_1khz",
+      "domain": "SPICE_TRANSIENT",
+      "reference_solver": "XYCE_7_8",
+      "expected_settling_uv": "3300000"
+    },
+    {
+      "id": "sync_buck_48v_to_1v8_saltation",
+      "domain": "DIFF_SPICE_ADJOINT",
+      "reference_solver": "FILIPPOV_ANALYTICAL",
+      "expected_settling_uv": "1800000"
+    }
+  ]
+}

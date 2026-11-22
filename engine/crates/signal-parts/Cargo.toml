@@ -1,0 +1,17 @@
+# Module: engine/crates/signal-parts/Cargo.toml — 3-Tier Universal Component & parts.lock.json Engine
+# Invariants: Enforces BLAKE3 content-addressed part revisions and prevents Org NDA part leakage (18-*).
+# Spec: architecture/18-universal-component-and-datasheet-repository.md
+[package]
+name = "signal-parts"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-proto = { workspace = true }
+thiserror = { workspace = true }

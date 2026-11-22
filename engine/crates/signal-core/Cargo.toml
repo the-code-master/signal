@@ -1,0 +1,21 @@
+# Module: engine/crates/signal-core/Cargo.toml — Core SI Primitives, SecretBox & Release Auth Guard
+# Invariants: #![forbid(unsafe_code)]; compile_error! if dev-guest-auth enabled in release builds (F-088, F-095).
+# Spec: architecture/03-rust-eda-engine.md, architecture/15-application-security-and-project-isolation.md
+[package]
+name = "signal-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[features]
+default = []
+dev-guest-auth = []
+
+[lints]
+workspace = true
+
+[dependencies]
+thiserror = { workspace = true }
+zeroize = { workspace = true }

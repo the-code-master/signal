@@ -1,0 +1,18 @@
+# Module: engine/crates/signal-git-sync/Cargo.toml — BYO-Git Padme Vault & Dual-Fenced Super-Commit
+# Invariants: Enforces Padme O(log log L) size padding (F-117) and <project>-meta CAS-first 2PC (I-12, F-119).
+# Spec: architecture/07-security-encryption-dlp-and-sftp.md, architecture/13-vcs-git-server-and-storage-analysis.md
+[package]
+name = "signal-git-sync"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-core = { workspace = true }
+signal-proto = { workspace = true }
+thiserror = { workspace = true }

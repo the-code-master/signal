@@ -1,0 +1,16 @@
+# Module: engine/crates/signal-operator/Cargo.toml — Multi-Version K8s 1.37+ Cell Reconciler
+# Invariants: Places cells on 1-4 -> N pool-rust-engine worker nodes with adaptive 1-node fallback & LTS pinning (20-*).
+# Spec: architecture/04-kubernetes-runtime-and-collaboration.md, architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+[package]
+name = "signal-operator"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-proto = { workspace = true }

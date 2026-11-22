@@ -725,6 +725,120 @@ dependencies = [
 ]
 
 [[package]]
+name = "signal-cam"
+version = "0.1.0"
+dependencies = [
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
+name = "signal-cell-wasm"
+version = "0.1.0"
+dependencies = [
+ "signal-core",
+]
+
+[[package]]
+name = "signal-component"
+version = "0.1.0"
+dependencies = [
+ "signal-core",
+]
+
+[[package]]
+name = "signal-core"
+version = "0.1.0"
+dependencies = [
+ "thiserror",
+ "zeroize",
+]
+
+[[package]]
+name = "signal-diff-sim"
+version = "0.1.0"
+dependencies = [
+ "signal-sim",
+]
+
+[[package]]
+name = "signal-egress-proxy"
+version = "0.1.0"
+dependencies = [
+ "thiserror",
+]
+
+[[package]]
+name = "signal-geom"
+version = "0.1.0"
+dependencies = [
+ "signal-core",
+]
+
+[[package]]
+name = "signal-git-sync"
+version = "0.1.0"
+dependencies = [
+ "signal-core",
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
+name = "signal-graph"
+version = "0.1.0"
+dependencies = [
+ "signal-geom",
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
+name = "signal-mcad"
+version = "0.1.0"
+dependencies = [
+ "signal-geom",
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
+name = "signal-operator"
+version = "0.1.0"
+dependencies = [
+ "signal-proto",
+]
+
+[[package]]
+name = "signal-parts"
+version = "0.1.0"
+dependencies = [
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
+name = "signal-plm"
+version = "0.1.0"
+dependencies = [
+ "signal-parts",
+ "signal-proto",
+]
+
+[[package]]
+name = "signal-pod"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "signal-core",
+ "signal-git-sync",
+ "signal-graph",
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
 name = "signal-proto"
 version = "0.1.0"
 dependencies = [
@@ -735,6 +849,21 @@ dependencies = [
  "tonic",
  "tonic-build",
  "workspace-hack",
+]
+
+[[package]]
+name = "signal-sftp-egress"
+version = "0.1.0"
+dependencies = [
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
+name = "signal-sim"
+version = "0.1.0"
+dependencies = [
+ "signal-component",
 ]
 
 [[package]]
@@ -808,6 +937,26 @@ dependencies = [
  "once_cell",
  "rustix",
  "windows-sys 0.61.2",
+]
+
+[[package]]
+name = "thiserror"
+version = "2.0.21"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "09e52cb86a36cede5cb101bf8908837b3e4c6e5e59fe7fd85c23fb56200d189e"
+dependencies = [
+ "thiserror-impl",
+]
+
+[[package]]
+name = "thiserror-impl"
+version = "2.0.21"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fe5197923287db20a58125f0bc85c062f7f2c892de97b18c356f9efb14b28524"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 3.0.10",
 ]
 
 [[package]]
@@ -1119,6 +1268,26 @@ name = "zerocopy-derive"
 version = "0.8.64"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a5cbd820fe3e35fb38c83b6dc7e6b1618bc46e0cd10073ae94e8d52dc468d8b9"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+]
+
+[[package]]
+name = "zeroize"
+version = "1.9.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "85ccff8a4805aba1eaa4cd4afcd49f7557dd2cf5fd79ffc37f8959466effc5aa"
+dependencies = [
+ "zeroize_derive",
+]
+
+[[package]]
+name = "zeroize_derive"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3c50655cbb0fe3fc43170059e702f1ce5e19b84cec58dc87b037a09935c2f328"
 dependencies = [
  "proc-macro2",
  "quote",

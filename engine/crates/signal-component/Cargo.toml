@@ -1,0 +1,16 @@
+# Module: engine/crates/signal-component/Cargo.toml — Pure-Rust ElectronicModule Trait & Charge/Flux Stamp Contract
+# Invariants: Enforces exact q(v)/Phi(i) conservation (never naive C(V)dV/dt, F-024); LLVM-free core crate (F-115).
+# Spec: architecture/03-rust-eda-engine.md
+[package]
+name = "signal-component"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-core = { workspace = true }

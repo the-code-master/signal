@@ -1,0 +1,18 @@
+# Module: engine/crates/signal-mcad/Cargo.toml — Pure-Rust Parametric B-Rep CAD & Sheet-Metal Kernel
+# Invariants: Exact nm coordinates; topological ECAD-MCAD anchor stability across feature edits (19-*).
+# Spec: architecture/19-cad-cam-3d-printing-and-plm-operations.md
+[package]
+name = "signal-mcad"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-geom = { workspace = true }
+signal-proto = { workspace = true }
+thiserror = { workspace = true }

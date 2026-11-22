@@ -1,0 +1,16 @@
+# Module: engine/crates/signal-geom/Cargo.toml — Overflow-Proof i128 Fixed-Point Geometry Kernel
+# Invariants: #![forbid(unsafe_code)]; widens 64-bit nm products to i128 to prevent board-scale overflow (F-030).
+# Spec: architecture/03-rust-eda-engine.md
+[package]
+name = "signal-geom"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-core = { workspace = true }

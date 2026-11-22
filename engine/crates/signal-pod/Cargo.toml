@@ -1,0 +1,28 @@
+# Module: engine/crates/signal-pod/Cargo.toml — Isolated Per-Project Security Cell Runtime
+# Invariants: LLVM-free (F-115); forbids dev-guest-auth in release (F-095); replays session_hydrate_and_edit.jsonl (F-145).
+# Spec: architecture/04-kubernetes-runtime-and-collaboration.md, architecture/15-application-security-and-project-isolation.md
+[package]
+name = "signal-pod"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[features]
+default = []
+dev-guest-auth = ["signal-core/dev-guest-auth"]
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-core = { workspace = true }
+signal-graph = { workspace = true }
+signal-git-sync = { workspace = true }
+signal-proto = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }

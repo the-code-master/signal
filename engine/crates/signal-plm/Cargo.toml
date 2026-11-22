@@ -1,0 +1,17 @@
+# Module: engine/crates/signal-plm/Cargo.toml — Native Multi-View BOM, ECN/MCN/PCN & Deviation Waiver Gate
+# Invariants: Enforces qty/time-bounded DeviationWaiver limits before SFTP factory release (19-*).
+# Spec: architecture/19-cad-cam-3d-printing-and-plm-operations.md
+[package]
+name = "signal-plm"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-parts = { workspace = true }
+signal-proto = { workspace = true }

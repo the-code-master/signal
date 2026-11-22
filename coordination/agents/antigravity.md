@@ -206,3 +206,9 @@
 - **Branch:** `ag/AG-P0-01-rust-workspace-and-proto` → `main`
 - **Touched Paths:** `rust-toolchain.toml`, `engine/.cargo/config.toml`, `engine/Cargo.toml`, `engine/Cargo.lock`, `engine/crates/workspace-hack/**`, `engine/crates/signal-proto/**`, `plan/TODO-LEDGER-ANTIGRAVITY-LANE-A.md`, `coordination/agents/antigravity.md`
 - **Verification:** `cargo fmt --all -- --check`, `cargo clippy --workspace --all-targets -- -D warnings` (`0` warnings), and `cargo test --workspace` (`2/2` `> 2^53 - 1` `bigint` fixture round-trip tests passing; zero generated `.rs` stubs in source tree).
+
+### [AG-P0-02] 18-Crate `#![forbid(unsafe_code)]` Rust `1.100+` Skeletons, `dev-guest-auth` Guard, Supply-Chain & Benchmarks (`P0-02` Complete)
+- **Status:** `COMPLETED`
+- **Branch:** `ag/AG-P0-02-rust-crate-skeletons` → `main`
+- **Touched Paths:** `engine/Cargo.toml`, `engine/Cargo.lock`, `engine/deny.toml`, `engine/supply-chain/{config,audits}.toml`, `engine/crates/{signal-core,signal-geom,signal-graph,signal-component,signal-parts,signal-sim,signal-diff-sim,signal-git-sync,signal-cell-wasm,signal-pod,signal-operator,signal-egress-proxy,signal-sftp-egress,signal-mcad,signal-cam,signal-plm}/**`, `benchmarks/**`, `coordination/TASK_BOARD.md`, `plan/TODO-LEDGER-ANTIGRAVITY-LANE-A.md`, `coordination/agents/antigravity.md`
+- **Verification:** `cargo fmt --all -- --check`, `cargo clippy --workspace --all-targets -- -D warnings` (`0` warnings across 18 crates), `cargo test --workspace` (`9/9` unit + JSONL transcript replay tests passing), `cargo check -p signal-core --release --features dev-guest-auth` deterministically blocked (`F-095`), and modularity/header audit (`<= 250 LOC`).

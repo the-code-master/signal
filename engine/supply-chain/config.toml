@@ -1,0 +1,15 @@
+# Module: engine/supply-chain/config.toml — cargo-vet Supply-Chain Audit Policy
+# Invariants: Tracks safe-to-deploy criteria and 7-day dependency cooldown policy (F-091).
+# Spec: architecture/15-application-security-and-project-isolation.md
+[cargo-vet]
+version = "0.10"
+
+[imports.mozilla]
+url = "https://raw.githubusercontent.com/mozilla/supply-chain/main/audits.toml"
+
+[imports.bytecode-alliance]
+url = "https://raw.githubusercontent.com/bytecodealliance/wasmtime/main/supply-chain/audits.toml"
+
+[policy]
+default-criteria = "safe-to-deploy"
+cooldown-days = 7

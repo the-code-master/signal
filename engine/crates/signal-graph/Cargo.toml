@@ -1,0 +1,18 @@
+# Module: engine/crates/signal-graph/Cargo.toml — Multi-Domain ECS Design Graph & Fencing Ledger
+# Invariants: Enforces monotonic fencing_epoch (412 on stale zombies) and Idempotency-Key deduplication (F-040, F-119).
+# Spec: architecture/03-rust-eda-engine.md, architecture/10-api-and-data-contracts.md
+[package]
+name = "signal-graph"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-geom = { workspace = true }
+signal-proto = { workspace = true }
+thiserror = { workspace = true }
