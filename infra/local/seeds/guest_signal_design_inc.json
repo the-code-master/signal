@@ -1,0 +1,46 @@
+{
+  "org": {
+    "org_id": "11111111-2222-4333-8444-555555555555",
+    "slug": "signal-design-inc",
+    "display_name": "Guest @ Signal Design, Inc.",
+    "vcs_provider": "GITHUB",
+    "encryption_mode": "ENCRYPTED_VAULT"
+  },
+  "project": {
+    "project_id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+    "slug": "aurora-ev-inverter",
+    "display_name": "Aurora 800V SiC Traction Inverter",
+    "repos": [
+      { "subproject_type": "META", "provider_repo_id": "local_gh_repo_1001" },
+      { "subproject_type": "SCHEMATIC", "provider_repo_id": "local_gh_repo_1002" },
+      { "subproject_type": "PCB", "provider_repo_id": "local_gh_repo_1003" },
+      { "subproject_type": "CAD_MCAD", "provider_repo_id": "local_gh_repo_1004" },
+      { "subproject_type": "PLM_OPS", "provider_repo_id": "local_gh_repo_1005" }
+    ]
+  },
+  "repo_access_entries": [
+    {
+      "provider_user_id": "local-guest-0001",
+      "display_name": "Guest Lead Architect",
+      "org_role": "ORG_ADMIN",
+      "authorized_provider_repo_ids": [
+        "local_gh_repo_1001",
+        "local_gh_repo_1002",
+        "local_gh_repo_1003",
+        "local_gh_repo_1004",
+        "local_gh_repo_1005"
+      ],
+      "expires_at_utc_ms": "1924905600000"
+    },
+    {
+      "provider_user_id": "local-pcb-contractor-0002",
+      "display_name": "External Layout Contractor (PCB-Scoped Only)",
+      "org_role": "EXTERNAL_COLLABORATOR",
+      "authorized_provider_repo_ids": [
+        "local_gh_repo_1001",
+        "local_gh_repo_1003"
+      ],
+      "expires_at_utc_ms": "1893456000000"
+    }
+  ]
+}

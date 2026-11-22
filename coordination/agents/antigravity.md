@@ -224,3 +224,10 @@
 - **Branch:** `ag/AG-P0-04-k8s-helm-and-docker` → `main`
 - **Touched Paths:** `infra/docker/Dockerfile.{web,api,bridge,rust-pod,operator,ai}`, `infra/k8s/helm/signal/**`, `infra/k8s/karpenter/nodepools.yaml`, `infra/k8s/policies/kyverno-cosign-sbom.yaml`, `infra/k8s/gitops/overlays/{dev,staging,prod}/application.yaml`, `plan/TODO-LEDGER-ANTIGRAVITY-LANE-A.md`, `coordination/agents/antigravity.md`
 - **Verification:** `./signal.sh check --target k8s` (`helm lint` across `values`, `values-local`, `values-starter`, `values-enterprise` with `0` failures), `helm template` topology/security assertion (`pool-web`, `pool-api`, `CiliumNetworkPolicy` 100% lateral drop, `readOnlyRootFilesystem: true`, `runAsUser: 65532`, 1-node adaptive fallback), and `./signal.sh image --dry-run` (`exit 0`).
+
+### [AG-P0-05] macOS Apple Silicon Local Dev Harness (`dev:lite`, `dev:full`, `dev:k8s`, `lavapipe` WGSL) — Antigravity Phase 0 Complete
+- **Status:** `COMPLETED`
+- **Branch:** `ag/AG-P0-05-local-mac-dev-harness` → `main`
+- **Touched Paths:** `infra/local/{README.md,docker-compose.arm64.yml}`, `infra/local/env/{web,api,rust-engine,ai-llm,data}.env.example`, `infra/local/seeds/guest_signal_design_inc.json`, `infra/local/wgsl/verify_lavapipe_parity.sh`, `coordination/handoffs/20261121-P0-04-ag-to-cursor.md`, `coordination/TASK_BOARD.md`, `plan/TODO-LEDGER-ANTIGRAVITY-LANE-A.md`, `coordination/agents/antigravity.md`
+- **Verification:** `docker compose -f infra/local/docker-compose.arm64.yml config -q` (`0`), `./infra/local/wgsl/verify_lavapipe_parity.sh` (`0`), `./signal.sh dev {lite,full,k8s} --dry-run` (`0`), and full monorepo `./signal.sh check` (`9/9` components green, exit `0`).
+- **Handoff Notes for Cursor:** See [`coordination/handoffs/20261121-P0-04-ag-to-cursor.md`](../handoffs/20261121-P0-04-ag-to-cursor.md). All Step 0A (`C-P0-01..03`) and Lane A (`AG-P0-01..05`) deliverables are merged to `origin/main` with zero touches to Lane B (`web/**`, `services/**`, `cursor.md`, `TODO-LEDGER-CURSOR-LANE-B.md`).

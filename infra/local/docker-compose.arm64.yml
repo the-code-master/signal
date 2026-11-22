@@ -1,0 +1,56 @@
+# Module: infra/local/docker-compose.arm64.yml — Native Apple Silicon / Multi-Arch Local Dev Backing Stack
+# Invariants: Zero x86 Rosetta emulation on M-series Macs; exercises real RLS, Hybrid PQC DevKMS, local-git-mock & MockSFTP (09-*, F-105).
+# Spec: architecture/09-local-development-environment.md
+name: signal-local
+
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.0-pg17
+    environment:
+      POSTGRES_USER: signal_admin
+      POSTGRES_PASSWORD: signal_local_dev_only
+      POSTGRES_DB: signal_control_plane
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U signal_admin -d signal_control_plane"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  valkey:
+    image: valkey/valkey:8-alpine
+    ports:
+      - "127.0.0.1:6379:6379"
+
+  nats:
+    image: nats:2.11-alpine
+    command: ["-js", "-m", "8222"]
+    ports:
+      - "127.0.0.1:4222:4222"
+      - "127.0.0.1:8222:8222"
+
+  minio:
+    image: minio/minio:latest
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: signal_minio
+      MINIO_ROOT_PASSWORD: signal_local_minio_secret
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+
+  local-git-mock:
+    image: python:3.13-alpine
+    working_dir: /srv
+    volumes:
+      - ./seeds:/srv/seeds:ro
+    command: ["python3", "-m", "http.server", "8085", "--bind", "0.0.0.0"]
+    ports:
+      - "127.0.0.1:8085:8085"
+
+  mock-sftp:
+    image: atmoz/sftp:alpine
+    command: ["fab_ingest:signal_sftp_dev_only:1001:100:dropoff"]
+    ports:
+      - "127.0.0.1:2222:22"
