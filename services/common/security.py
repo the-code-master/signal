@@ -84,6 +84,16 @@ async def require_org_member(
     return principal
 
 
+@mark_auth_guard
+async def require_org_admin(
+    org_slug: str,
+    principal: PrincipalContext = Depends(require_org_member),
+) -> PrincipalContext:
+    if principal.org_role != "ORG_ADMIN":
+        raise_not_found()
+    return principal
+
+
 def require_repo_access(
     required_repo_id: str,
 ) -> Callable[[str, PrincipalContext], Coroutine[Any, Any, PrincipalContext]]:

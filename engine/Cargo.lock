@@ -737,6 +737,8 @@ name = "signal-cell-wasm"
 version = "0.1.0"
 dependencies = [
  "signal-core",
+ "signal-proto",
+ "thiserror",
 ]
 
 [[package]]
@@ -768,6 +770,7 @@ dependencies = [
 name = "signal-egress-proxy"
 version = "0.1.0"
 dependencies = [
+ "signal-proto",
  "thiserror",
 ]
 
@@ -786,6 +789,7 @@ dependencies = [
  "signal-core",
  "signal-proto",
  "thiserror",
+ "zeroize",
 ]
 
 [[package]]
@@ -829,6 +833,7 @@ version = "0.1.0"
 dependencies = [
  "signal-component",
  "signal-core",
+ "signal-proto",
  "thiserror",
 ]
 
@@ -836,13 +841,17 @@ dependencies = [
 name = "signal-operator"
 version = "0.1.0"
 dependencies = [
+ "signal-core",
  "signal-proto",
+ "thiserror",
 ]
 
 [[package]]
 name = "signal-parts"
 version = "0.1.0"
 dependencies = [
+ "signal-core",
+ "signal-geom",
  "signal-proto",
  "thiserror",
 ]

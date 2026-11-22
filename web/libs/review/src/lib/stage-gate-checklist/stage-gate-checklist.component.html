@@ -1,0 +1,35 @@
+<sig-panel
+  title="Hardware Stage-Gate Readiness Checklist"
+  subtitle="FEAT-098 EVT / DVT / PVT / Tape-Out Automated Verification Gate"
+  badge="ML-DSA-65 Sign-Off"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (gate of vm().gates; track gate) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().activeGate === gate"
+            type="button"
+            (click)="selectGate(gate)"
+          >
+            {{ gate }}
+          </button>
+        }
+      </div>
+      <div class="sig-row">
+        <sig-status-pill [label]="vm().summaryBadge" [tone]="vm().summaryTone" />
+        <button
+          class="sig-btn sig-btn-primary"
+          type="button"
+          [disabled]="!vm().readyToSignOff"
+          (click)="signActiveGate()"
+        >
+          Attest Stage-Gate
+        </button>
+      </div>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

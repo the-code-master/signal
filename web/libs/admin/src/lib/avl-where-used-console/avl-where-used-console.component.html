@@ -1,0 +1,29 @@
+<sig-panel
+  title="Cross-Project AVL Obsolescence & Where-Used Console"
+  subtitle="FEAT-075 Org-Wide PCN/EOL Blast-Radius Analyzer • 1-Click Cross-Project ECO Draft"
+  badge="signal-org-parts"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (mpn of vm().mpns; track mpn) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().selectedEntry.targetMpn === mpn"
+            type="button"
+            (click)="selectMpn(mpn)"
+          >
+            {{ mpn }}
+          </button>
+        }
+        <sig-status-pill [label]="vm().blastBadge" [tone]="vm().blastTone" />
+      </div>
+      <button class="sig-btn sig-btn-primary" type="button" (click)="draftCrossProjectEco()">
+        Draft 1-Click Cross-Project ECO
+      </button>
+    </div>
+
+    <span class="sig-code">{{ vm().ecoDraftBadge }}</span>
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

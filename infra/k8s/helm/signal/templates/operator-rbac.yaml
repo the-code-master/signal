@@ -1,0 +1,43 @@
+# Module: infra/k8s/helm/signal/templates/operator-rbac.yaml — Least-Privilege RBAC for signal-operator
+# Invariants: Grants scoped ProjectSession CRD, Pod cell lifecycle, and Host-Aggregated Node Lease permissions ONLY (15-*).
+# Spec: architecture/04-kubernetes-runtime-and-collaboration.md, architecture/15-application-security-and-project-isolation.md
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: signal-operator-sa
+  labels:
+    {{- include "signal.labels" . | nindent 4 }}
+    signal.design/tier: tier3-operator
+automountServiceAccountToken: true
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: signal-operator-reconciler
+  labels:
+    {{- include "signal.labels" . | nindent 4 }}
+rules:
+  - apiGroups: ["signal.design"]
+    resources: ["projectsessions", "projectsessions/status"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "create", "delete", "patch"]
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: signal-operator-reconciler-binding
+  labels:
+    {{- include "signal.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: signal-operator-reconciler
+subjects:
+  - kind: ServiceAccount
+    name: signal-operator-sa
+    namespace: {{ .Release.Namespace }}

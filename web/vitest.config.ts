@@ -17,6 +17,11 @@ export default defineConfig({
       "@signal/schematic": resolve(root, "libs/schematic/src/index.ts"),
       "@signal/sim-viewer": resolve(root, "libs/sim-viewer/src/index.ts"),
       "@signal/academy": resolve(root, "libs/academy/src/index.ts"),
+      "@signal/specs": resolve(root, "libs/specs/src/index.ts"),
+      "@signal/library-studio": resolve(root, "libs/library-studio/src/index.ts"),
+      "@signal/visual-diff": resolve(root, "libs/visual-diff/src/index.ts"),
+      "@signal/review": resolve(root, "libs/review/src/index.ts"),
+      "@signal/admin": resolve(root, "libs/admin/src/index.ts"),
     },
   },
   test: {

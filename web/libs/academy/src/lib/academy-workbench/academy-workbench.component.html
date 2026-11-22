@@ -25,6 +25,7 @@
     [hudSignals]="vm().descriptor.hudSignals"
   />
 
+  <sig-breadboard-twin (shortStateChanged)="onBreadboardShortChanged($event)" />
   <sig-visual-failure-fx (ratingAutoFixed)="onAutoFixed($event)" />
   <sig-quick-calc-hud (insertedIntoSchematic)="onInserted($event)" />
 </div>

@@ -1,10 +1,21 @@
 // Module: web/libs/academy/src/index.ts — Public Barrel for @signal/academy
-// Invariants: Sole public entrypoint for lazy route loading and FEAT-113 / FEAT-114 Academy tools.
+// Invariants: Sole public entrypoint for lazy route loading and FEAT-111 / FEAT-113 / FEAT-114 Academy tools.
 // Spec: docs/engineering/ANGULAR_ENGINEERING_GUIDE.md
 export { WORKBENCH_DESCRIPTOR, WORKBENCH_ROUTES } from "./academy.routes";
 export { AcademyWorkbenchComponent } from "./lib/academy-workbench/academy-workbench.component";
 export { buildAcademyWorkbenchVm } from "./lib/academy-workbench/academy-workbench.logic";
 export type { AcademyWorkbenchVm } from "./lib/academy-workbench/academy-workbench.model";
+export { BreadboardTwinComponent } from "./lib/breadboard-twin/breadboard-twin.component";
+export {
+  analyzeBreadboardConnectivity,
+  buildBreadboardTwinVm,
+  holeToCanonical5HoleStrip,
+} from "./lib/breadboard-twin/breadboard-twin.logic";
+export type {
+  BreadboardConnectivityAnalysis,
+  BreadboardJumperWire,
+  BreadboardTwinVm,
+} from "./lib/breadboard-twin/breadboard-twin.model";
 export { QuickCalcHudComponent } from "./lib/quick-calc-hud/quick-calc-hud.component";
 export {
   buildQuickCalcHudVm,

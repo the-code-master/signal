@@ -1,0 +1,32 @@
+<sig-panel
+  title="Parametric Padstack Sculptor, IPC-7351C & 3D STEP Verifier"
+  subtitle="FEAT-076 IPC-7525 & Backdrill Cross-Section • FEAT-071 Most/Nominal/Least & AP242 Overlap"
+  badge="PadstackDef"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <sig-status-pill [label]="vm().padstackBadge" [tone]="vm().padstackTone" />
+        <sig-status-pill [label]="vm().stepOverlapBadge" [tone]="vm().stepOverlapTone" />
+        <span class="sig-code">{{ vm().courtyardBadge }}</span>
+      </div>
+      <div class="sig-row">
+        @for (den of densities; track den) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().density === den"
+            type="button"
+            (click)="selectDensity(den)"
+          >
+            {{ den }}
+          </button>
+        }
+        <button class="sig-btn sig-btn-primary" type="button" (click)="toggleBackdrill()">
+          Toggle Backdrill
+        </button>
+      </div>
+    </div>
+
+    <sig-data-grid [columns]="vm().layerColumns" [rows]="vm().layerRows" />
+  </div>
+</sig-panel>

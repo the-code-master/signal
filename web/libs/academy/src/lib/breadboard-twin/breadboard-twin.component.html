@@ -1,0 +1,16 @@
+<sig-panel
+  title="Solderless Breadboard <-> Schematic Digital Twin"
+  subtitle="FEAT-111 5-Hole Strip Equivalence (A-E | Ravine | F-J) & Rail Short-Circuit Guard"
+  badge="breadboard_map"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <sig-status-pill [label]="vm().analysis.warningSummary" [tone]="vm().analysis.tone" />
+      <button class="sig-btn sig-btn-primary" type="button" (click)="toggleShortTest()">
+        Test Same-Strip Jumper Short (B1 -> GND)
+      </button>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

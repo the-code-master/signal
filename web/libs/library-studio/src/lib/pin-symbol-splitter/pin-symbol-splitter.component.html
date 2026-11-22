@@ -1,0 +1,47 @@
+<sig-panel
+  title="Master Pin Table, IEEE/IEC Symbols & Bank Splitter"
+  subtitle="18-* Single Master Pin Table • IEEE 315 / IEC 60617 • FEAT-072 Functional Bank Partitioner"
+  badge="pins.json"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <sig-status-pill [label]="vm().bijectionBadge" [tone]="vm().bijectionTone" />
+        <span class="sig-code">{{ vm().standardBadge }}</span>
+      </div>
+      <div class="sig-row">
+        @for (std of standards; track std) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().standard === std"
+            type="button"
+            (click)="selectStandard(std)"
+          >
+            {{ std }}
+          </button>
+        }
+        @for (cap of bankCaps; track cap) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="maxPinsPerBank() === cap"
+            type="button"
+            (click)="selectBankCap(cap)"
+          >
+            Max {{ cap }} Pins/Bank
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="sig-grid-2">
+      @for (bank of vm().banks; track bank.unitIndex) {
+        <div class="sig-surface sig-row-between">
+          <strong class="sig-title">{{ bank.bankTitle }}</strong>
+          <span class="sig-code">{{ bank.pinNumbers.join(", ") }}</span>
+        </div>
+      }
+    </div>
+
+    <sig-data-grid [columns]="vm().pinColumns" [rows]="vm().pinRows" />
+  </div>
+</sig-panel>

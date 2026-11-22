@@ -1,0 +1,34 @@
+<div class="sig-stack">
+  <sig-panel
+    [title]="vm().descriptor.title"
+    [subtitle]="vm().descriptor.subtitle"
+    [badge]="vm().engineBadge"
+  >
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (dom of vm().domains; track dom) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().activeDomain === dom"
+            type="button"
+            (click)="selectDomain(dom)"
+          >
+            {{ dom }}
+          </button>
+        }
+      </div>
+      <span class="sig-code">{{ vm().activeRevisionText }}</span>
+    </div>
+  </sig-panel>
+
+  <sig-history-time-scrubber (revisionSelected)="onRevisionSelected($event)" />
+
+  <sig-dual-plane-viewport
+    [domainTitle]="vm().descriptor.title"
+    [hudSignals]="vm().descriptor.hudSignals"
+  />
+
+  <sig-panel title="Onion-Skin Semantic Entity Diffs" badge="Topological CRDT Verified">
+    <sig-data-grid [columns]="vm().diffColumns" [rows]="vm().diffRows" />
+  </sig-panel>
+</div>

@@ -1,0 +1,66 @@
+<sig-panel
+  title="Datasheet Curve-Fitter, WASM SDK Rig & Golden Snippets"
+  subtitle="FEAT-073 LM/DE Curve-Fit • FEAT-074 Wasmtime Module Rig • FEAT-079 Subcircuit + Copper Stamper"
+  badge="signal-module-sdk"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <sig-status-pill [label]="vm().curveFitBadge" [tone]="vm().curveFitTone" />
+        <span class="sig-code">{{ vm().wasmSdkBadge }}</span>
+      </div>
+      <div class="sig-row">
+        @for (fam of families; track fam) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().activeFamily === fam"
+            type="button"
+            (click)="selectFamily(fam)"
+          >
+            {{ fam }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="sig-canvas-frame">
+      <svg class="sig-svg-plot" viewBox="0 0 800 160" aria-label="Datasheet Fitted Compact Model Curve">
+        <polyline
+          fill="none"
+          stroke="var(--sig-accent-primary)"
+          stroke-width="2.2"
+          [attr.points]="vm().svgCurvePoints"
+        />
+      </svg>
+    </div>
+
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (snip of vm().snippets; track snip.snippetId) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().stampedPreview.snippetId === snip.snippetId"
+            type="button"
+            (click)="stampSnippet(snip.snippetId)"
+          >
+            Stamp {{ snip.title }}
+          </button>
+        }
+      </div>
+      <div class="sig-row">
+        @for (off of offsets; track off) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="refdesOffset() === off"
+            type="button"
+            (click)="selectOffset(off)"
+          >
+            Base +{{ off }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <sig-data-grid [columns]="vm().snippetColumns" [rows]="vm().snippetRows" />
+  </div>
+</sig-panel>

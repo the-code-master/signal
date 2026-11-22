@@ -1,0 +1,23 @@
+<div class="sig-stack">
+  <sig-panel
+    [title]="vm().descriptor.title"
+    [subtitle]="vm().descriptor.subtitle"
+    [badge]="vm().engineBadge"
+  >
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <sig-status-pill [label]="vm().postureBadge" [tone]="vm().postureTone" />
+        <span class="sig-code">{{ vm().breakGlassBadge }}</span>
+      </div>
+      <button class="sig-btn sig-btn-primary" type="button" (click)="sweepExpiredContractors()">
+        Sweep Expired Contractor Grants
+      </button>
+    </div>
+  </sig-panel>
+
+  <sig-panel title="Access Review & BYO-Git Roster Matrix" badge="F-092 expires_at">
+    <sig-data-grid [columns]="vm().accessColumns" [rows]="vm().accessRows" />
+  </sig-panel>
+
+  <sig-avl-where-used-console />
+</div>

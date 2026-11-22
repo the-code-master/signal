@@ -1,0 +1,50 @@
+<div class="sig-stack">
+  <sig-panel
+    [title]="vm().descriptor.title"
+    [subtitle]="vm().descriptor.subtitle"
+    [badge]="vm().engineBadge"
+  >
+    <div class="sig-stack">
+      <div class="sig-grid-cards">
+        @for (kpi of vm().descriptor.kpis; track kpi.id) {
+          <div class="sig-panel sig-row-between">
+            <span class="sig-subtitle">{{ kpi.label }}</span>
+            <sig-status-pill [label]="kpi.value" [tone]="kpi.tone" />
+          </div>
+        }
+      </div>
+      <div class="sig-toolbar">
+        <div class="sig-row">
+          @for (tab of vm().tabs; track tab.id) {
+            <button
+              class="sig-btn"
+              [class.sig-btn-primary]="vm().activeTab === tab.id"
+              type="button"
+              (click)="selectTab(tab.id)"
+            >
+              {{ tab.label }}
+            </button>
+          }
+        </div>
+        <span class="sig-code">{{ vm().lastStampNote }}</span>
+      </div>
+    </div>
+  </sig-panel>
+
+  <sig-dual-plane-viewport
+    [domainTitle]="vm().descriptor.title"
+    [hudSignals]="vm().descriptor.hudSignals"
+  />
+
+  @switch (vm().activeTab) {
+    @case ("PIN_SYMBOL") {
+      <sig-pin-symbol-splitter />
+    }
+    @case ("PADSTACK_STEP") {
+      <sig-padstack-footprint-step />
+    }
+    @case ("CURVE_SDK_SNIPPETS") {
+      <sig-curve-sdk-snippets (snippetStamped)="onSnippetStamped($event)" />
+    }
+  }
+</div>

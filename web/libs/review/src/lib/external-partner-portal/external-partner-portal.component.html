@@ -1,0 +1,19 @@
+<sig-panel
+  title="External Partner Stripped Zero-Leak Review Portal"
+  subtitle="FEAT-119 Time-Boxed Guest Session • BOM Cost & NDA Sub-Sheets Redacted"
+  badge="readonly_view_filter"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <sig-status-pill [label]="vm().portalBadge" [tone]="vm().portalTone" />
+        <span class="sig-code">Hidden NDA Entities: {{ vm().strippedCount }}</span>
+      </div>
+      <button class="sig-btn sig-btn-primary" type="button" (click)="toggleExpireNow()">
+        Simulate TTL Expiry / Revoke Link
+      </button>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

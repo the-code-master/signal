@@ -1,0 +1,67 @@
+# Module: infra/k8s/helm/signal/templates/operator-crd.yaml — ProjectSession 1-Project=1-Cell CRD
+# Invariants: Enforces monotonic fencingEpoch, pinnedEngineVersion LTS lock, and H100 CC vs B200 TEE-I/O MIG schema (F-118).
+# Spec: architecture/04-kubernetes-runtime-and-collaboration.md, architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: projectsessions.signal.design
+  labels:
+    {{- include "signal.labels" . | nindent 4 }}
+spec:
+  group: signal.design
+  scope: Namespaced
+  names:
+    plural: projectsessions
+    singular: projectsession
+    kind: ProjectSession
+    shortNames:
+      - projsess
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      subresources:
+        status: {}
+      schema:
+        openAPIV3Schema:
+          type: object
+          required: ["spec"]
+          properties:
+            spec:
+              type: object
+              required: ["projectId", "fencingEpoch", "computeTier", "pinnedEngineVersion"]
+              properties:
+                projectId:
+                  type: string
+                  minLength: 1
+                fencingEpoch:
+                  type: integer
+                  minimum: 1
+                computeTier:
+                  type: string
+                  enum:
+                    - EXPLORER_WASM
+                    - CORE_STANDARD
+                    - CORE_HIGHMEM
+                    - CORE_GPU
+                    - CONFIDENTIAL_SILICON
+                pinnedEngineVersion:
+                  type: string
+                  pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+                confidentialGpuMode:
+                  type: string
+                  enum:
+                    - NONE
+                    - H100_FULL_CC_EXCLUSIVE
+                    - B200_TEE_IO_CONFIDENTIAL_MIG
+            status:
+              type: object
+              properties:
+                lifecycleState:
+                  type: string
+                assignedNodeId:
+                  type: string
+                observedFencingEpoch:
+                  type: integer
+                lastCutoverFreezePs:
+                  type: integer

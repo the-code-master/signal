@@ -1,0 +1,33 @@
+<div class="sig-stack">
+  <sig-panel
+    [title]="vm().descriptor.title"
+    [subtitle]="vm().descriptor.subtitle"
+    [badge]="vm().engineBadge"
+  >
+    <div class="sig-toolbar">
+      <sig-status-pill [label]="vm().reqGateBadge" [tone]="vm().reqGateTone" />
+      <sig-status-pill [label]="vm().bomProvenanceBadge" [tone]="vm().bomProvenanceTone" />
+      <span class="sig-code">{{ vm().totalBoardCostText }}</span>
+    </div>
+  </sig-panel>
+
+  <sig-panel title="Executable PRD / HFS Requirement Matrix" subtitle="Live-Bound to Simulation Assertions" badge="PRD + HFS">
+    <sig-data-grid [columns]="vm().reqColumns" [rows]="vm().reqRows" />
+  </sig-panel>
+
+  <sig-panel
+    title="Mirrored Multi-Distributor BOM Matrix"
+    subtitle="FEAT-077 Cryptographic ECIA Franchise Chain-of-Custody & Broker Blocker"
+    badge="parts.lock.json"
+  >
+    <div class="sig-stack">
+      <div class="sig-toolbar">
+        <span class="sig-subtitle">Sourcing Policy Simulation:</span>
+        <button class="sig-btn sig-btn-primary" type="button" (click)="toggleSourcingMode()">
+          Toggle Franchise-Only vs Spot-Broker Offer
+        </button>
+      </div>
+      <sig-data-grid [columns]="vm().bomColumns" [rows]="vm().bomRows" />
+    </div>
+  </sig-panel>
+</div>

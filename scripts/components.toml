@@ -47,6 +47,42 @@ build_commands = [
   ["cargo", "build", "--manifest-path", "engine/Cargo.toml", "-p", "signal-operator", "--no-default-features"],
 ]
 
+[components.rust-egress-proxy]
+tier = "TIER3_RUST_ENGINE"
+required_path = "engine/crates/signal-egress-proxy/Cargo.toml"
+watched_paths = ["engine/crates/signal-egress-proxy/"]
+forbid_features = ["dev-guest-auth"]
+check_commands = [
+  ["cargo", "test", "--manifest-path", "engine/Cargo.toml", "-p", "signal-egress-proxy"],
+]
+build_commands = [
+  ["cargo", "build", "--manifest-path", "engine/Cargo.toml", "-p", "signal-egress-proxy", "--no-default-features"],
+]
+
+[components.rust-cell-wasm]
+tier = "TIER3_RUST_ENGINE"
+required_path = "engine/crates/signal-cell-wasm/Cargo.toml"
+watched_paths = ["engine/crates/signal-cell-wasm/"]
+forbid_features = ["dev-guest-auth"]
+check_commands = [
+  ["cargo", "test", "--manifest-path", "engine/Cargo.toml", "-p", "signal-cell-wasm"],
+]
+build_commands = [
+  ["cargo", "build", "--manifest-path", "engine/Cargo.toml", "-p", "signal-cell-wasm", "--no-default-features"],
+]
+
+[components.rust-sftp-egress]
+tier = "TIER3_RUST_ENGINE"
+required_path = "engine/crates/signal-sftp-egress/Cargo.toml"
+watched_paths = ["engine/crates/signal-sftp-egress/"]
+forbid_features = ["dev-guest-auth"]
+check_commands = [
+  ["cargo", "test", "--manifest-path", "engine/Cargo.toml", "-p", "signal-sftp-egress"],
+]
+build_commands = [
+  ["cargo", "build", "--manifest-path", "engine/Cargo.toml", "-p", "signal-sftp-egress", "--no-default-features"],
+]
+
 [components.web]
 tier = "TIER1_WEB"
 required_path = "web/package.json"

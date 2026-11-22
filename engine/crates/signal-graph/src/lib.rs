@@ -8,17 +8,24 @@ use std::collections::HashMap;
 use thiserror::Error;
 
 pub mod beautify;
+pub mod breadboard_map;
 pub mod bus_bundle;
 pub mod command_query_a11y;
 pub mod cow_arena;
 pub mod crdt_validator;
 pub mod ecs_crdt;
+pub mod ephemeral_presence;
 pub mod hierarchy_ops;
 pub mod pin_swap_reannotate;
+pub mod snippet_stamp;
 
 pub use beautify::{
     SchematicBlock, beautify_schematic_layout, count_two_layer_crossings,
     route_orthogonal_wire_astar,
+};
+pub use breadboard_map::{
+    StripKind, TERMINAL_STRIP_HOLES, build_breadboard_strips_from_netlist,
+    classify_breadboard_strip, sync_breadboard_twin,
 };
 pub use bus_bundle::{expand_protocol_bundle, parse_bus_slice};
 pub use command_query_a11y::{
@@ -29,12 +36,19 @@ pub use ecs_crdt::{
     CoWGraphSnapshot, DesignGraphEngine, EcsEntity, ElectricalPinRole, GenEntityId,
     TopologicalConflictCard, TopologicalConflictKind,
 };
+pub use ephemeral_presence::{
+    CollaboratorPresenceState, EphemeralPresenceHub, PRESENCE_MIN_INTERVAL_US,
+};
 pub use hierarchy_ops::{
     ChannelExpandedInstance, ResolvedBomVariantItem, SheetNetPort, build_cross_sheet_portal_index,
     expand_multi_channel_block, resolve_assembly_variant,
 };
 pub use pin_swap_reannotate::{
     AnnotatableInstance, SwappablePinAnchor, propose_optimal_pin_swaps, reannotate_sheet_instances,
+};
+pub use snippet_stamp::{
+    GoldenSnippetTemplate, SnippetComponentTemplate, SnippetTraceTemplate,
+    StampedComponentInstance, StampedPreRoutedTrace, StampedSnippetBundle, stamp_golden_snippet,
 };
 
 #[derive(Debug, Error, PartialEq, Eq)]

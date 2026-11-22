@@ -13,4 +13,5 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
+signal-proto = { workspace = true }
 thiserror = { workspace = true }
