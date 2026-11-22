@@ -1,0 +1,11 @@
+<label class="sig-row">
+  <span class="sig-subtitle">{{ label() }}</span>
+  <input
+    class="sig-input"
+    type="text"
+    [value]="effectiveText()"
+    (input)="onInput($event)"
+    [attr.aria-label]="label()"
+  />
+  <span class="sig-badge sig-mono">{{ parsed().resolvedHint }}</span>
+</label>

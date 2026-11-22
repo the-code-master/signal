@@ -237,3 +237,9 @@
 - **Branch:** `cursor/CU-P0-01-angular-v22-design-system` → `main`
 - **Touched Paths:** `.nvmrc`, `web/package.json`, `web/pnpm-workspace.yaml`, `web/pnpm-lock.yaml`, `web/tsconfig.base.json`, `web/vitest.config.ts`, `web/eslint.config.mjs`, `web/.stylelintrc.json`, `web/tools/{codegen-contracts,verify-ui-style-guide}.mjs`, `web/libs/design-system/**`, `plan/TODO-LEDGER-CURSOR-LANE-B.md`, `coordination/agents/antigravity.md`
 - **Verification:** `pnpm --dir web lint` (`0` violations), `pnpm --dir web typecheck` (`tsc` TS `6.0.3` `--noEmit` `0` errors), and `pnpm --dir web test --run` (`2/2` `bigint` `9007199254740993n` & theme tests passing).
+
+### [CU-P0-02] Standardized `@signal/ui-kit` 4-File Shared HTML Component Ecosystem *(User-Requested Lane B Takeover)*
+- **Status:** `COMPLETED`
+- **Branch:** `cursor/CU-P0-02-angular-ui-kit` → `main`
+- **Touched Paths:** `web/libs/ui-kit/**`, `plan/TODO-LEDGER-CURSOR-LANE-B.md`, `coordination/agents/antigravity.md`
+- **Verification:** `pnpm --dir web lint` (`0` violations), `pnpm --dir web typecheck` (`0` errors), and `pnpm --dir web test --run` (`3/3` passed including `m` milli vs `Meg`/`M` Mega `bigint` parser test).

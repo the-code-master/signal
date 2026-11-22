@@ -1,0 +1,14 @@
+<section class="sig-panel">
+  <header class="sig-panel-header">
+    <div>
+      <h2 class="sig-title">{{ vm().heading }}</h2>
+      @if (vm().subheading) {
+        <p class="sig-subtitle">{{ vm().subheading }}</p>
+      }
+    </div>
+    @if (vm().hasBadge) {
+      <span class="sig-badge sig-mono">{{ vm().badgeText }}</span>
+    }
+  </header>
+  <ng-content />
+</section>

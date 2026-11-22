@@ -1,0 +1,11 @@
+@if (vm().open) {
+  <div class="sig-drawer-backdrop" role="dialog" aria-modal="true" [attr.aria-label]="vm().heading">
+    <aside class="sig-drawer-sheet sig-stack">
+      <div class="sig-row-between">
+        <h2 class="sig-title">{{ vm().heading }}</h2>
+        <button class="sig-btn" type="button" (click)="closed.emit()">Close</button>
+      </div>
+      <ng-content />
+    </aside>
+  </div>
+}
