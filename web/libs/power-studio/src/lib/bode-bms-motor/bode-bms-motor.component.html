@@ -1,0 +1,29 @@
+<sig-panel
+  title="Type-II/III Bode Compensator, NsMp BMS Pack Studio & PMSM FOC dq0 Motor Lab"
+  subtitle="FEAT-026 K-Factor Loop Synth • FEAT-027 2-RC Randles BMS • FEAT-028 Park/Clarke SVPWM Drive"
+  badge="FEAT-026..028"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (topo of vm().compTopologies; track topo) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().compTopology === topo"
+            type="button"
+            (click)="selectTopology(topo)"
+          >
+            {{ topo }}
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().summaryBadge" [tone]="vm().summaryTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">{{ vm().motorBmsBadge }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

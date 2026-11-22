@@ -1,0 +1,19 @@
+# Module: engine/crates/signal-emc/Cargo.toml — CISPR/FCC EMC, EMI Filter, ESD/Surge, Cavity, FMEDA, FTA, WCCA & Rad-Hard
+# Invariants: #![forbid(unsafe_code)]; deterministic EMC pre-compliance & ISO 26262 FMEDA / minimal cut-set solvers (FEAT-031..040).
+# Spec: architecture/03-rust-eda-engine.md, architecture/17-extended-feature-specifications-ui-and-rust.md
+[package]
+name = "signal-emc"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-aging = { workspace = true }
+signal-core = { workspace = true }
+signal-proto = { workspace = true }
+thiserror = { workspace = true }

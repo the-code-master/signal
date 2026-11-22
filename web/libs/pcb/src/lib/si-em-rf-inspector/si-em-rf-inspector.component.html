@@ -1,0 +1,40 @@
+<sig-panel
+  title="224G Glass-Weave, Via Back-Drill, Return-Path, RF Wizard, 3D EM & Spatial TDR"
+  subtitle="FEAT-011/013/016/019/087/089 High-Speed SI & Full-Wave EM Inspector"
+  badge="signal-em-cpo"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <button class="sig-btn" [class.sig-btn-primary]="vm().weaveRotated10Deg" type="button" (click)="toggleWeaveRotation()">
+          10° Glass-Weave Rotation
+        </button>
+        <button class="sig-btn" [class.sig-btn-primary]="vm().backdrillEnabled" type="button" (click)="toggleBackdrill()">
+          Via Back-Drill
+        </button>
+        <button class="sig-btn" type="button" (click)="stepEmPhase()">
+          Step 3D EM Phase (+45°)
+        </button>
+      </div>
+      <sig-status-pill [label]="vm().siGateBadge" [tone]="vm().siGateTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <div class="sig-row">
+        @for (rf of vm().rfPresets; track rf) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().rfPreset === rf"
+            type="button"
+            (click)="selectRfPreset(rf)"
+          >
+            {{ rf }}
+          </button>
+        }
+      </div>
+      <span class="sig-code">{{ vm().rfEmBadge }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

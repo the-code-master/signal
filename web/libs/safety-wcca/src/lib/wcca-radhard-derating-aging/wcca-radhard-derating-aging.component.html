@@ -1,0 +1,39 @@
+<sig-panel
+  title="Extreme-Value WCCA, Heavy-Ion Rad-Hard, Stress Derating & 15-Year Aging (I-05)"
+  subtitle="FEAT-037 Adjoint WCCA • FEAT-038 SEU/SET LET • FEAT-040 ECSS/NAVSEA Derating • I-05 NBTI/HCI/TDDB/EM"
+  badge="signal-aging"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (pol of vm().policies; track pol) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().policy === pol"
+            type="button"
+            (click)="selectPolicy(pol)"
+          >
+            {{ pol }}
+          </button>
+        }
+        @for (yr of vm().yearPresets; track yr) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().missionYears === yr"
+            type="button"
+            (click)="selectYears(yr)"
+          >
+            {{ yr }} Yr
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().summaryBadge" [tone]="vm().summaryTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">{{ vm().radDeratingBadge }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

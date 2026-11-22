@@ -9,6 +9,7 @@ import {
   onMotionInputSample,
 } from "../dual-plane-client/dual-plane-client.logic";
 import type { PlaneSettlingState } from "../dual-plane-client/dual-plane-client.model";
+import { DlpGuardComponent } from "../lib/dlp-guard/dlp-guard.component";
 import { createVolatileOpBuffer, sealCloudClipboardEnvelope } from "../volatile-reconnect/volatile-reconnect.logic";
 import type { CloudClipboardEnvelope } from "../volatile-reconnect/volatile-reconnect.model";
 import { buildViewportReticleVm } from "./dual-plane-viewport.logic";
@@ -16,7 +17,7 @@ import { buildViewportReticleVm } from "./dual-plane-viewport.logic";
 @Component({
   selector: "sig-dual-plane-viewport",
   standalone: true,
-  imports: [SigSiInputComponent, SigStatusPillComponent],
+  imports: [SigSiInputComponent, SigStatusPillComponent, DlpGuardComponent],
   templateUrl: "./dual-plane-viewport.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

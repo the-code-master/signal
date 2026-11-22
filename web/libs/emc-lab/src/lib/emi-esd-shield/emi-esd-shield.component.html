@@ -1,0 +1,28 @@
+<sig-panel
+  title="EMI Filter & Middlebrook Stability, IEC 61000-4-2 ESD/Surge & Shield Cavity"
+  subtitle="FEAT-032 CM/DM Filter • FEAT-033 TVS Clamping • FEAT-034 Cavity f_mnp & Slot Aperture Leakage"
+  badge="signal-emc"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (lvl of vm().esdLevels; track lvl) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().esdLevel === lvl"
+            type="button"
+            (click)="selectEsd(lvl)"
+          >
+            {{ lvl }}
+          </button>
+        }
+        <button class="sig-btn" [class.sig-btn-primary]="vm().dampingNetworkEnabled" type="button" (click)="toggleDamping()">
+          R-C Middlebrook Damper
+        </button>
+      </div>
+      <sig-status-pill [label]="vm().summaryBadge" [tone]="vm().summaryTone" />
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

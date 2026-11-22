@@ -1,0 +1,25 @@
+<sig-panel
+  title="PDN Target Impedance, 3D Geodesic Creepage, DC IR-Drop & SiC Hot-Loop"
+  subtitle="FEAT-022 Z_PDN(f) • FEAT-023 IEC 60664-1 3D Geodesic • FEAT-024 Busbar IR • FEAT-025 Miller Immunity"
+  badge="signal-power-integrity"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <button class="sig-btn" [class.sig-btn-primary]="vm().slotRibAdded" type="button" (click)="toggleMilledSlot()">
+          Milled HV Isolation Slot / Rib
+        </button>
+        <button class="sig-btn" [class.sig-btn-primary]="vm().negativeGateBiasEnabled" type="button" (click)="toggleNegativeVee()">
+          -4V Negative Gate Bias (VEE)
+        </button>
+      </div>
+      <sig-status-pill [label]="vm().summaryBadge" [tone]="vm().summaryTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">{{ vm().hotLoopBadge }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

@@ -1,0 +1,46 @@
+<div class="sig-stack">
+  <sig-panel
+    [title]="vm().descriptor.title"
+    [subtitle]="vm().descriptor.subtitle"
+    [badge]="vm().engineBadge"
+  >
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (lvl of vm().asilTargets; track lvl) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().asilTarget === lvl"
+            type="button"
+            (click)="selectAsil(lvl)"
+          >
+            {{ lvl }}
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().fmedaBadge" [tone]="vm().fmedaTone" />
+    </div>
+  </sig-panel>
+
+  <sig-dual-plane-viewport
+    [domainTitle]="vm().descriptor.title"
+    [hudSignals]="vm().descriptor.hudSignals"
+  />
+
+  <sig-panel
+    title="ISO 26262 FMEDA Metrics & Zero-Suppressed BDD Fault-Tree Cut-Sets"
+    subtitle="FEAT-035 SPFM / LFM / PMHF Calculator • FEAT-036 Minimal Cut-Set Synthesis"
+    badge="FEAT-035 / 036"
+  >
+    <div class="sig-stack">
+      <div class="sig-surface sig-row-between">
+        <span class="sig-code">{{ vm().ftaCutSetBadge }}</span>
+        <button class="sig-btn sig-btn-primary" type="button" (click)="toggleRedundantCrowbar()">
+          Toggle Redundant STO Crowbar Mechanism
+        </button>
+      </div>
+      <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+    </div>
+  </sig-panel>
+
+  <sig-wcca-radhard-derating-aging />
+</div>

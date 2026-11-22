@@ -1,0 +1,19 @@
+# Module: engine/crates/signal-power-integrity/Cargo.toml — PDN, 3D Geodesic Creepage, IR-Drop, BMS, FOC & Thermal (FEAT-022..030)
+# Invariants: #![forbid(unsafe_code)]; exact 3D surface creepage across slots/ribs & conservative electrothermal solvers.
+# Spec: architecture/03-rust-eda-engine.md, architecture/17-extended-feature-specifications-ui-and-rust.md
+[package]
+name = "signal-power-integrity"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-core = { workspace = true }
+signal-geom = { workspace = true }
+signal-proto = { workspace = true }
+thiserror = { workspace = true }

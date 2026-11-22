@@ -23,6 +23,13 @@ export default defineConfig({
       "@signal/review": resolve(root, "libs/review/src/index.ts"),
       "@signal/admin": resolve(root, "libs/admin/src/index.ts"),
       "@signal/ai-copilot": resolve(root, "libs/ai-copilot/src/index.ts"),
+      "@signal/pcb": resolve(root, "libs/pcb/src/index.ts"),
+      "@signal/magnetics": resolve(root, "libs/magnetics/src/index.ts"),
+      "@signal/power-studio": resolve(root, "libs/power-studio/src/index.ts"),
+      "@signal/emc-lab": resolve(root, "libs/emc-lab/src/index.ts"),
+      "@signal/safety-wcca": resolve(root, "libs/safety-wcca/src/index.ts"),
+      "@signal/dfm-panel": resolve(root, "libs/dfm-panel/src/index.ts"),
+      "@signal/sftp-release": resolve(root, "libs/sftp-release/src/index.ts"),
     },
   },
   test: {

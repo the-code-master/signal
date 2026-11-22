@@ -1,0 +1,28 @@
+<sig-panel
+  title="GD&T Fab/Assembly Drawings, ICT + JTAG Testability & J-STD-020 MSL Reflow"
+  subtitle="FEAT-067 ASME Y14.5 Drawing • FEAT-069 ICT/JTAG Coverage • FEAT-080 MSL Floor-Life & Peak Reflow"
+  badge="FEAT-067 / 069 / 080"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (lvl of vm().mslLevels; track lvl) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().mslLevel === lvl"
+            type="button"
+            (click)="selectMsl(lvl)"
+          >
+            {{ lvl }}
+          </button>
+        }
+        <button class="sig-btn" [class.sig-btn-primary]="vm().jtagBoundaryScanEnabled" type="button" (click)="toggleJtag()">
+          IEEE 1149.1 JTAG Union
+        </button>
+      </div>
+      <sig-status-pill [label]="vm().summaryBadge" [tone]="vm().summaryTone" />
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

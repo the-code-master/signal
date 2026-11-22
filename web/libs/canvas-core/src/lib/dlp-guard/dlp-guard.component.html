@@ -1,0 +1,24 @@
+<div
+  class="sig-surface sig-row-between"
+  (window:keydown)="onKeydown($event)"
+  (window:blur)="onWindowBlur()"
+  (window:focus)="onWindowFocus()"
+  (contextmenu)="onContextMenu($event)"
+  (copy)="onCopy($event)"
+>
+  <div class="sig-row">
+    <sig-status-pill [label]="vm().guardStatusLabel" [tone]="vm().guardTone" />
+    <sig-status-pill [label]="vm().attestation.badgeText" [tone]="vm().attestation.tone" />
+    <span class="sig-badge sig-mono">
+      Sweep: {{ vm().sweep.observedTilesPerSec }} / {{ vm().sweep.thresholdTilesPerSec }} tiles/s
+    </span>
+  </div>
+  <div class="sig-row">
+    <button class="sig-btn" type="button" (click)="simulateSweepBurst(150)">
+      Test &gt;3x Sweep Freeze
+    </button>
+    <button class="sig-btn" type="button" (click)="simulateSweepBurst(36)">
+      Reset Stream Rate
+    </button>
+  </div>
+</div>

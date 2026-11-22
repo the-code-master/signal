@@ -1,0 +1,46 @@
+<div class="sig-stack">
+  <sig-panel
+    [title]="vm().descriptor.title"
+    [subtitle]="vm().descriptor.subtitle"
+    [badge]="vm().engineBadge"
+  >
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (std of vm().standards; track std) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().standard === std"
+            type="button"
+            (click)="selectStandard(std)"
+          >
+            {{ std }}
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().spectrumBadge" [tone]="vm().spectrumTone" />
+    </div>
+  </sig-panel>
+
+  <sig-dual-plane-viewport
+    [domainTitle]="vm().descriptor.title"
+    [hudSignals]="vm().descriptor.hudSignals"
+  />
+
+  <sig-panel
+    title="LISN Conducted / 3m Radiated Spectrum & MLCC Piezo Acoustic Guard"
+    subtitle="FEAT-031 CISPR/FCC Mask Audit • FEAT-039 20 Hz–20 kHz Piezo Whine Detector"
+    badge="FEAT-031 / 039"
+  >
+    <div class="sig-stack">
+      <div class="sig-surface sig-row-between">
+        <span class="sig-code">{{ vm().piezoBadge }}</span>
+        <button class="sig-btn sig-btn-primary" type="button" (click)="toggleUltrasonicBurstClamp()">
+          Toggle 32 kHz Ultrasonic vs 8 kHz PFM Burst
+        </button>
+      </div>
+      <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+    </div>
+  </sig-panel>
+
+  <sig-emi-esd-shield />
+</div>

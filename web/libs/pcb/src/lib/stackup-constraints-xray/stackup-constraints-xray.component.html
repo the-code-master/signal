@@ -1,0 +1,32 @@
+<sig-panel
+  title="Copper Pour Hygiene, HDI Via Matrix, Net-Class Grid & Single-Key X-Ray"
+  subtitle="FEAT-014 Acid-Trap/Island Guard • FEAT-018 HDI uVia <=0.8 • FEAT-095 Constraint Matrix • FEAT-096 X-Ray"
+  badge="render_mask"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (p of vm().presets; track p) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().preset === p"
+            type="button"
+            (click)="selectPreset(p)"
+          >
+            {{ p }}
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().pourHdiBadge" [tone]="vm().pourHdiTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">GPU Uniform Layer Bitmask (FEAT-096): {{ vm().gpuLayerBitmaskHex }}</span>
+      <button class="sig-btn sig-btn-primary" type="button" (click)="toggleTeardrops()">
+        Toggle Teardrops &amp; Dead-Island Pruner
+      </button>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

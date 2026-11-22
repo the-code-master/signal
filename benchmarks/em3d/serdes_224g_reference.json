@@ -1,0 +1,17 @@
+{
+  "benchmark_id": "em3d_224g_pam4_stripline_v1",
+  "spec_refs": ["I-04", "F-032", "F-036", "FEAT-089"],
+  "channel": {
+    "baud_rate_hz": "112000000000",
+    "modulation": "PAM4_224GBPS",
+    "trace_length_nm": "85000000",
+    "er_eff": 3.35,
+    "loss_tangent_df": 0.002,
+    "target_min_com_db": 3.0
+  },
+  "tdr_step_reference": {
+    "source_z0_mohm": "50000",
+    "reflection_gamma": 0.2,
+    "expected_peeled_z_mohm": "75000"
+  }
+}

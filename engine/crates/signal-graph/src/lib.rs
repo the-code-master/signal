@@ -11,6 +11,7 @@ pub mod beautify;
 pub mod breadboard_map;
 pub mod bus_bundle;
 pub mod command_query_a11y;
+pub mod constraint_matrix;
 pub mod cow_arena;
 pub mod crdt_validator;
 pub mod ecs_crdt;
@@ -33,6 +34,7 @@ pub use command_query_a11y::{
     QueryableEntity, build_wcag_accessibility_tree, evaluate_selection_query,
     execute_omni_command_dsl, route_keyboard_a11y_wire,
 };
+pub use constraint_matrix::{ConstraintMatrixResolver, NetClassSpec};
 pub use ecs_crdt::{
     CoWGraphSnapshot, DesignGraphEngine, EcsEntity, ElectricalPinRole, GenEntityId,
     TopologicalConflictCard, TopologicalConflictKind,

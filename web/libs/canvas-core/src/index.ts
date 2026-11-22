@@ -43,5 +43,21 @@ export type {
   VolatileGraphMutationOp,
   VolatileOpBufferHandle,
 } from "./volatile-reconnect/volatile-reconnect.model";
+export { DlpGuardComponent } from "./lib/dlp-guard/dlp-guard.component";
+export {
+  TILE_SWEEP_ANOMALY_MULTIPLIER,
+  buildDlpGuardVm,
+  evaluatePrivacyCurtainActive,
+  evaluateTileSweepRate,
+  shouldAllowClipboardCopy,
+  shouldInterceptDlpKey,
+  verifyManagedBrowserCaptureLock,
+} from "./lib/dlp-guard/dlp-guard.logic";
+export type {
+  BrowserCaptureAttestation,
+  DlpGuardVm,
+  DlpSecurityEventCode,
+  TileSweepEvaluation,
+} from "./lib/dlp-guard/dlp-guard.model";
 export { WorkbenchStageComponent } from "./workbench-stage/workbench-stage.component";
 export type { WorkbenchDescriptor, WorkbenchKpiCard } from "./workbench-stage/workbench-stage.model";

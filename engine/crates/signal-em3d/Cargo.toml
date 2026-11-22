@@ -1,0 +1,19 @@
+# Module: engine/crates/signal-em3d/Cargo.toml — 3D Full-Wave PEEC/FDTD, Passive Vector Fitting, 224G PAM4 COM & TDR (I-04)
+# Invariants: #![forbid(unsafe_code)]; enforces S-parameter passivity sigma_max(S(jw)) <= 1.0 (F-032).
+# Spec: architecture/03-rust-eda-engine.md, architecture/16-architectural-audit-flaws-and-futuristic-innovations.md
+[package]
+name = "signal-em3d"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-core = { workspace = true }
+signal-geom = { workspace = true }
+signal-proto = { workspace = true }
+thiserror = { workspace = true }

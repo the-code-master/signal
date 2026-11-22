@@ -1,0 +1,25 @@
+<sig-panel
+  title="Heatsink / Cold-Plate Thermal Assembly & Multi-Rail Sequencing Gantt"
+  subtitle="FEAT-029 TIM/CFM/Cold-Plate R_theta_JA • FEAT-030 PGOOD Interlock & Body-Diode Back-Power Verifier"
+  badge="FEAT-029..030"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (ck of vm().coolingKinds; track ck) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().coolingKind === ck"
+            type="button"
+            (click)="selectCooling(ck)"
+          >
+            {{ ck }}
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().summaryBadge" [tone]="vm().summaryTone" />
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

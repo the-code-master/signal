@@ -1,6 +1,6 @@
-# Module: engine/crates/signal-sftp-egress/Cargo.toml — Step-Up 2FA Write-Only SFTP Release Gate
-# Invariants: Blocks release unless Step-Up 2FA token and Tier-0 3x Quorum Audit outbox sequence are verified (F-080, F-147).
-# Spec: architecture/07-security-encryption-dlp-and-sftp.md
+# Module: engine/crates/signal-sftp-egress/Cargo.toml — Disposable Write-Only SFTP Release Pod & Step-Up 2FA Gate
+# Invariants: Blocks release unless Step-Up 2FA, Tier-0 3x Quorum Audit, anti-SSRF IP, & pinned host key pass (F-081, F-082, F-147).
+# Spec: architecture/07-security-encryption-dlp-and-sftp.md, architecture/15-application-security-and-project-isolation.md
 [package]
 name = "signal-sftp-egress"
 version.workspace = true
@@ -13,5 +13,12 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
+signal-core = { workspace = true }
+signal-egress-proxy = { workspace = true }
 signal-proto = { workspace = true }
 thiserror = { workspace = true }
+zeroize = { workspace = true }
+
+[dev-dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }

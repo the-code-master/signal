@@ -1,0 +1,35 @@
+<sig-panel
+  title="Push-and-Shove Bus-Trunk Router, Trombone Meanders & Package Flight-Time"
+  subtitle="FEAT-017 Multi-Lane PNS • FEAT-012 Euler-Arc Diff-Pair Phase Tuner • FEAT-015 Die-to-Ball Delay"
+  badge="signal-pcb-router"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (m of vm().modes; track m) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().mode === m"
+            type="button"
+            (click)="selectMode(m)"
+          >
+            {{ m }}
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().skewGateBadge" [tone]="vm().skewGateTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <sig-si-input
+        label="Trombone Meander Amplitude:"
+        unitSymbol="m"
+        initialText="250u"
+        (valueCommitted)="onAmplitudeCommitted($event)"
+      />
+      <span class="sig-code">{{ vm().tromboneSummary }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

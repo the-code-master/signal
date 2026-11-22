@@ -1,0 +1,44 @@
+<div class="sig-stack">
+  <sig-panel
+    [title]="vm().descriptor.title"
+    [subtitle]="vm().descriptor.subtitle"
+    [badge]="vm().engineBadge"
+  >
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (w of vm().windingKinds; track w) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().windingKind === w"
+            type="button"
+            (click)="selectWinding(w)"
+          >
+            {{ w }}
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().lossBalanceBadge" [tone]="vm().saturationTone" />
+    </div>
+  </sig-panel>
+
+  <sig-dual-plane-viewport
+    [domainTitle]="vm().descriptor.title"
+    [hudSignals]="vm().descriptor.hudSignals"
+  />
+
+  <sig-panel
+    title="Planar / Bobbin Cross-Section, Air-Gap Fringing & B-H Saturation Margin"
+    subtitle="FEAT-021 Steinmetz iGSE Core Loss vs Dowell Proximity Winding Optimizer"
+    badge="FEAT-021"
+  >
+    <div class="sig-stack">
+      <sig-si-input
+        label="Center-Leg Distributed Air-Gap:"
+        unitSymbol="m"
+        initialText="400u"
+        (valueCommitted)="onGapCommitted($event)"
+      />
+      <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+    </div>
+  </sig-panel>
+</div>

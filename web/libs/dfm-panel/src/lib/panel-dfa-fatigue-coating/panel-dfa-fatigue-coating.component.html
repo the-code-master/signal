@@ -1,0 +1,25 @@
+<sig-panel
+  title="Step-and-Repeat Panelizer, IPC-7351B DFA, Solder Fatigue & Coating Keepouts"
+  subtitle="FEAT-063 MLCC Flex Guard • FEAT-064 Stencil/Tombstone • FEAT-065 Coffin-Manson • FEAT-066 Coating Mask"
+  badge="signal-dfm"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (m of vm().depanelMethods; track m) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().depanelMethod === m"
+            type="button"
+            (click)="selectMethod(m)"
+          >
+            {{ m }}
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().summaryBadge" [tone]="vm().summaryTone" />
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

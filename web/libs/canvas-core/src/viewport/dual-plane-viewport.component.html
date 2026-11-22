@@ -12,6 +12,8 @@
     </div>
   </div>
 
+  <sig-dlp-guard [hasSealedClipboard]="clipboardEnvelope() !== null" />
+
   <div class="sig-panel sig-stack">
     <div class="sig-row-between">
       <strong class="sig-title">{{ vm().domainTitle }} — Server-Rendered GPU Atlas Stream</strong>

@@ -1,0 +1,65 @@
+<div class="sig-stack">
+  <sig-panel
+    [title]="vm().descriptor.title"
+    [subtitle]="vm().descriptor.subtitle"
+    [badge]="vm().engineBadge"
+  >
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (st of vm().steps; track st) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().step === st"
+            type="button"
+            (click)="selectStep(st)"
+          >
+            {{ st }}
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().gateBadge" [tone]="vm().gateTone" />
+    </div>
+  </sig-panel>
+
+  <sig-panel
+    title="3-Step Write-Only SFTP Factory, Regulatory Lab & MCAD Partner Egress Wizard"
+    subtitle="F-076 Burned-TOTP / WebAuthn • F-081 Ephemeral russh Pod • F-147 3x Quorum Tier-0 WORM Audit"
+    badge="ZERO_BROWSER_DOWNLOAD"
+  >
+    <div class="sig-stack">
+      <div class="sig-toolbar">
+        <div class="sig-row">
+          @for (dest of vm().destinations; track dest) {
+            <button
+              class="sig-btn"
+              [class.sig-btn-primary]="vm().destination === dest"
+              type="button"
+              (click)="selectDestination(dest)"
+            >
+              {{ dest }}
+            </button>
+          }
+          @for (ak of vm().authKinds; track ak) {
+            <button
+              class="sig-btn"
+              [class.sig-btn-primary]="vm().authKind === ak"
+              type="button"
+              (click)="selectAuth(ak)"
+            >
+              {{ ak }}
+            </button>
+          }
+        </div>
+        <button class="sig-btn sig-btn-primary" type="button" (click)="dispatchAndBurnNonce()">
+          Execute Write-Only SFTP Dispatch
+        </button>
+      </div>
+
+      <div class="sig-surface sig-row-between">
+        <span class="sig-code">{{ vm().receiptSummary }}</span>
+      </div>
+
+      <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+    </div>
+  </sig-panel>
+</div>

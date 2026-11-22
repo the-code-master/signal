@@ -725,6 +725,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "signal-aging"
+version = "0.1.0"
+dependencies = [
+ "signal-core",
+ "thiserror",
+]
+
+[[package]]
 name = "signal-cam"
 version = "0.1.0"
 dependencies = [
@@ -757,6 +765,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "signal-dfm"
+version = "0.1.0"
+dependencies = [
+ "signal-core",
+ "signal-geom",
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
 name = "signal-diff-sim"
 version = "0.1.0"
 dependencies = [
@@ -770,6 +788,26 @@ dependencies = [
 name = "signal-egress-proxy"
 version = "0.1.0"
 dependencies = [
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
+name = "signal-em3d"
+version = "0.1.0"
+dependencies = [
+ "signal-core",
+ "signal-geom",
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
+name = "signal-emc"
+version = "0.1.0"
+dependencies = [
+ "signal-aging",
+ "signal-core",
  "signal-proto",
  "thiserror",
 ]
@@ -838,6 +876,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "signal-magnetics"
+version = "0.1.0"
+dependencies = [
+ "signal-core",
+ "signal-geom",
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
 name = "signal-mcad"
 version = "0.1.0"
 dependencies = [
@@ -876,6 +924,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "signal-pcb"
+version = "0.1.0"
+dependencies = [
+ "signal-core",
+ "signal-geom",
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
 name = "signal-plm"
 version = "0.1.0"
 dependencies = [
@@ -898,6 +956,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "signal-power-integrity"
+version = "0.1.0"
+dependencies = [
+ "signal-core",
+ "signal-geom",
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
 name = "signal-proto"
 version = "0.1.0"
 dependencies = [
@@ -914,8 +982,13 @@ dependencies = [
 name = "signal-sftp-egress"
 version = "0.1.0"
 dependencies = [
+ "serde",
+ "serde_json",
+ "signal-core",
+ "signal-egress-proxy",
  "signal-proto",
  "thiserror",
+ "zeroize",
 ]
 
 [[package]]

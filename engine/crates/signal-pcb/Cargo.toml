@@ -1,0 +1,19 @@
+# Module: engine/crates/signal-pcb/Cargo.toml — 45°/Clothoid PNS Router, Bus-Trunk, Fiber-Weave, HDI & Signed Fab Profiles
+# Invariants: #![forbid(unsafe_code)]; exact nm integer coordinates, signed fab profiles (F-135), minimal-perturbation ECO (F-134).
+# Spec: architecture/03-rust-eda-engine.md, architecture/17-extended-feature-specifications-ui-and-rust.md
+[package]
+name = "signal-pcb"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-core = { workspace = true }
+signal-geom = { workspace = true }
+signal-proto = { workspace = true }
+thiserror = { workspace = true }
