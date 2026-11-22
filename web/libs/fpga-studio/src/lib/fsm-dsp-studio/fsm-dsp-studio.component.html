@@ -1,0 +1,39 @@
+<sig-panel
+  title="Bidirectional Graphical FSM <-> RTL Studio & Fixed-Point Q(m.n) DSP Filter Lab"
+  subtitle="FEAT-057 Deadlock-Free SV Codegen • FEAT-060 Remez FIR/IIR Q(1.n) SQNR & Limit-Cycle Analyzer"
+  badge="signal-fpga::dsp"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (enc of vm().fsmEncodings; track enc) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().fsmEncoding === enc"
+            type="button"
+            (click)="selectEncoding(enc)"
+          >
+            {{ enc }}
+          </button>
+        }
+        @for (bits of vm().fracBitPresets; track bits) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().fracBitsN === bits"
+            type="button"
+            (click)="selectBits(bits)"
+          >
+            Q(1.{{ bits }})
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().dspFsmBadge" [tone]="vm().dspFsmTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">{{ vm().rtlPreviewLine }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

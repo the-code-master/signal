@@ -1,0 +1,47 @@
+<div class="sig-stack">
+  <sig-panel
+    [title]="vm().descriptor.title"
+    [subtitle]="vm().descriptor.subtitle"
+    [badge]="vm().engineBadge"
+  >
+    <div class="sig-stack">
+      <div class="sig-grid-cards">
+        @for (kpi of vm().descriptor.kpis; track kpi.id) {
+          <div class="sig-panel sig-row-between">
+            <span class="sig-subtitle">{{ kpi.label }}</span>
+            <sig-status-pill [label]="kpi.value" [tone]="kpi.tone" />
+          </div>
+        }
+      </div>
+      <div class="sig-row">
+        @for (tab of vm().tabs; track tab.id) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().activeTab === tab.id"
+            type="button"
+            (click)="selectTab(tab.id)"
+          >
+            {{ tab.label }}
+          </button>
+        }
+      </div>
+    </div>
+  </sig-panel>
+
+  <sig-dual-plane-viewport
+    [domainTitle]="vm().descriptor.title"
+    [hudSignals]="vm().descriptor.hudSignals"
+  />
+
+  @switch (vm().activeTab) {
+    @case ("ANALOG_GMID_BSPDN") {
+      <sig-analog-gmid-liberty />
+    }
+    @case ("SOC_STA_UCIE_LITHO") {
+      <sig-soc-sta-ucie-litho />
+    }
+    @case ("UPF_CPO_CRYO_SEC") {
+      <sig-upf-cpo-cryo-sec />
+    }
+  }
+</div>

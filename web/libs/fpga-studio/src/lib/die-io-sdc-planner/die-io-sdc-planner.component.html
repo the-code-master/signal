@@ -1,0 +1,21 @@
+<sig-panel
+  title="FPGA Die Bank V_CCO / SSN Planner & SDC/XDC Structural CDC Verifier"
+  subtitle="FEAT-051 Live PCB BGA Ratline Cross-Probe • FEAT-052 False-Path / Multicycle / CDC Matrix"
+  badge="signal-fpga::io"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <button class="sig-btn" [class.sig-btn-primary]="vm().autoPinSwapApplied" type="button" (click)="togglePinSwap()">
+          Bank-Legal BGA Pin-Swap
+        </button>
+        <button class="sig-btn" [class.sig-btn-primary]="vm().grayCodeCdcSynchronizer" type="button" (click)="toggleCdcSync()">
+          2-FF Gray-Code CDC Synchronizer
+        </button>
+      </div>
+      <sig-status-pill [label]="vm().ioSdcBadge" [tone]="vm().ioSdcTone" />
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

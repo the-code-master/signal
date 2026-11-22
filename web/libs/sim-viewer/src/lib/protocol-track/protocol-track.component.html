@@ -1,0 +1,37 @@
+<sig-panel
+  title="Live Decoded Bus Protocol Track (AXI4 / SPI / I2C / CAN-FD / USB-PD / PCIe)"
+  subtitle="FEAT-053 Cycle-Synced START | ADDR | DATA | ACK | CRC Transaction Pills"
+  badge="protocol_decode"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (proto of vm().protocols; track proto) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().activeProtocol === proto"
+            type="button"
+            (click)="selectProtocol(proto)"
+          >
+            {{ proto }}
+          </button>
+        }
+        <button class="sig-btn sig-btn-primary" type="button" (click)="jumpToNextNackOrCrcError()">
+          Jump to Next NACK / CRC Error
+        </button>
+      </div>
+      <sig-status-pill [label]="vm().focusBadge" [tone]="vm().trackTone" />
+    </div>
+
+    <input
+      class="sig-input sig-mono"
+      type="text"
+      placeholder="Filter decoded address / payload / TLP / PDO (e.g. 0x48, NACK, EPR)..."
+      aria-label="Filter decoded protocol transactions"
+      [value]="vm().searchQuery"
+      (input)="onSearchInput($event)"
+    />
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

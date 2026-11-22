@@ -767,6 +767,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "signal-cosim"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "signal-core",
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
 name = "signal-dfm"
 version = "0.1.0"
 dependencies = [
@@ -824,6 +834,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "signal-fpga"
+version = "0.1.0"
+dependencies = [
+ "signal-core",
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
 name = "signal-geom"
 version = "0.1.0"
 dependencies = [
@@ -853,6 +872,16 @@ dependencies = [
 
 [[package]]
 name = "signal-harness"
+version = "0.1.0"
+dependencies = [
+ "signal-core",
+ "signal-geom",
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
+name = "signal-ic"
 version = "0.1.0"
 dependencies = [
  "signal-core",
@@ -996,6 +1025,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "signal-security-hw"
+version = "0.1.0"
+dependencies = [
+ "signal-core",
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
 name = "signal-sftp-egress"
 version = "0.1.0"
 dependencies = [
@@ -1028,6 +1066,16 @@ name = "signal-surrogate"
 version = "0.1.0"
 dependencies = [
  "signal-core",
+ "thiserror",
+]
+
+[[package]]
+name = "signal-twin"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "signal-core",
+ "signal-proto",
  "thiserror",
 ]
 

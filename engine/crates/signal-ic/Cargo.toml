@@ -1,0 +1,19 @@
+# Module: engine/crates/signal-ic/Cargo.toml — Analog/Digital IC, UPF/DFT, Chiplet Halo, CPO Photonics & 4K Cryo-CMOS
+# Invariants: Signed *.halo.gds.sig zero-lateral-movement federation (F-125); overflow-proof 4K Fermi-Dirac & baseband CPO (F-148).
+# Spec: architecture/03-rust-eda-engine.md, architecture/16-architectural-audit-flaws-and-futuristic-innovations.md
+[package]
+name = "signal-ic"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-core = { workspace = true }
+signal-geom = { workspace = true }
+signal-proto = { workspace = true }
+thiserror = { workspace = true }

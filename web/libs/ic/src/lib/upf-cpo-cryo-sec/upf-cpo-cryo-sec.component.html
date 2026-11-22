@@ -1,0 +1,25 @@
+<sig-panel
+  title="IEEE 1801 UPF, 193 THz CPO Photonics, 4 K Cryo-CMOS & Welch TVLA Security"
+  subtitle="I-07 UPF Isolation • F-148 Baseband SVEA & Cryo Fermi-Dirac • FEAT-050 |t| <= 4.5 TVLA/DPA & Glitch"
+  badge="signal-security-hw"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <button class="sig-btn" [class.sig-btn-primary]="vm().domMaskingEnabled" type="button" (click)="toggleDomMasking()">
+          Domain-Oriented Masking (DOM)
+        </button>
+        <button class="sig-btn" [class.sig-btn-primary]="vm().cryo4kActive" type="button" (click)="toggleCryo4k()">
+          4 K Cryo-CMOS Stage
+        </button>
+      </div>
+      <sig-status-pill [label]="vm().securityBadge" [tone]="vm().securityTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">{{ vm().cpoCryoBadge }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

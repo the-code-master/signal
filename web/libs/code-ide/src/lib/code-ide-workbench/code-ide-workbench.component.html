@@ -1,0 +1,41 @@
+<div class="sig-stack">
+  <sig-panel
+    [title]="vm().descriptor.title"
+    [subtitle]="vm().descriptor.subtitle"
+    [badge]="vm().engineBadge"
+  >
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (lang of vm().languages; track lang) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().language === lang"
+            type="button"
+            (click)="selectLanguage(lang)"
+          >
+            {{ lang }}
+          </button>
+        }
+        <button class="sig-btn" [class.sig-btn-primary]="vm().gliftZeroizerApplied" type="button" (click)="toggleGliftZeroizer()">
+          RTL GLIFT Key Zeroizer
+        </button>
+      </div>
+      <sig-status-pill [label]="vm().gliftBadge" [tone]="vm().gliftTone" />
+    </div>
+  </sig-panel>
+
+  <sig-panel
+    title="Windowed On-Demand LSP Buffer & RTL Gate-Level IFT Taint Highlighter"
+    subtitle="F-069 Zero Whole-Repo Browser Sync • FEAT-050 Shadow-Gate Secret Taint Verification"
+    badge="F-069 / FEAT-050"
+  >
+    <div class="sig-stack">
+      <div class="sig-surface sig-row-between">
+        <span class="sig-code">{{ vm().activeBufferRangeBadge }}</span>
+      </div>
+      <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+    </div>
+  </sig-panel>
+
+  <sig-memmap-pinmux-energy />
+</div>

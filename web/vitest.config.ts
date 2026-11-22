@@ -34,6 +34,10 @@ export default defineConfig({
       "@signal/harness-3d": resolve(root, "libs/harness-3d/src/index.ts"),
       "@signal/cam-print": resolve(root, "libs/cam-print/src/index.ts"),
       "@signal/plm-ops": resolve(root, "libs/plm-ops/src/index.ts"),
+      "@signal/ic": resolve(root, "libs/ic/src/index.ts"),
+      "@signal/fpga-studio": resolve(root, "libs/fpga-studio/src/index.ts"),
+      "@signal/code-ide": resolve(root, "libs/code-ide/src/index.ts"),
+      "@signal/bringup-lab": resolve(root, "libs/bringup-lab/src/index.ts"),
     },
   },
   test: {

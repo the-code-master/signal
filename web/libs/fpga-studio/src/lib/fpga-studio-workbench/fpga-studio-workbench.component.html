@@ -1,0 +1,31 @@
+<div class="sig-stack">
+  <sig-panel
+    [title]="vm().descriptor.title"
+    [subtitle]="vm().descriptor.subtitle"
+    [badge]="vm().engineBadge"
+  >
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (p of vm().partPresets; track p) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().partPreset === p"
+            type="button"
+            (click)="selectPart(p)"
+          >
+            {{ p }}
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().deviceSummaryBadge" tone="ok" />
+    </div>
+  </sig-panel>
+
+  <sig-dual-plane-viewport
+    [domainTitle]="vm().descriptor.title"
+    [hudSignals]="vm().descriptor.hudSignals"
+  />
+
+  <sig-die-io-sdc-planner />
+  <sig-fsm-dsp-studio />
+</div>

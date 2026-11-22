@@ -36,6 +36,11 @@ members = [
     "crates/signal-aging",
     "crates/signal-dfm",
     "crates/signal-harness",
+    "crates/signal-ic",
+    "crates/signal-security-hw",
+    "crates/signal-fpga",
+    "crates/signal-cosim",
+    "crates/signal-twin",
 ]
 
 [workspace.package]

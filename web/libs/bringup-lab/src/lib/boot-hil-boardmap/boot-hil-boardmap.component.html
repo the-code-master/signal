@@ -1,0 +1,39 @@
+<sig-panel
+  title="Cold-Boot POST Timeline, Virtual HIL Fault Runner & Technician Board-Map"
+  subtitle="FEAT-058 PMIC->PLL->QSPI->UEFI • FEAT-059 Watchdog HIL • FEAT-070 Touch Bench Probe Lookup"
+  badge="signal-cosim / twin"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (sc of vm().hilScenarios; track sc) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().hilScenario === sc"
+            type="button"
+            (click)="selectHil(sc)"
+          >
+            {{ sc }}
+          </button>
+        }
+        @for (tp of vm().testpoints; track tp.testpointId) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().selectedTp.testpointId === tp.testpointId"
+            type="button"
+            (click)="selectTestpoint(tp.testpointId)"
+          >
+            {{ tp.testpointId }}
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().bootHilBadge" [tone]="vm().bootHilTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">{{ vm().boardMapBadge }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

@@ -10,6 +10,7 @@ import { WaveformFormulaBarComponent } from "../formula-bar/formula-bar.componen
 import { JitterStudioComponent } from "../jitter-studio/jitter-studio.component";
 import { MonteCarloStudioComponent } from "../monte-carlo/monte-carlo.component";
 import { ParetoFrontierComponent } from "../pareto-frontier/pareto-frontier.component";
+import { ProtocolTrackComponent } from "../protocol-track/protocol-track.component";
 import { RegressionSuiteComponent } from "../regression-suite/regression-suite.component";
 import { StimulusAuditionComponent } from "../stimulus-audition/stimulus-audition.component";
 import { VirtualBenchDeckComponent } from "../virtual-bench/virtual-bench.component";
@@ -26,6 +27,7 @@ import type { SimStudioTabId } from "./sim-viewer-workbench.model";
     SigStatusPillComponent,
     WaveformCanvasComponent,
     WaveformFormulaBarComponent,
+    ProtocolTrackComponent,
     VirtualBenchDeckComponent,
     MonteCarloStudioComponent,
     JitterStudioComponent,

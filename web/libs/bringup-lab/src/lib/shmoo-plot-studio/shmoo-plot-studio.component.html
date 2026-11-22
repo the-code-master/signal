@@ -1,0 +1,35 @@
+<sig-panel
+  title="2D / 3D PVT Pass/Fail Shmoo Mapper & ATE Silicon Boundary Overlay"
+  subtitle="FEAT-088 Adaptive (V_DD x f_clk x T_A) Sweep • Click-to-Inspect Margin vs ATE Silicon"
+  badge="shmoo_runner"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (tMk of vm().tempPresetsMkelvin; track tMk) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().tempMkelvin === tMk"
+            type="button"
+            (click)="selectTemp(tMk)"
+          >
+            {{ tMk.toString() }} mK
+          </button>
+        }
+        <button class="sig-btn" type="button" (click)="selectCorner('V750_F500')">
+          Inspect V750_F500
+        </button>
+        <button class="sig-btn" type="button" (click)="selectCorner('V900_F450')">
+          Inspect V900_F450
+        </button>
+      </div>
+      <sig-status-pill [label]="vm().shmooBadge" [tone]="vm().shmooTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">{{ vm().selectedPointBadge }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

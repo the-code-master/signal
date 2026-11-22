@@ -1,0 +1,18 @@
+# Module: engine/crates/signal-fpga/Cargo.toml — FPGA Bank I/O & SerDes Planner, SDC/XDC Verifier, FSM & Fixed-Point DSP
+# Invariants: Enforces bank V_CCO & SSN limits; computes exact Q(m.n) FIR SQNR dB & synthesizable RTL (FEAT-051, 052, 057, 060).
+# Spec: architecture/17-extended-feature-specifications-ui-and-rust.md
+[package]
+name = "signal-fpga"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-core = { workspace = true }
+signal-proto = { workspace = true }
+thiserror = { workspace = true }

@@ -1,0 +1,34 @@
+<div class="sig-stack">
+  <sig-panel
+    [title]="vm().descriptor.title"
+    [subtitle]="vm().descriptor.subtitle"
+    [badge]="vm().engineBadge"
+  >
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (src of vm().captureSources; track src) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().captureSource === src"
+            type="button"
+            (click)="selectCapture(src)"
+          >
+            {{ src }}
+          </button>
+        }
+        <button class="sig-btn" [class.sig-btn-primary]="vm().bayesianCalibrated" type="button" (click)="toggleCalibration()">
+          Bayesian Parasitic Fit (I-06)
+        </button>
+      </div>
+      <sig-status-pill [label]="vm().twinBadge" [tone]="vm().twinTone" />
+    </div>
+  </sig-panel>
+
+  <sig-dual-plane-viewport
+    [domainTitle]="vm().descriptor.title"
+    [hudSignals]="vm().descriptor.hudSignals"
+  />
+
+  <sig-boot-hil-boardmap />
+  <sig-shmoo-plot-studio />
+</div>

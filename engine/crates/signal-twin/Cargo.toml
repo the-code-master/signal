@@ -1,0 +1,21 @@
+# Module: engine/crates/signal-twin/Cargo.toml — Post-Silicon Lab Bench Digital Twin (I-06), Board Debug & Shmoo Mapper
+# Invariants: Calibrates ESR/ESL/er to Touchstone/SCPI captures; evaluates 2D/3D PVT Shmoo grids in exact SI units.
+# Spec: architecture/17-extended-feature-specifications-ui-and-rust.md, architecture/16-architectural-audit-flaws-and-futuristic-innovations.md
+[package]
+name = "signal-twin"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-core = { workspace = true }
+signal-proto = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }

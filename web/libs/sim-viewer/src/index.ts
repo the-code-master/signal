@@ -97,6 +97,17 @@ export type {
   ParetoFrontierVm,
   ParetoPriorityGoal,
 } from "./lib/pareto-frontier/pareto-frontier.model";
+export { ProtocolTrackComponent } from "./lib/protocol-track/protocol-track.component";
+export {
+  DEFAULT_PROTOCOL_PACKETS,
+  buildProtocolTrackVm,
+  findNextErrorPacket,
+} from "./lib/protocol-track/protocol-track.logic";
+export type {
+  DecodedBusProtocol,
+  DecodedProtocolPacket,
+  ProtocolTrackVm,
+} from "./lib/protocol-track/protocol-track.model";
 export { WhatIfScrubberComponent } from "./lib/what-if-scrubber/what-if-scrubber.component";
 export { buildWhatIfScrubberVm } from "./lib/what-if-scrubber/what-if-scrubber.logic";
 export type { GhostFamilyCurve, WhatIfScrubberVm } from "./lib/what-if-scrubber/what-if-scrubber.model";

@@ -33,6 +33,7 @@
 
   <sig-waveform-canvas (netCrossProbed)="onNetCrossProbed($event)" />
   <sig-waveform-formula-bar (formulaCommitted)="onFormulaCommitted($event)" />
+  <sig-protocol-track (packetJumped)="onNetCrossProbed($event)" />
 
   @switch (vm().activeTab) {
     @case ("VIRTUAL_BENCH") {

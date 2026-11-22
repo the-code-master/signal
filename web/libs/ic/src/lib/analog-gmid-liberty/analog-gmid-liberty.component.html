@@ -1,0 +1,32 @@
+<sig-panel
+  title="Analog gm/Id Sizing, ABBA Pelgrom Matcher, Liberty LVF & Backside PowerVia"
+  subtitle="FEAT-041 4D gm/Id • FEAT-042 Common-Centroid • FEAT-043 .lib LVF • FEAT-044 BSPDN Nano-TSV"
+  badge="signal-ic::analog"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (reg of vm().regions; track reg) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().region === reg"
+            type="button"
+            (click)="selectRegion(reg)"
+          >
+            {{ reg }}
+          </button>
+        }
+        <button class="sig-btn" [class.sig-btn-primary]="vm().backsidePdnEnabled" type="button" (click)="toggleBspdn()">
+          Backside PowerVia (BSPDN)
+        </button>
+      </div>
+      <sig-status-pill [label]="vm().summaryBadge" [tone]="vm().summaryTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">{{ vm().libertyBspdnBadge }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

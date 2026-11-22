@@ -1,0 +1,25 @@
+<sig-panel
+  title="SoC Floorplan, DME Clock-Tree, STA + Metal ECO, UCIe Halo & Litho/CMP"
+  subtitle="FEAT-045..049 Digital Backend • F-125 Signed 5 µm *.halo.gds.sig Zero-Lateral-Movement Federation"
+  badge="signal-ic::digital"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <button class="sig-btn" [class.sig-btn-primary]="vm().metalEcoApplied" type="button" (click)="toggleMetalEco()">
+          Post-Mask Spare-Cell Metal ECO
+        </button>
+        <button class="sig-btn" [class.sig-btn-primary]="vm().cmpDummyFillApplied" type="button" (click)="toggleCmpFill()">
+          CMP Dummy Metal Fill
+        </button>
+      </div>
+      <sig-status-pill [label]="vm().staGateBadge" [tone]="vm().staGateTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">{{ vm().haloLithoBadge }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>
