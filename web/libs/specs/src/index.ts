@@ -14,4 +14,21 @@ export type {
   ProvenanceStatus,
   SpecsBomWorkbenchVm,
 } from "./lib/specs-bom-workbench/specs-bom-workbench.model";
+export { BomConsolidationComponent } from "./lib/bom-consolidation/bom-consolidation.component";
+export {
+  DEFAULT_BOM_MERGE_PROPOSALS,
+  buildBomConsolidationVm,
+  evaluateSafeFeederMerges,
+} from "./lib/bom-consolidation/bom-consolidation.logic";
+export type { BomConsolidationVm, BomMergeProposal } from "./lib/bom-consolidation/bom-consolidation.model";
+export { DatasheetDriftComponent } from "./lib/datasheet-drift/datasheet-drift.component";
+export {
+  DEFAULT_DATASHEET_DRIFT_NOTICES,
+  buildDatasheetDriftVm,
+  computeAbsMaxRegressionUv,
+} from "./lib/datasheet-drift/datasheet-drift.logic";
+export type {
+  DatasheetDriftVm,
+  DatasheetRevisionNotice,
+} from "./lib/datasheet-drift/datasheet-drift.model";
 export { WORKBENCH_DESCRIPTOR, WORKBENCH_ROUTES } from "./specs.routes";

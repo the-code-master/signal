@@ -1,0 +1,53 @@
+<div class="sig-stack">
+  <sig-panel
+    [title]="vm().descriptor.title"
+    [subtitle]="vm().descriptor.subtitle"
+    [badge]="vm().engineBadge"
+  >
+    <div class="sig-stack">
+      <div class="sig-toolbar">
+        <sig-status-pill [label]="vm().proof.badgeText" [tone]="vm().proof.tone" />
+        <div class="sig-row">
+          @for (dr of vm().driftStates; track dr) {
+            <button
+              class="sig-btn"
+              [class.sig-btn-primary]="vm().activeDrift === dr"
+              type="button"
+              (click)="selectDrift(dr)"
+            >
+              Main: {{ dr }}
+            </button>
+          }
+        </div>
+      </div>
+      <sig-data-grid [columns]="vm().cowColumns" [rows]="vm().cowRows" />
+    </div>
+  </sig-panel>
+
+  <sig-panel
+    title="Clean-Room Legacy CAD & Whiteboard Quarantine Wizard (I-10)"
+    subtitle="Zero-Network WASM Sandbox • <= 20:1 Bomb Cap • <= 64 Depth • Zero-Tool VLM OCR"
+    badge="signal-import"
+  >
+    <div class="sig-stack">
+      <div class="sig-toolbar">
+        <div class="sig-row">
+          @for (fmt of vm().formats; track fmt) {
+            <button
+              class="sig-btn"
+              [class.sig-btn-primary]="vm().activeFormat === fmt"
+              type="button"
+              (click)="selectFormat(fmt)"
+            >
+              {{ fmt }}
+            </button>
+          }
+        </div>
+        <button class="sig-btn sig-btn-primary" type="button" (click)="toggleBombSimulation()">
+          Toggle 45:1 Bomb / Depth=92 Attack Test
+        </button>
+      </div>
+      <sig-status-pill [label]="vm().importCheck.summaryBadge" [tone]="vm().importCheck.tone" />
+    </div>
+  </sig-panel>
+</div>

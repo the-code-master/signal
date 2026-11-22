@@ -1,0 +1,36 @@
+<sig-panel
+  title="Quarantined 15-Locale Technical Glossary Translator"
+  subtitle="FEAT-110 Side-by-Side Hover Translation • Preserves RefDes, NetNames & SI Units Verbatim"
+  badge="QuarantinedTranslate"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (loc of vm().locales; track loc) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().activeLocale === loc"
+            type="button"
+            (click)="selectLocale(loc)"
+          >
+            {{ loc }}
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().quarantineBadge" [tone]="vm().quarantineTone" />
+    </div>
+
+    <input
+      class="sig-input sig-mono"
+      type="text"
+      aria-label="Engineering review note to translate"
+      [value]="vm().sourceText"
+      (input)="onSourceInput($event)"
+    />
+
+    <div class="sig-surface sig-stack">
+      <span class="sig-code">{{ vm().result.translatedText }}</span>
+      <span class="sig-badge sig-mono">{{ vm().preservedSummary }}</span>
+    </div>
+  </div>
+</sig-panel>

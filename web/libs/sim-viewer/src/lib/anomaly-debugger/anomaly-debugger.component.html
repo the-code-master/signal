@@ -1,0 +1,32 @@
+<sig-panel
+  title="Waveform Anomaly Root-Cause Debugger"
+  subtitle="FEAT-106 Ringing / Overshoot / Droop Attribution & Ranked CoW Mitigations"
+  badge="anomaly_attribution"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (c of vm().cases; track c.id) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().selectedCase.id === c.id"
+            type="button"
+            (click)="selectSymptom(c.id)"
+          >
+            {{ c.id }}
+          </button>
+        }
+      </div>
+      <button class="sig-btn sig-btn-primary" type="button" (click)="applyTopMitigation()">
+        Stage #1 Mitigation on CoW Branch
+      </button>
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-subtitle">{{ vm().selectedCase.dominantRootCause }}</span>
+      <sig-status-pill [label]="vm().appliedMitigation ?? vm().windowBadge" tone="ok" />
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

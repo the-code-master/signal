@@ -22,6 +22,7 @@ export default defineConfig({
       "@signal/visual-diff": resolve(root, "libs/visual-diff/src/index.ts"),
       "@signal/review": resolve(root, "libs/review/src/index.ts"),
       "@signal/admin": resolve(root, "libs/admin/src/index.ts"),
+      "@signal/ai-copilot": resolve(root, "libs/ai-copilot/src/index.ts"),
     },
   },
   test: {

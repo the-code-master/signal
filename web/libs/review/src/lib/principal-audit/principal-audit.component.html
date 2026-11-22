@@ -1,0 +1,28 @@
+<sig-panel
+  title="200-Point Principal Engineer Red-Team Audit"
+  subtitle="FEAT-104 Pre-Fab / Pre-Tapeout Deterministic Heuristic Deck & 1-Click Auto-Fix"
+  badge="redteam_deck"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <sig-status-pill [label]="vm().summaryBadge" [tone]="vm().summaryTone" />
+        @for (flt of vm().filters; track flt) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().activeFilter === flt"
+            type="button"
+            (click)="selectFilter(flt)"
+          >
+            {{ flt }}
+          </button>
+        }
+      </div>
+      <button class="sig-btn sig-btn-primary" type="button" (click)="autoFixAllOpen()">
+        Apply 1-Click Deterministic Auto-Fixes
+      </button>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

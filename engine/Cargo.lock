@@ -775,6 +775,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "signal-formal"
+version = "0.1.0"
+dependencies = [
+ "signal-core",
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
 name = "signal-geom"
 version = "0.1.0"
 dependencies = [
@@ -798,6 +807,16 @@ version = "0.1.0"
 dependencies = [
  "signal-core",
  "signal-geom",
+ "signal-proto",
+ "thiserror",
+]
+
+[[package]]
+name = "signal-import"
+version = "0.1.0"
+dependencies = [
+ "signal-core",
+ "signal-formal",
  "signal-proto",
  "thiserror",
 ]
@@ -911,6 +930,14 @@ dependencies = [
  "signal-lib-semiconductor",
  "signal-module-sdk",
  "signal-proto",
+ "thiserror",
+]
+
+[[package]]
+name = "signal-surrogate"
+version = "0.1.0"
+dependencies = [
+ "signal-core",
  "thiserror",
 ]
 

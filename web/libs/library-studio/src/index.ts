@@ -41,3 +41,13 @@ export type {
   PinSymbolSplitterVm,
   SchematicSymbolStandard,
 } from "./lib/pin-symbol-splitter/pin-symbol-splitter.model";
+export { DatasheetTestbenchComponent } from "./lib/datasheet-testbench/datasheet-testbench.component";
+export {
+  DEFAULT_TESTBENCH_CURVES,
+  buildDatasheetTestbenchVm,
+  computeCurveOverlayRmsPct,
+} from "./lib/datasheet-testbench/datasheet-testbench.logic";
+export type {
+  DatasheetTestbenchVm,
+  ExtractedConditionCurve,
+} from "./lib/datasheet-testbench/datasheet-testbench.model";

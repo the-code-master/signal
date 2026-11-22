@@ -5,9 +5,9 @@ import { describe, expect, it } from "vitest";
 import { buildSchematicWorkbenchVm, SCHEMATIC_WORKBENCH_DESCRIPTOR } from "./schematic-workbench.logic";
 
 describe("buildSchematicWorkbenchVm", () => {
-  it("builds 4 schematic feature tabs and reflects beautify/portal state", () => {
+  it("builds 5 schematic feature tabs including FEAT-101 and reflects beautify/portal state", () => {
     const vm = buildSchematicWorkbenchVm(SCHEMATIC_WORKBENCH_DESCRIPTOR, "LIVE_HUD", true, "p2");
-    expect(vm.tabs.length).toBe(4);
+    expect(vm.tabs.length).toBe(5);
     expect(vm.activeTab).toBe("LIVE_HUD");
     expect(vm.statusBanner).toContain("Sugiyama Untangled");
     expect(vm.statusBanner).toContain("p2");

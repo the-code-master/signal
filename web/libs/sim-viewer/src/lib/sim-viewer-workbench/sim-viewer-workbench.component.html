@@ -53,5 +53,14 @@
     @case ("STIMULUS_AUDITION") {
       <sig-stimulus-audition />
     }
+    @case ("BREAKING_POINT") {
+      <sig-breaking-point />
+    }
+    @case ("PARETO_FRONTIER") {
+      <sig-pareto-frontier (cowPreviewRequested)="onNetCrossProbed($event)" />
+    }
+    @case ("ANOMALY_DEBUGGER") {
+      <sig-anomaly-debugger />
+    }
   }
 </div>

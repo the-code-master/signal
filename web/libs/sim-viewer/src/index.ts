@@ -76,6 +76,27 @@ export type {
   WaveformCanvasVm,
   WaveformCursorReadout,
 } from "./lib/waveform-canvas/waveform-canvas.model";
+export { AnomalyDebuggerComponent } from "./lib/anomaly-debugger/anomaly-debugger.component";
+export { DEFAULT_ANOMALY_CASES, buildAnomalyDebuggerVm } from "./lib/anomaly-debugger/anomaly-debugger.logic";
+export type {
+  AnomalyAttributionCase,
+  AnomalyDebuggerVm,
+  AnomalySymptomId,
+} from "./lib/anomaly-debugger/anomaly-debugger.model";
+export { BreakingPointComponent } from "./lib/breaking-point/breaking-point.component";
+export { DEFAULT_STRESS_ENVELOPES, buildBreakingPointVm } from "./lib/breaking-point/breaking-point.logic";
+export type { BreakingPointVm, ComponentStressEnvelope } from "./lib/breaking-point/breaking-point.model";
+export { ParetoFrontierComponent } from "./lib/pareto-frontier/pareto-frontier.component";
+export {
+  RAW_PARETO_POPULATION,
+  buildParetoFrontierVm,
+  filterNonDominatedParetoCandidates,
+} from "./lib/pareto-frontier/pareto-frontier.logic";
+export type {
+  ParetoCandidatePoint,
+  ParetoFrontierVm,
+  ParetoPriorityGoal,
+} from "./lib/pareto-frontier/pareto-frontier.model";
 export { WhatIfScrubberComponent } from "./lib/what-if-scrubber/what-if-scrubber.component";
 export { buildWhatIfScrubberVm } from "./lib/what-if-scrubber/what-if-scrubber.logic";
 export type { GhostFamilyCurve, WhatIfScrubberVm } from "./lib/what-if-scrubber/what-if-scrubber.model";

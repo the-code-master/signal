@@ -3,7 +3,12 @@
 // Spec: architecture/06-frontend-angular-and-fastapi-control-plane.md, docs/engineering/ANGULAR_UI_STYLE_GUIDE.md
 import type { WorkbenchDescriptor } from "@signal/canvas-core";
 
-export type SchematicTabId = "BEAUTIFY_BUS" | "LIVE_HUD" | "HIERARCHY_VARIANTS" | "PINSWAP_EQUATIONS";
+export type SchematicTabId =
+  | "BEAUTIFY_BUS"
+  | "LIVE_HUD"
+  | "HIERARCHY_VARIANTS"
+  | "PINSWAP_EQUATIONS"
+  | "CIRCUIT_EXPLAINER";
 
 export interface SchematicTabOption {
   readonly id: SchematicTabId;

@@ -6,6 +6,8 @@ import { DualPlaneViewportComponent, type WorkbenchDescriptor } from "@signal/ca
 import { SigDataGridComponent, SigPanelComponent, SigStatusPillComponent } from "@signal/ui-kit";
 import { ExternalPartnerPortalComponent } from "../external-partner-portal/external-partner-portal.component";
 import { LiveHuddlePresenceComponent } from "../live-huddle-presence/live-huddle-presence.component";
+import { LiveReviewDeckComponent } from "../live-review-deck/live-review-deck.component";
+import { PrincipalAuditComponent } from "../principal-audit/principal-audit.component";
 import { StageGateChecklistComponent } from "../stage-gate-checklist/stage-gate-checklist.component";
 import { buildReviewWorkbenchVm } from "./review-workbench.logic";
 
@@ -20,6 +22,8 @@ import { buildReviewWorkbenchVm } from "./review-workbench.logic";
     LiveHuddlePresenceComponent,
     StageGateChecklistComponent,
     ExternalPartnerPortalComponent,
+    PrincipalAuditComponent,
+    LiveReviewDeckComponent,
   ],
   templateUrl: "./review-workbench.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,

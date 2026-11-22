@@ -38,6 +38,9 @@ export type {
   SpatialComponentAnchor,
   SpatialSweepDirection,
 } from "./lib/pinswap-equations/pinswap-equations.model";
+export { CircuitExplainerComponent } from "./lib/circuit-explainer/circuit-explainer.component";
+export { DEFAULT_CIRCUIT_STAGES, buildCircuitExplainerVm } from "./lib/circuit-explainer/circuit-explainer.logic";
+export type { CircuitExplainerVm, FunctionalStageBlock } from "./lib/circuit-explainer/circuit-explainer.model";
 export { SchematicWorkbenchComponent } from "./lib/schematic-workbench/schematic-workbench.component";
 export { buildSchematicWorkbenchVm } from "./lib/schematic-workbench/schematic-workbench.logic";
 export type { SchematicTabId, SchematicWorkbenchVm } from "./lib/schematic-workbench/schematic-workbench.model";

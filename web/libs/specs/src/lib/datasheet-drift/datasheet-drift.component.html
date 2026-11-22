@@ -1,0 +1,32 @@
+<sig-panel
+  title="Datasheet Revision Drift & Errata Sentinel"
+  subtitle="FEAT-078 Quarantined Rev A -> Rev B Pinout, AbsMax & Derating Diff"
+  badge="DiffDatasheetRevisions"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (item of vm().notices; track item.noticeId) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().selectedNotice.noticeId === item.noticeId"
+            type="button"
+            (click)="selectNotice(item.noticeId)"
+          >
+            {{ item.mpn }} ({{ item.newRevisionLabel }})
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().summaryBadge" [tone]="vm().summaryTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">{{ vm().hashCompareBadge }}</span>
+      <button class="sig-btn sig-btn-primary" type="button" (click)="acknowledgeAndPinSelected()">
+        Re-Verify ERC/SOA &amp; Pin New BLAKE3 in parts.lock.json
+      </button>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

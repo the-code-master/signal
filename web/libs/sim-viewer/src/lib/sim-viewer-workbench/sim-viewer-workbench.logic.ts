@@ -35,6 +35,9 @@ export const SIM_STUDIO_TABS: readonly SimStudioTabOption[] = [
   { id: "WHAT_IF_ADJOINT", label: "04 • What-If Adjoint (FEAT-085)" },
   { id: "REGRESSION_SUITE", label: "05 • Spec Regression (FEAT-086)" },
   { id: "STIMULUS_AUDITION", label: "06 • WebAudio A/B (FEAT-090)" },
+  { id: "BREAKING_POINT", label: "07 • Breaking Point (FEAT-102)" },
+  { id: "PARETO_FRONTIER", label: "08 • Pareto NSGA-III (FEAT-103)" },
+  { id: "ANOMALY_DEBUGGER", label: "09 • Anomaly Root-Cause (FEAT-106)" },
 ];
 
 export function buildSimViewerWorkbenchVm(

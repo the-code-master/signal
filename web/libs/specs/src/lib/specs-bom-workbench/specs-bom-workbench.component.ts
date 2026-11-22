@@ -4,12 +4,20 @@
 import { ChangeDetectionStrategy, Component, computed, input, signal } from "@angular/core";
 import type { WorkbenchDescriptor } from "@signal/canvas-core";
 import { SigDataGridComponent, SigPanelComponent, SigStatusPillComponent } from "@signal/ui-kit";
+import { BomConsolidationComponent } from "../bom-consolidation/bom-consolidation.component";
+import { DatasheetDriftComponent } from "../datasheet-drift/datasheet-drift.component";
 import { buildSpecsBomWorkbenchVm } from "./specs-bom-workbench.logic";
 
 @Component({
   selector: "sig-specs-bom-workbench",
   standalone: true,
-  imports: [SigPanelComponent, SigStatusPillComponent, SigDataGridComponent],
+  imports: [
+    SigPanelComponent,
+    SigStatusPillComponent,
+    SigDataGridComponent,
+    DatasheetDriftComponent,
+    BomConsolidationComponent,
+  ],
   templateUrl: "./specs-bom-workbench.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

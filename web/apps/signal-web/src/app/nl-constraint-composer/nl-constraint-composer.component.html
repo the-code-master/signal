@@ -1,0 +1,36 @@
+<sig-panel
+  title="Natural-Language -> Deterministic Rule Compiler"
+  subtitle="FEAT-105 Side-by-Side NL Intent -> DRC / UPF / SDC / SVA Constraint AST"
+  badge="constraint_ast"
+>
+  <div class="sig-stack">
+    <div class="sig-row">
+      @for (lang of vm().languages; track lang) {
+        <button
+          class="sig-btn"
+          [class.sig-btn-primary]="vm().targetLanguage === lang"
+          type="button"
+          (click)="selectLanguage(lang)"
+        >
+          {{ lang }}
+        </button>
+      }
+      <sig-status-pill [label]="vm().compiled.statusBadge" [tone]="vm().compiled.tone" />
+    </div>
+
+    <div class="sig-grid-2">
+      <input
+        class="sig-input"
+        type="text"
+        aria-label="Natural Language Constraint Prompt"
+        [value]="vm().prompt"
+        (input)="onPromptInput($event)"
+      />
+      <span class="sig-code">{{ vm().compiled.compiledRuleDsl }}</span>
+    </div>
+
+    <button class="sig-btn sig-btn-primary" type="button" (click)="commitRule()">
+      Stage Compiled Constraint Rule
+    </button>
+  </div>
+</sig-panel>

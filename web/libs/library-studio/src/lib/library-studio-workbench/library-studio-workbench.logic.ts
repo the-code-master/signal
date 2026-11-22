@@ -36,6 +36,7 @@ export const LIBRARY_STUDIO_TABS: readonly LibraryStudioTabOption[] = [
   { id: "PIN_SYMBOL", label: "01 • Master Pins & Bank Splitter (FEAT-072)" },
   { id: "PADSTACK_STEP", label: "02 • Padstack, IPC-7351 & 3D STEP (FEAT-071/076)" },
   { id: "CURVE_SDK_SNIPPETS", label: "03 • Curve-Fitter, WASM SDK & Snippets (FEAT-073/074/079)" },
+  { id: "DATASHEET_TESTBENCH", label: "04 • Datasheet-to-Testbench (FEAT-107)" },
 ];
 
 export function buildLibraryStudioWorkbenchVm(

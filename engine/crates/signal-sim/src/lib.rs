@@ -6,6 +6,7 @@
 use thiserror::Error;
 
 pub mod analytics;
+pub mod anomaly_attribution;
 pub mod circuit;
 pub mod elements;
 pub mod equilibrate_solver;
@@ -16,6 +17,7 @@ pub mod pss_hb;
 pub mod spice_loader;
 pub mod stamp;
 
+pub use anomaly_attribution::{ParasiticLoopCandidate, attribute_waveform_anomaly};
 pub use circuit::{AssembledMnaState, CircuitElement, MnaCircuit, pnjlim};
 pub use equilibrate_solver::{
     Complex64, GPU_MONTE_CARLO_BATCH_CROSSOVER, LinearSolverDispatcher, RuizEquilibratedSystem,

@@ -8,13 +8,13 @@ import {
 } from "./library-studio-workbench.logic";
 
 describe("buildLibraryStudioWorkbenchVm", () => {
-  it("exposes 3 Library Studio tabs and reflects stamped snippet telemetry", () => {
+  it("exposes 4 Library Studio tabs including FEAT-107 and reflects stamped snippet telemetry", () => {
     const vm = buildLibraryStudioWorkbenchVm(
       LIBRARY_STUDIO_WORKBENCH_DESCRIPTOR,
       "PADSTACK_STEP",
       "snip-sic-kelvin-gate @ base 400",
     );
-    expect(vm.tabs.length).toBe(3);
+    expect(vm.tabs.length).toBe(4);
     expect(vm.activeTab).toBe("PADSTACK_STEP");
     expect(vm.lastStampNote).toContain("base 400");
   });

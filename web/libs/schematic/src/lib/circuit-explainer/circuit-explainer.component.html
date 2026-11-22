@@ -1,0 +1,30 @@
+<sig-panel
+  title="Circuit Explainer & Symbolic Transfer Cards"
+  subtitle="FEAT-101 VF2 Subgraph Stage Partitioning • Signal Flow & Symbolic H(s)"
+  badge="subgraph_matcher"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (stg of vm().stages; track stg.stageId) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().selectedStage.stageId === stg.stageId"
+            type="button"
+            (click)="selectStage(stg.stageId)"
+          >
+            {{ stg.stageId }}
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().signalFlowSummary" tone="ok" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">{{ vm().selectedStage.symbolicTransferFn }}</span>
+      <span class="sig-badge sig-mono">{{ vm().bboxBadge }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

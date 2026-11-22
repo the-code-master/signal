@@ -5,6 +5,7 @@ import { ChangeDetectionStrategy, Component, computed, input, signal } from "@an
 import { DualPlaneViewportComponent, type WorkbenchDescriptor } from "@signal/canvas-core";
 import { SigPanelComponent, SigStatusPillComponent } from "@signal/ui-kit";
 import { BeautifyBusComponent } from "../beautify-bus/beautify-bus.component";
+import { CircuitExplainerComponent } from "../circuit-explainer/circuit-explainer.component";
 import { HierarchyVariantsComponent } from "../hierarchy-variants/hierarchy-variants.component";
 import { LiveSimHudComponent } from "../live-sim-hud/live-sim-hud.component";
 import { PinswapEquationsComponent } from "../pinswap-equations/pinswap-equations.component";
@@ -22,6 +23,7 @@ import type { SchematicTabId } from "./schematic-workbench.model";
     LiveSimHudComponent,
     HierarchyVariantsComponent,
     PinswapEquationsComponent,
+    CircuitExplainerComponent,
   ],
   templateUrl: "./schematic-workbench.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -18,6 +18,7 @@ pub mod ephemeral_presence;
 pub mod hierarchy_ops;
 pub mod pin_swap_reannotate;
 pub mod snippet_stamp;
+pub mod subgraph_matcher;
 
 pub use beautify::{
     SchematicBlock, beautify_schematic_layout, count_two_layer_crossings,
@@ -50,6 +51,7 @@ pub use snippet_stamp::{
     GoldenSnippetTemplate, SnippetComponentTemplate, SnippetTraceTemplate,
     StampedComponentInstance, StampedPreRoutedTrace, StampedSnippetBundle, stamp_golden_snippet,
 };
+pub use subgraph_matcher::{StageComponentNode, StagePrimitiveKind, explain_circuit_stages};
 
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum GraphError {

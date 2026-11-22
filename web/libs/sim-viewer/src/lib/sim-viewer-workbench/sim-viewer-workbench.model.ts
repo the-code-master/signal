@@ -9,7 +9,10 @@ export type SimStudioTabId =
   | "JITTER_STUDIO"
   | "WHAT_IF_ADJOINT"
   | "REGRESSION_SUITE"
-  | "STIMULUS_AUDITION";
+  | "STIMULUS_AUDITION"
+  | "BREAKING_POINT"
+  | "PARETO_FRONTIER"
+  | "ANOMALY_DEBUGGER";
 
 export interface SimStudioTabOption {
   readonly id: SimStudioTabId;

@@ -4,9 +4,12 @@
 import { ChangeDetectionStrategy, Component, computed, input, signal } from "@angular/core";
 import type { WorkbenchDescriptor } from "@signal/canvas-core";
 import { SigPanelComponent, SigStatusPillComponent } from "@signal/ui-kit";
+import { AnomalyDebuggerComponent } from "../anomaly-debugger/anomaly-debugger.component";
+import { BreakingPointComponent } from "../breaking-point/breaking-point.component";
 import { WaveformFormulaBarComponent } from "../formula-bar/formula-bar.component";
 import { JitterStudioComponent } from "../jitter-studio/jitter-studio.component";
 import { MonteCarloStudioComponent } from "../monte-carlo/monte-carlo.component";
+import { ParetoFrontierComponent } from "../pareto-frontier/pareto-frontier.component";
 import { RegressionSuiteComponent } from "../regression-suite/regression-suite.component";
 import { StimulusAuditionComponent } from "../stimulus-audition/stimulus-audition.component";
 import { VirtualBenchDeckComponent } from "../virtual-bench/virtual-bench.component";
@@ -29,6 +32,9 @@ import type { SimStudioTabId } from "./sim-viewer-workbench.model";
     WhatIfScrubberComponent,
     RegressionSuiteComponent,
     StimulusAuditionComponent,
+    BreakingPointComponent,
+    ParetoFrontierComponent,
+    AnomalyDebuggerComponent,
   ],
   templateUrl: "./sim-viewer-workbench.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -8,7 +8,9 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from "@angular/rou
 import { SIG_PROFILES, SIG_THEMES, type SigThemeId, type SigUiProfile } from "@signal/design-system";
 import { SigDrawerComponent, SigPanelComponent, SigStatusPillComponent } from "@signal/ui-kit";
 import { AccessibilityCadComponent } from "../accessibility/accessibility.component";
+import { InlineTranslateComponent } from "../inline-translate/inline-translate.component";
 import { MultiMonitorManagerComponent } from "../multi-monitor/multi-monitor.component";
+import { NlConstraintComposerComponent } from "../nl-constraint-composer/nl-constraint-composer.component";
 import { OmniPaletteComponent } from "../omni-palette/omni-palette.component";
 import { SelectionQueryToolbarComponent } from "../selection-query/selection-query.component";
 import { SpacemouseControlComponent } from "../spacemouse/spacemouse.component";
@@ -30,6 +32,8 @@ import type { CadKeymapPreset, PlatformReleaseDto, SessionLeaseDto } from "./ide
     MultiMonitorManagerComponent,
     SpacemouseControlComponent,
     AccessibilityCadComponent,
+    NlConstraintComposerComponent,
+    InlineTranslateComponent,
   ],
   templateUrl: "./ide-shell.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,6 +51,7 @@ export class IdeShellComponent implements OnInit {
   readonly omniPaletteOpen = signal<boolean>(false);
   readonly queryBarOpen = signal<boolean>(false);
   readonly powerDrawerOpen = signal<boolean>(false);
+  readonly aiToolsDrawerOpen = signal<boolean>(false);
   readonly secondaryPaneCount = signal<number>(0);
   readonly keymapPreset = signal<CadKeymapPreset>("KiCad");
   readonly lastCliSummary = signal<string>("Cmd+K Ready");

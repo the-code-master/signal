@@ -1,0 +1,19 @@
+<sig-panel
+  title="Stress-Envelope Breaking-Point Explorer"
+  subtitle="FEAT-102 Worst-Case Surge & Thermal Vector Solver • First-to-Fail Attribution"
+  badge="stress_boundary"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <sig-status-pill [label]="vm().summaryBadge" [tone]="vm().summaryTone" />
+      <div class="sig-row">
+        <label class="sig-subtitle" for="sig-surge-v">Bus Surge ({{ surgeVolts() }} V):</label>
+        <input id="sig-surge-v" type="range" min="700" max="960" [value]="surgeVolts()" (input)="onSurgeInput($event)" />
+        <label class="sig-subtitle" for="sig-amb-c">T_amb ({{ ambientCelsius() }} °C):</label>
+        <input id="sig-amb-c" type="range" min="25" max="125" [value]="ambientCelsius()" (input)="onAmbientInput($event)" />
+      </div>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

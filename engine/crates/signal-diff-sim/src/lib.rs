@@ -6,12 +6,15 @@
 use thiserror::Error;
 
 pub mod fast_sweep;
+pub mod pareto_nsga3;
 pub mod revolve_adjoint;
 pub mod saltation;
+pub mod stress_boundary;
 
 pub use fast_sweep::{
     FastWhatIfSweepSummary, WhatIfCandidateCurve, run_fast_what_if_inductance_sweep,
 };
+pub use pareto_nsga3::{explore_pareto_frontier, fast_non_dominated_sort, pareto_dominates};
 pub use revolve_adjoint::{
     SwitchedBuckChopper, binomial_revolve_capacity, compute_revolve_snapshot_indices,
     hermite_interpolate_state, warm_start_pss_for_adjoint,
@@ -20,6 +23,7 @@ pub use saltation::{
     SwitchingEvent, apply_adjoint_saltation_jump, apply_forward_saltation_jump,
     compute_saltation_matrix,
 };
+pub use stress_boundary::{ComponentStressEnvelope, find_stress_breaking_point};
 
 #[derive(Debug, Error, PartialEq)]
 pub enum DiffSimError {

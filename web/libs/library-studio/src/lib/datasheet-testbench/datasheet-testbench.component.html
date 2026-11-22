@@ -1,0 +1,32 @@
+<sig-panel
+  title="Datasheet-to-Testbench & ConditionCurveSet Wizard"
+  subtitle="FEAT-107 Quarantined Dual-VLM PDF -> Typical Application CoW Schematic + SPICE Curve Overlay"
+  badge="BuildDatasheetTestbench"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (item of vm().presets; track item.mpn) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().selected.mpn === item.mpn"
+            type="button"
+            (click)="selectPart(item.mpn)"
+          >
+            {{ item.mpn }}
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().rmsBadge" [tone]="vm().rmsTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">{{ vm().thermalErrataBadge }}</span>
+      <button class="sig-btn sig-btn-primary" type="button" (click)="openGeneratedTestbench()">
+        Promote Verified Typical-App Testbench ({{ vm().selected.generatedBranchId }})
+      </button>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

@@ -5,6 +5,7 @@ import { ChangeDetectionStrategy, Component, computed, input, signal } from "@an
 import { DualPlaneViewportComponent, type WorkbenchDescriptor } from "@signal/canvas-core";
 import { SigPanelComponent, SigStatusPillComponent } from "@signal/ui-kit";
 import { CurveSdkSnippetsComponent } from "../curve-sdk-snippets/curve-sdk-snippets.component";
+import { DatasheetTestbenchComponent } from "../datasheet-testbench/datasheet-testbench.component";
 import { PadstackFootprintStepComponent } from "../padstack-footprint-step/padstack-footprint-step.component";
 import { PinSymbolSplitterComponent } from "../pin-symbol-splitter/pin-symbol-splitter.component";
 import { buildLibraryStudioWorkbenchVm } from "./library-studio-workbench.logic";
@@ -20,6 +21,7 @@ import type { LibraryStudioTabId } from "./library-studio-workbench.model";
     PinSymbolSplitterComponent,
     PadstackFootprintStepComponent,
     CurveSdkSnippetsComponent,
+    DatasheetTestbenchComponent,
   ],
   templateUrl: "./library-studio-workbench.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,

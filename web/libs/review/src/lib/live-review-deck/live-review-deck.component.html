@@ -1,0 +1,32 @@
+<sig-panel
+  title="Live In-App PDR / CDR / FDR Presentation Deck"
+  subtitle="FEAT-109 Interactive Viewport-Anchored Briefing • Replaces Static Slide Exports"
+  badge="Zero-Leak Deck"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (gate of vm().milestones; track gate) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().milestone === gate"
+            type="button"
+            (click)="selectMilestone(gate)"
+          >
+            {{ gate }} Deck
+          </button>
+        }
+        <button class="sig-btn" type="button" (click)="prevSlide()">Prev Slide</button>
+        <button class="sig-btn" type="button" (click)="nextSlide()">Next Slide</button>
+      </div>
+      <sig-status-pill [label]="vm().dlpBadge" [tone]="vm().gateTone" />
+    </div>
+
+    <div class="sig-surface sig-row-between">
+      <span class="sig-code">{{ vm().positionBadge }}</span>
+      <span class="sig-badge sig-mono">{{ vm().anchorBadge }}</span>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

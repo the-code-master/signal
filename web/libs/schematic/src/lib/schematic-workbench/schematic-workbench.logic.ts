@@ -33,6 +33,7 @@ export const SCHEMATIC_TABS: readonly SchematicTabOption[] = [
   { id: "LIVE_HUD", label: "02 • Live Controls & Current-River" },
   { id: "HIERARCHY_VARIANTS", label: "03 • Portals, Repeat(N) & Variants" },
   { id: "PINSWAP_EQUATIONS", label: "04 • Pin Swap, Reannotate & Equations" },
+  { id: "CIRCUIT_EXPLAINER", label: "05 • Circuit Explainer (FEAT-101)" },
 ];
 
 export function buildSchematicWorkbenchVm(

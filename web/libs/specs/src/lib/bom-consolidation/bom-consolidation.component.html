@@ -1,0 +1,26 @@
+<sig-panel
+  title="SMT Feeder-Slot & Passive BOM Consolidator"
+  subtitle="FEAT-108 Saltation-Adjoint Verified Zero-Shift Passive & Package Deduplication"
+  badge="ConsolidateBomFeeders"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        <span class="sig-subtitle">Max Adjoint ΔMetric Cap:</span>
+        @for (cap of presets; track cap) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().maxAllowedShiftPct === cap"
+            type="button"
+            (click)="selectShiftCap(cap)"
+          >
+            &lt;= {{ cap }}%
+          </button>
+        }
+      </div>
+      <sig-status-pill [label]="vm().summaryBadge" [tone]="vm().summaryTone" />
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

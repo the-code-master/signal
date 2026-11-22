@@ -1,0 +1,30 @@
+<sig-panel
+  title="Multi-Objective NSGA-III Pareto Frontier Studio"
+  subtitle="FEAT-103 Cost vs Efficiency vs Area vs Peak Tj vs Embodied Carbon"
+  badge="pareto_nsga3"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (goal of vm().goals; track goal) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().goal === goal"
+            type="button"
+            (click)="selectGoal(goal)"
+          >
+            {{ goal }}
+          </button>
+        }
+      </div>
+      <div class="sig-row">
+        <sig-status-pill [label]="vm().recommendedBadge" tone="ok" />
+        <button class="sig-btn sig-btn-primary" type="button" (click)="previewRecommendedBranch()">
+          Preview CoW Branch
+        </button>
+      </div>
+    </div>
+
+    <sig-data-grid [columns]="vm().columns" [rows]="vm().rows" />
+  </div>
+</sig-panel>

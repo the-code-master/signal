@@ -130,7 +130,8 @@ dockerfile = "infra/docker/Dockerfile.ai"
 image_name = "signal-ai"
 check_commands = [
   ["uv", "run", "ruff", "check", "ai/"],
-  ["uv", "run", "pytest", "ai/", "-q"],
+  ["uv", "run", "pyright", "ai/"],
+  ["uv", "run", "pytest", "ai/datasheet-ingest", "ai/rag-service", "ai/llm-gateway", "ai/orchestrator", "-q"],
 ]
 build_commands = []
 

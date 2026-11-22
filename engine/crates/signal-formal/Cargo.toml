@@ -1,0 +1,18 @@
+# Module: engine/crates/signal-formal/Cargo.toml — Pure-Rust SAT/IC3 Prover, 200-Pt Red-Team & Constraint Compiler (I-03)
+# Invariants: #![forbid(unsafe_code)]; deterministic pure-Rust DPLL/CDCL + IC3 safety prover without external C++ solvers.
+# Spec: architecture/03-rust-eda-engine.md, architecture/05-ai-agent-and-datasheet-rag.md, architecture/16-*
+[package]
+name = "signal-formal"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+signal-core = { workspace = true }
+signal-proto = { workspace = true }
+thiserror = { workspace = true }

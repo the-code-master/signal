@@ -27,4 +27,22 @@ export type {
   StageGateChecklistVm,
   StageGateCriterion,
 } from "./lib/stage-gate-checklist/stage-gate-checklist.model";
+export { LiveReviewDeckComponent } from "./lib/live-review-deck/live-review-deck.component";
+export {
+  DEFAULT_REVIEW_SLIDES,
+  buildLiveReviewDeckVm,
+  stepSlideIndex,
+} from "./lib/live-review-deck/live-review-deck.logic";
+export type {
+  LiveReviewDeckVm,
+  LiveReviewSlide,
+  ReviewDeckMilestone,
+} from "./lib/live-review-deck/live-review-deck.model";
+export { PrincipalAuditComponent } from "./lib/principal-audit/principal-audit.component";
+export { DEFAULT_REDTEAM_FINDINGS, buildPrincipalAuditVm } from "./lib/principal-audit/principal-audit.logic";
+export type {
+  AuditSeverityFilter,
+  PrincipalAuditVm,
+  RedTeamAuditItem,
+} from "./lib/principal-audit/principal-audit.model";
 export { WORKBENCH_DESCRIPTOR, WORKBENCH_ROUTES } from "./review.routes";

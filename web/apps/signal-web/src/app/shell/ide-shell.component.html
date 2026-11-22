@@ -18,6 +18,9 @@
       <button class="sig-btn" type="button" (click)="powerDrawerOpen.set(true)">
         6-DOF / Monitors / A11y
       </button>
+      <button class="sig-btn" type="button" (click)="aiToolsDrawerOpen.set(true)">
+        NL Rules / 15-Locale
+      </button>
       @for (prof of profiles; track prof) {
         <button
           class="sig-btn"
@@ -115,6 +118,13 @@
           <p class="sig-subtitle">{{ hl }}</p>
         </div>
       }
+    </div>
+  </sig-drawer>
+
+  <sig-drawer [open]="aiToolsDrawerOpen()" title="NL Constraint Compiler & Quarantined 15-Locale Translator" (closed)="aiToolsDrawerOpen.set(false)">
+    <div class="sig-stack">
+      <sig-nl-constraint-composer (ruleCommitted)="lastCliSummary.set($event)" />
+      <sig-inline-translate />
     </div>
   </sig-drawer>
 </div>
