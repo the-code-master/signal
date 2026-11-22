@@ -1,0 +1,39 @@
+# Module: infra/k8s/policies/cilium-huddle-sfu.yaml — Cilium eBPF Zero-Lateral-Movement Policy for signal-huddle-sfu
+# Invariants: Blocks 100% of SFU -> Tier-3 Rust Engine / PostgreSQL / KMS traffic; permits ONLY turns:443 ingress & mTLS ticket check (21-*).
+# Spec: architecture/21-collaboration-space-project-status-and-automated-reviews.md, architecture/15-application-security-and-project-isolation.md
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: signal-huddle-sfu-zero-lateral
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: signal-huddle-sfu
+      signal.design/tier: tier2-api-bridge
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            signal.design/tier: tier1-web
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "3478"
+              protocol: UDP
+    - fromEntities:
+        - ingress
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "3478"
+              protocol: UDP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: signal-api-bridge
+            signal.design/tier: tier2-api-bridge
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP

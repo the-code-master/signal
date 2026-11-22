@@ -16,6 +16,7 @@ pub mod fab_writers;
 pub mod readonly_view_filter;
 pub mod render;
 pub mod render_mask;
+pub mod review_snapshot;
 pub mod stage_gate;
 pub mod watermark;
 use signal_proto::v1::{

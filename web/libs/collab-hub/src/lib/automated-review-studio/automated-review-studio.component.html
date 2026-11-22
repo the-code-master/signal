@@ -1,0 +1,53 @@
+<sig-panel
+  title="Automated Weekly, Monthly Executive & Stage-Gate Review Studio (FEAT-109)"
+  subtitle="100% deterministic Rust/PLM KPI citations + Zero-Leak in-app presentation deck + ML-DSA-65 sign-off"
+  [badge]="vm().signOffBadge"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (cadence of vm().cadences; track cadence) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().activePacket.cadence === cadence"
+            type="button"
+            (click)="generateCadence(cadence)"
+          >
+            Generate {{ cadence }}
+          </button>
+        }
+      </div>
+      <div class="sig-row">
+        <button class="sig-btn" type="button" (click)="togglePresentationDeck()">
+          {{ vm().presentationMode ? "Exit Presentation Deck" : "Enter Zero-Leak Deck Mode" }}
+        </button>
+        <button class="sig-btn sig-btn-primary" type="button" (click)="executeFreshSignOff()">
+          Sign Off Gate (Step-Up 2FA + ML-DSA-65)
+        </button>
+      </div>
+    </div>
+
+    @if (vm().presentationMode) {
+      <div class="sig-toolbar">
+        <div class="sig-stack">
+          <strong>{{ vm().activeSlide.heading }}</strong>
+          <span>{{ vm().activeSlide.narrativeLine }}</span>
+          <code>{{ vm().activeSlide.deterministicCitation }}</code>
+        </div>
+        <button class="sig-btn" type="button" (click)="nextSlide()">
+          Next Slide ({{ vm().slideCounterLabel }})
+        </button>
+      </div>
+    }
+
+    <sig-data-grid
+      [title]="vm().activePacket.reviewId + ' — Verified Deterministic KPI Citations'"
+      [columns]="vm().kpiColumns"
+      [rows]="vm().kpiRows"
+    />
+
+    <div class="sig-row">
+      <sig-status-pill [label]="vm().lastSignOffStatus" [tone]="vm().signOffTone" />
+    </div>
+  </div>
+</sig-panel>

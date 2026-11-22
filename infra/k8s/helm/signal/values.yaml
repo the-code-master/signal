@@ -37,6 +37,21 @@ tier2ApiBridge:
       cpu: "2000m"
       memory: "2Gi"
 
+huddleSfu:
+  replicas: 2
+  nodePool: "pool-api"
+  image: "signal-huddle-sfu"
+  turnsPort: 443
+  udpMuxPort: 3478
+  spiffeMtlsEnabled: true
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "512Mi"
+    limits:
+      cpu: "1000m"
+      memory: "1Gi"
+
 tier3RustEngine:
   operatorImage: "signal-operator"
   podImage: "signal-pod"

@@ -1,0 +1,58 @@
+<sig-panel
+  title="5-Team DEK-Encrypted Channels, @entity Threads & Encrypted SFU Huddle"
+  subtitle="Per-repo required_repo_scopes RBAC masking + turns:huddle.signal.local:443 (<=15m TTL)"
+  [badge]="vm().scopeSummaryBadge"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (role of vm().viewerRoles; track role) {
+          <button
+            class="sig-btn"
+            [class.sig-btn-primary]="vm().viewerRole === role"
+            type="button"
+            (click)="selectRole(role)"
+          >
+            View as {{ role }}
+          </button>
+        }
+      </div>
+      <div class="sig-row">
+        <button class="sig-btn sig-btn-primary" type="button" (click)="toggleHuddle()">
+          {{ vm().huddle.active ? "Leave Encrypted Huddle" : "Start SFU Huddle (turns:443)" }}
+        </button>
+        <button class="sig-btn" type="button" (click)="toggleFollowPresenter()">
+          Follow Presenter: {{ vm().huddle.followPresenterViewport ? "ON" : "OFF" }}
+        </button>
+        <sig-status-pill [label]="vm().huddleBadge" [tone]="vm().huddleTone" />
+      </div>
+    </div>
+
+    <div class="sig-row">
+      @for (ch of vm().visibleChannels; track ch.channelId) {
+        <button
+          class="sig-btn"
+          [class.sig-btn-primary]="vm().activeChannel.channelId === ch.channelId"
+          type="button"
+          (click)="selectChannel(ch.channelId)"
+        >
+          {{ ch.slug }} ({{ ch.team }})
+        </button>
+      }
+    </div>
+
+    <sig-data-grid
+      [title]="vm().activeChannel.title"
+      [columns]="vm().messageColumns"
+      [rows]="vm().messageRows"
+    />
+
+    <div class="sig-row">
+      @for (anc of vm().visibleClickableAnchors; track anc.anchorId) {
+        <button class="sig-btn" type="button" (click)="triggerJump(anc)">
+          Jump to Canvas: {{ anc.entityId }} ({{ anc.domain }} @ {{ anc.commitSha }})
+        </button>
+      }
+    </div>
+  </div>
+</sig-panel>

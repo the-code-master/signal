@@ -1,0 +1,20 @@
+<div class="sig-stack">
+  <sig-panel
+    [title]="vm().descriptor.title"
+    [subtitle]="vm().descriptor.subtitle"
+    [badge]="vm().cellIsolationBadge"
+  >
+    <div class="sig-toolbar">
+      <sig-status-pill [label]="vm().jumpHudLabel" tone="ok" />
+    </div>
+  </sig-panel>
+
+  <sig-dual-plane-viewport
+    [domainTitle]="vm().descriptor.title"
+    [hudSignals]="vm().hudSignals"
+  />
+
+  <sig-team-channels-huddle (jumpToCanvas)="handleCanvasJump($event)" />
+  <sig-project-status-tower />
+  <sig-automated-review-studio />
+</div>

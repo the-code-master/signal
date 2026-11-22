@@ -1,0 +1,26 @@
+# Module: infra/k8s/helm/signal/templates/huddle-sfu-service.yaml — Tier-2 TURNS/443 & WebRTC Multiplex Service
+# Invariants: Exposes encrypted TURNS/443 and single-port UDP mux for authenticated project huddles only (21-*).
+# Spec: architecture/21-collaboration-space-project-status-and-automated-reviews.md
+{{- $sfu := .Values.huddleSfu | default dict -}}
+{{- $turnsPort := $sfu.turnsPort | default 443 -}}
+{{- $udpMuxPort := $sfu.udpMuxPort | default 3478 -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: signal-huddle-sfu
+  labels:
+    {{- include "signal.labels" . | nindent 4 }}
+    app.kubernetes.io/name: signal-huddle-sfu
+    signal.design/tier: tier2-api-bridge
+spec:
+  selector:
+    app.kubernetes.io/name: signal-huddle-sfu
+  ports:
+    - name: turns-tls
+      port: {{ $turnsPort }}
+      targetPort: turns-tls
+      protocol: TCP
+    - name: webrtc-mux-udp
+      port: {{ $udpMuxPort }}
+      targetPort: webrtc-mux-udp
+      protocol: UDP

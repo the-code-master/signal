@@ -1,0 +1,44 @@
+<sig-panel
+  title="Live Project Status Control Tower (5-Team RAG, Stage Gates & Dependency Ledger)"
+  subtitle="Auto-escalates overdue cross-team handshakes to BLOCKED and logs ML-DSA-65 ADR/EDR decisions"
+  [badge]="vm().overallBadge"
+>
+  <div class="sig-stack">
+    <div class="sig-toolbar">
+      <div class="sig-row">
+        @for (card of vm().teamCards; track card.team) {
+          <sig-status-pill
+            [label]="card.team + ': ' + card.effectiveHealth"
+            [tone]="card.tone"
+          />
+        }
+      </div>
+      <div class="sig-row">
+        <button class="sig-btn" type="button" (click)="simulateOverdueFwDependency()">
+          Simulate Overdue Design -> SW Dependency
+        </button>
+        <button class="sig-btn sig-btn-primary" type="button" (click)="applySignedFwOverride()">
+          Apply Rationale-Gated SW RAG Override
+        </button>
+      </div>
+    </div>
+
+    <sig-data-grid
+      title="Stage-Gate Milestones (Concept -> EVT -> DVT -> PVT -> MP)"
+      [columns]="vm().milestoneColumns"
+      [rows]="vm().milestoneRows"
+    />
+
+    <sig-data-grid
+      title="Cross-Team Dependency Handshake Ledger"
+      [columns]="vm().dependencyColumns"
+      [rows]="vm().dependencyRows"
+    />
+
+    <sig-data-grid
+      title="Immutable ML-DSA-65 Signed ADR / EDR Decision Log"
+      [columns]="vm().decisionColumns"
+      [rows]="vm().decisionRows"
+    />
+  </div>
+</sig-panel>

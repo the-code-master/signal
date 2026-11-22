@@ -1,0 +1,71 @@
+# Module: infra/k8s/helm/signal/templates/huddle-sfu-deployment.yaml — Tier-2 Zero-Leak WebRTC & Viewport-Follow SFU
+# Invariants: Scheduled strictly onto pool-api; verifies Ed25519 huddle tickets over SPIFFE mTLS; zero disk geometry recording (21-*).
+# Spec: architecture/21-collaboration-space-project-status-and-automated-reviews.md, architecture/20-versioning-release-monorepo-build-and-k8s-topology.md
+{{- $sfu := .Values.huddleSfu | default dict -}}
+{{- $sfuImage := $sfu.image | default "signal-huddle-sfu" -}}
+{{- $sfuReplicas := $sfu.replicas | default 2 -}}
+{{- $sfuPool := $sfu.nodePool | default .Values.tier2ApiBridge.nodePool -}}
+{{- $turnsPort := $sfu.turnsPort | default 443 -}}
+{{- $udpMuxPort := $sfu.udpMuxPort | default 3478 -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: signal-huddle-sfu
+  labels:
+    {{- include "signal.labels" . | nindent 4 }}
+    app.kubernetes.io/name: signal-huddle-sfu
+    signal.design/tier: tier2-api-bridge
+spec:
+  replicas: {{ $sfuReplicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: signal-huddle-sfu
+  template:
+    metadata:
+      labels:
+        {{- include "signal.labels" . | nindent 8 }}
+        app.kubernetes.io/name: signal-huddle-sfu
+        signal.design/tier: tier2-api-bridge
+    spec:
+      automountServiceAccountToken: false
+      {{- if not .Values.global.adaptiveSingleNodeFallback }}
+      nodeSelector:
+        signal.design/node-pool: {{ $sfuPool | quote }}
+      {{- end }}
+      volumes:
+        - name: sfu-ram-scratch
+          emptyDir:
+            medium: Memory
+            sizeLimit: 64Mi
+      containers:
+        - name: signal-huddle-sfu
+          image: "{{ .Values.global.imageRegistry }}/{{ $sfuImage }}:v{{ .Values.global.platformVersion }}"
+          ports:
+            - name: turns-tls
+              containerPort: {{ $turnsPort }}
+              protocol: TCP
+            - name: webrtc-mux-udp
+              containerPort: {{ $udpMuxPort }}
+              protocol: UDP
+          env:
+            - name: SIGNAL_ENV
+              value: "production"
+            - name: SIGNAL_HUDDLE_TURNS_PORT
+              value: {{ $turnsPort | quote }}
+            - name: SIGNAL_HUDDLE_ED25519_TICKET_REQUIRED
+              value: "1"
+            - name: SIGNAL_HUDDLE_SPIFFE_MTLS_REQUIRED
+              value: {{ ($sfu.spiffeMtlsEnabled | default true) | quote }}
+            - name: SIGNAL_HUDDLE_ZERO_DISK_RECORDING
+              value: "1"
+            - name: SIGNAL_HUDDLE_TICKET_VERIFY_ENDPOINT
+              value: "https://signal-api-bridge:{{ .Values.tier2ApiBridge.apiPort }}/internal/v1/huddles/verify-ticket"
+          volumeMounts:
+            - name: sfu-ram-scratch
+              mountPath: /tmp/sfu-ephemeral
+          securityContext:
+            {{- include "signal.containerSecurityContext" . | nindent 12 }}
+          {{- if $sfu.resources }}
+          resources:
+            {{- toYaml $sfu.resources | nindent 12 }}
+          {{- end }}
