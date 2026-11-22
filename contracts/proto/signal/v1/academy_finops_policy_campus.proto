@@ -1,0 +1,117 @@
+// Module: Signal Academy LTI 1.3, Open-Silicon MPW, WASM Policy SDK, FinOps, Portfolio DAG & Campus Edge
+// Invariants: Signed ML-DSA-65 WASM policy rule-packs; explicit SI/currency bigint fields (_ms, _micros_usd).
+// Spec: architecture/14-universal-scale-accessibility-and-expandability.md, architecture/17-extended-feature-specifications-ui-and-rust.md
+
+syntax = "proto3";
+
+package signal.v1;
+
+import "signal/v1/common.proto";
+
+option java_multiple_files = true;
+option java_package = "com.signaldesign.v1";
+
+enum OpenSiliconPdkKind {
+  OPEN_SILICON_PDK_KIND_UNSPECIFIED = 0;
+  OPEN_SILICON_PDK_KIND_SKYWATER_SKY130 = 1;
+  OPEN_SILICON_PDK_KIND_GF180MCU = 2;
+  OPEN_SILICON_PDK_KIND_IHP_SG13G2 = 3;
+}
+
+message SignedWasmPolicyManifest {
+  string policy_pack_id = 1;
+  string version = 2;
+  uint64 fuel_budget_instructions = 3 [jstype = JS_STRING];
+  uint32 max_linear_memory_kib = 4;
+  string wasm_module_blake3 = 5;
+  HybridPqcSignature org_admin_signature = 6;
+}
+
+message GradeAcademyLabRequest {
+  string lab_assignment_id = 1;
+  string student_pseudo_id = 2;
+  string submission_branch_id = 3;
+  uint64 randomized_rubric_seed = 4 [jstype = JS_STRING];
+}
+
+message GradeAcademyLabResponse {
+  double score_pct = 1;
+  uint32 passed_fault_rubrics = 2;
+  uint32 total_fault_rubrics = 3;
+  string lti13_grade_passback_receipt = 4;
+  HybridPqcSignature grader_signature = 5;
+}
+
+message ValidateMpwShuttleTileRequest {
+  string project_id = 1;
+  OpenSiliconPdkKind pdk = 2;
+  string tile_slot_preset = 3;
+  int64 die_width_nm = 4 [jstype = JS_STRING];
+  int64 die_height_nm = 5 [jstype = JS_STRING];
+}
+
+message ValidateMpwShuttleTileResponse {
+  bool precheck_drc_lvs_antenna_clean = 1;
+  double metal_density_pct = 2;
+  bool pin_ring_harness_aligned = 3;
+  string shuttle_submission_digest = 4;
+}
+
+message QueryEnterpriseFinOpsRequest {
+  string org_id = 1;
+  int64 window_start_utc_ms = 2 [jstype = JS_STRING];
+  int64 window_end_utc_ms = 3 [jstype = JS_STRING];
+}
+
+message QueryEnterpriseFinOpsResponse {
+  int64 cpu_core_ms_consumed = 1 [jstype = JS_STRING];
+  int64 gpu_ms_consumed = 2 [jstype = JS_STRING];
+  int64 ai_tokens_consumed = 3 [jstype = JS_STRING];
+  int64 accrued_spend_micros_usd = 4 [jstype = JS_STRING];
+  int64 hard_cap_micros_usd = 5 [jstype = JS_STRING];
+  bool hard_budget_cap_tripped = 6;
+}
+
+message EvaluateWasmPolicyPackRequest {
+  FencingAuthority fencing = 1;
+  string branch_id = 2;
+  SignedWasmPolicyManifest manifest = 3;
+}
+
+message EvaluateWasmPolicyPackResponse {
+  bool policy_compliant = 1;
+  uint64 fuel_consumed = 2 [jstype = JS_STRING];
+  repeated string violation_messages = 3;
+}
+
+message AnalyzePortfolioBlastRadiusRequest {
+  string org_id = 1;
+  string affected_mpn_or_ip_id = 2;
+}
+
+message AnalyzePortfolioBlastRadiusResponse {
+  repeated string impacted_project_ids = 1;
+  uint32 transitive_depth = 2;
+  int64 estimated_revenue_at_risk_micros_usd = 3 [jstype = JS_STRING];
+}
+
+message SyncCampusEdgeStoreForwardRequest {
+  string campus_appliance_id = 1;
+  uint32 queued_super_commit_count = 2;
+  int64 offline_duration_ms = 3 [jstype = JS_STRING];
+}
+
+message SyncCampusEdgeStoreForwardResponse {
+  bool upstream_reconciled = 1;
+  uint32 synced_super_commit_count = 2;
+  int64 compressed_delta_bytes = 3 [jstype = JS_STRING];
+}
+
+service AcademyFinOpsPolicyService {
+  rpc GradeAcademyLab(GradeAcademyLabRequest) returns (GradeAcademyLabResponse);
+  rpc ValidateMpwShuttleTile(ValidateMpwShuttleTileRequest) returns (ValidateMpwShuttleTileResponse);
+  rpc QueryEnterpriseFinOps(QueryEnterpriseFinOpsRequest) returns (QueryEnterpriseFinOpsResponse);
+  rpc EvaluateWasmPolicyPack(EvaluateWasmPolicyPackRequest) returns (EvaluateWasmPolicyPackResponse);
+  rpc AnalyzePortfolioBlastRadius(AnalyzePortfolioBlastRadiusRequest) returns (AnalyzePortfolioBlastRadiusResponse);
+  rpc SyncCampusEdgeStoreForward(SyncCampusEdgeStoreForwardRequest) returns (SyncCampusEdgeStoreForwardResponse);
+}

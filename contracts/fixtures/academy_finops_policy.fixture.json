@@ -1,0 +1,18 @@
+{
+  "fixture_id": "academy_finops_policy_phase8_bigint_v1",
+  "wasm_policy_manifest": {
+    "policy_pack_id": "pol_aerospace_mil_stackup_v2",
+    "version": "2.1.0",
+    "fuel_budget_instructions": "9007199254740993",
+    "max_linear_memory_kib": 4096,
+    "wasm_module_blake3": "11223344556677889900aabbccddeeff11223344556677889900aabbccddeeff"
+  },
+  "finops_summary": {
+    "cpu_core_ms_consumed": "845000000",
+    "gpu_ms_consumed": "124000000",
+    "ai_tokens_consumed": "42800000",
+    "accrued_spend_micros_usd": "9007199254740997",
+    "hard_cap_micros_usd": "18014398509481984",
+    "hard_budget_cap_tripped": false
+  }
+}
