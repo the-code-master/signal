@@ -1,6 +1,6 @@
-// Module: Parametric B-Rep Mechanical CAD (CAD_MCAD), CNC CAM (CAM_CNC) & Direct-B-Rep 3D Printing
-// Invariants: All physical geometry in exact integer nanometers (_nm); CNC/3MF egress via SFTP only.
-// Spec: architecture/19-cad-cam-3d-printing-and-plm-operations.md
+// Module: Parametric B-Rep Mechanical CAD (CAD_MCAD), Harness 3D, CNC CAM (CAM_CNC) & Direct-B-Rep 3D Printing
+// Invariants: All physical geometry in exact integer nanometers (_nm); CNC/3MF egress via Step-Up 2FA SFTP only.
+// Spec: architecture/19-cad-cam-3d-printing-and-plm-operations.md, architecture/17-extended-feature-specifications-ui-and-rust.md
 
 syntax = "proto3";
 
@@ -15,16 +15,22 @@ enum McadFeatureOpKind {
   MCAD_FEATURE_OP_KIND_UNSPECIFIED = 0;
   MCAD_FEATURE_OP_KIND_EXTRUDE = 1;
   MCAD_FEATURE_OP_KIND_REVOLVE = 2;
-  MCAD_FEATURE_OP_KIND_FILLET = 3;
-  MCAD_FEATURE_OP_KIND_SHELL = 4;
-  MCAD_FEATURE_OP_KIND_SHEET_METAL_FLANGE = 5;
+  MCAD_FEATURE_OP_KIND_LOFT = 3;
+  MCAD_FEATURE_OP_KIND_SWEEP = 4;
+  MCAD_FEATURE_OP_KIND_FILLET = 5;
+  MCAD_FEATURE_OP_KIND_CHAMFER = 6;
+  MCAD_FEATURE_OP_KIND_SHELL = 7;
+  MCAD_FEATURE_OP_KIND_SHEET_METAL_FLANGE = 8;
+  MCAD_FEATURE_OP_KIND_SNAP_HOOK = 9;
+  MCAD_FEATURE_OP_KIND_GASKET_GROOVE = 10;
 }
 
 enum CncAxisStrategy {
   CNC_AXIS_STRATEGY_UNSPECIFIED = 0;
-  CNC_AXIS_STRATEGY_ADAPTIVE_3AXIS = 1;
-  CNC_AXIS_STRATEGY_INDEXED_3PLUS2 = 2;
-  CNC_AXIS_STRATEGY_SIMULTANEOUS_5AXIS = 3;
+  CNC_AXIS_STRATEGY_ADAPTIVE_2P5D = 1;
+  CNC_AXIS_STRATEGY_ADAPTIVE_3AXIS = 2;
+  CNC_AXIS_STRATEGY_INDEXED_3PLUS2 = 3;
+  CNC_AXIS_STRATEGY_SIMULTANEOUS_5AXIS = 4;
 }
 
 enum AdditiveProcessKind {
@@ -35,17 +41,51 @@ enum AdditiveProcessKind {
   ADDITIVE_PROCESS_KIND_DMLS_METAL_LPBF = 4;
 }
 
+message EcadMcadAnchor {
+  string anchor_id = 1;
+  string pcb_entity_id = 2;
+  Point3dNm pcb_origin_nm = 3;
+  int64 sync_latency_ps = 4 [jstype = JS_STRING];
+}
+
 message McadFeatureNode {
   string feature_id = 1;
   McadFeatureOpKind op_kind = 2;
   int64 primary_depth_nm = 3 [jstype = JS_STRING];
   int64 fillet_radius_nm = 4 [jstype = JS_STRING];
   string linked_pcb_anchor_id = 5;
+  double sheet_metal_k_factor = 6;
+}
+
+message CncOperation {
+  string operation_id = 1;
+  CncAxisStrategy strategy = 2;
+  int64 tool_diameter_nm = 3 [jstype = JS_STRING];
+  int64 stepover_nm = 4 [jstype = JS_STRING];
+  int64 spindle_rpm = 5 [jstype = JS_STRING];
+  int64 feedrate_nm_per_min = 6 [jstype = JS_STRING];
+}
+
+message Print3dJob {
+  string job_id = 1;
+  AdditiveProcessKind process = 2;
+  int64 layer_height_nm = 3 [jstype = JS_STRING];
+  double gyroid_infill_density_pct = 4;
+  bool tree_supports_enabled = 5;
+  bool thermal_warp_precompensation = 6;
+}
+
+message SlicingReport {
+  uint32 total_layer_count = 1;
+  int64 estimated_material_volume_cubic_nm = 2 [jstype = JS_STRING];
+  int64 estimated_print_duration_ps = 3 [jstype = JS_STRING];
+  bool direct_brep_analytic_contours = 4;
 }
 
 message EvaluateBRepFeatureTreeRequest {
   FencingAuthority fencing = 1;
   repeated McadFeatureNode features = 2;
+  repeated EcadMcadAnchor anchors = 3;
 }
 
 message EvaluateBRepFeatureTreeResponse {
@@ -53,6 +93,32 @@ message EvaluateBRepFeatureTreeResponse {
   BoundingBox3dNm bounds_nm = 2;
   int64 min_pcb_enclosure_clearance_nm = 3 [jstype = JS_STRING];
   uint32 interference_collision_count = 4;
+  int64 unfolded_flat_length_nm = 5 [jstype = JS_STRING];
+}
+
+message EvaluateMultiBoardAndFlexRequest {
+  string project_id = 1;
+  int64 flex_bend_radius_nm = 2 [jstype = JS_STRING];
+  int64 copper_thickness_nm = 3 [jstype = JS_STRING];
+  double fold_angle_deg = 4;
+}
+
+message EvaluateMultiBoardAndFlexResponse {
+  double outer_fiber_copper_strain_pct = 1;
+  bool strain_within_ipc2223_limit = 2;
+  uint32 enclosure_collision_count = 3;
+}
+
+message GenerateHarnessNailboardRequest {
+  string project_id = 1;
+  string harness_bundle_id = 2;
+  int64 bundle_current_na = 3 [jstype = JS_STRING];
+}
+
+message GenerateHarnessNailboardResponse {
+  int64 total_cut_length_nm = 1 [jstype = JS_STRING];
+  int64 worst_voltage_drop_uv = 2 [jstype = JS_STRING];
+  bool whma_a620_ampacity_pass = 3;
 }
 
 message GenerateCncToolpathRequest {
@@ -61,12 +127,14 @@ message GenerateCncToolpathRequest {
   CncAxisStrategy strategy = 3;
   int64 tool_diameter_nm = 4 [jstype = JS_STRING];
   string post_processor_profile = 5;
+  repeated CncOperation operations = 6;
 }
 
 message GenerateCncToolpathResponse {
   string toolpath_job_id = 1;
   int64 estimated_cycle_time_ps = 2 [jstype = JS_STRING];
   bool holder_gouge_free = 3;
+  string gcode_sftp_staging_digest = 4;
 }
 
 message SliceBRepFor3dPrintRequest {
@@ -74,16 +142,20 @@ message SliceBRepFor3dPrintRequest {
   string brep_solid_hash = 2;
   AdditiveProcessKind process = 3;
   int64 layer_height_nm = 4 [jstype = JS_STRING];
+  Print3dJob job_spec = 5;
 }
 
 message SliceBRepFor3dPrintResponse {
   string print_job_id = 1;
   uint32 total_layer_count = 2;
   int64 estimated_material_volume_cubic_nm = 3 [jstype = JS_STRING];
+  SlicingReport report = 4;
 }
 
 service McadCamPrintService {
   rpc EvaluateBRepFeatureTree(EvaluateBRepFeatureTreeRequest) returns (EvaluateBRepFeatureTreeResponse);
+  rpc EvaluateMultiBoardAndFlex(EvaluateMultiBoardAndFlexRequest) returns (EvaluateMultiBoardAndFlexResponse);
+  rpc GenerateHarnessNailboard(GenerateHarnessNailboardRequest) returns (GenerateHarnessNailboardResponse);
   rpc GenerateCncToolpath(GenerateCncToolpathRequest) returns (GenerateCncToolpathResponse);
   rpc SliceBRepFor3dPrint(SliceBRepFor3dPrintRequest) returns (SliceBRepFor3dPrintResponse);
 }

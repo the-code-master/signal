@@ -1,5 +1,5 @@
-// Module: Native PLM & Supply-Chain Operations (eBOM/mBOM/sBOM, ECN, MCN, PCN, Deviation & CTB)
-// Invariants: Expired or over-limit Deviation/Waivers MUST fail-closed block SFTP manufacturing release.
+// Module: Native PLM & Supply-Chain Operations (eBOM/mBOM/sBOM, ECO/ECN, MCN, PCN, Deviation, NCR/CAPA & CTB)
+// Invariants: Expired or over-limit Deviation/Waivers MUST fail-closed block SFTP manufacturing release (19-*).
 // Spec: architecture/19-cad-cam-3d-printing-and-plm-operations.md
 
 syntax = "proto3";
@@ -37,6 +37,52 @@ message BomLineItem {
   int64 unit_cost_micros_usd = 5 [jstype = JS_STRING];
   int64 embodied_co2e_mg = 6 [jstype = JS_STRING];
   bool rohs_pfas_compliant = 7;
+  string workstation_step_id = 8;
+}
+
+message EngineeringChangeOrder {
+  string eco_id = 1;
+  string title = 2;
+  string wip_disposition = 3;
+  string field_disposition = 4;
+  repeated string affected_upids = 5;
+  HybridPqcSignature ccb_quorum_sig = 6;
+}
+
+message ManufacturingChangeNotice {
+  string mcn_id = 1;
+  string workstation_id = 2;
+  int64 updated_torque_milli_nm = 3 [jstype = JS_STRING];
+  string cnc_or_slicer_recipe_hash = 4;
+}
+
+message PartChangeNotice {
+  string pcn_id = 1;
+  string affected_mpn = 2;
+  int64 last_time_buy_utc_ms = 3 [jstype = JS_STRING];
+  string spawned_ecr_id = 4;
+}
+
+message DeviationWaiverGate {
+  string deviation_id = 1;
+  uint64 authorized_qty_limit = 2 [jstype = JS_STRING];
+  uint64 consumed_qty = 3 [jstype = JS_STRING];
+  int64 expires_at_utc_ms = 4 [jstype = JS_STRING];
+  HybridPqcSignature ccb_approval_sig = 5;
+}
+
+message NcrCapaRecord {
+  string ncr_id = 1;
+  string serial_number = 2;
+  string current_8d_step = 3;
+  string root_cause_summary = 4;
+  string linked_pcb_or_mcad_entity_id = 5;
+}
+
+message ClearToBuildReport {
+  uint32 max_buildable_units = 1;
+  repeated string gating_shortage_mpns = 2;
+  int64 earliest_clear_date_utc_ms = 3 [jstype = JS_STRING];
 }
 
 message CompileMultiViewBomRequest {
@@ -51,14 +97,7 @@ message CompileMultiViewBomResponse {
   repeated BomLineItem lines = 2;
   int64 total_unit_cost_micros_usd = 3 [jstype = JS_STRING];
   uint32 clear_to_build_max_units = 4;
-}
-
-message DeviationWaiverGate {
-  string deviation_id = 1;
-  uint64 authorized_qty_limit = 2 [jstype = JS_STRING];
-  uint64 consumed_qty = 3 [jstype = JS_STRING];
-  int64 expires_at_utc_ms = 4 [jstype = JS_STRING];
-  HybridPqcSignature ccb_approval_sig = 5;
+  int64 total_embodied_co2e_mg = 5 [jstype = JS_STRING];
 }
 
 message VerifyDeviationGateRequest {
@@ -88,8 +127,19 @@ message TransitionChangeOrderResponse {
   string ops_repo_commit_sha = 3;
 }
 
+message EvaluateClearToBuildRequest {
+  string org_id = 1;
+  string project_id = 2;
+  uint32 target_lot_size = 3;
+}
+
+message EvaluateClearToBuildResponse {
+  ClearToBuildReport report = 1;
+}
+
 service PlmOpsService {
   rpc CompileMultiViewBom(CompileMultiViewBomRequest) returns (CompileMultiViewBomResponse);
   rpc VerifyDeviationGate(VerifyDeviationGateRequest) returns (VerifyDeviationGateResponse);
   rpc TransitionChangeOrder(TransitionChangeOrderRequest) returns (TransitionChangeOrderResponse);
+  rpc EvaluateClearToBuild(EvaluateClearToBuildRequest) returns (EvaluateClearToBuildResponse);
 }

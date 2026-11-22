@@ -1,0 +1,25 @@
+{
+  "fixture_id": "mcad_cam_job_phase5_bigint_v1",
+  "feature_node": {
+    "feature_id": "feat_enclosure_shell_01",
+    "op_kind": "MCAD_FEATURE_OP_KIND_SHELL",
+    "primary_depth_nm": "2500000",
+    "fillet_radius_nm": "1000000",
+    "linked_pcb_anchor_id": "anchor_mnt_hole_h1",
+    "sheet_metal_k_factor": 0.44
+  },
+  "cnc_operation": {
+    "operation_id": "op20_trochoidal_pocket",
+    "strategy": "CNC_AXIS_STRATEGY_SIMULTANEOUS_5AXIS",
+    "tool_diameter_nm": "6000000",
+    "stepover_nm": "900000",
+    "spindle_rpm": "18000",
+    "feedrate_nm_per_min": "9007199254740993"
+  },
+  "slicing_report": {
+    "total_layer_count": 480,
+    "estimated_material_volume_cubic_nm": "9007199254740997",
+    "estimated_print_duration_ps": "7200000000000000",
+    "direct_brep_analytic_contours": true
+  }
+}
